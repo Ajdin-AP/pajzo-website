@@ -116,7 +116,8 @@ export function useClaude() {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text().catch(() => 'unknown error');
+                throw new Error(`Server error ${response.status}: ${errorText.slice(0, 200)}`);
             }
 
             const reader = response.body?.getReader();
@@ -169,7 +170,8 @@ export function useClaude() {
 
         } catch (error) {
             console.error('Error with Claude API generation:', error);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Connection error: Unable to reach Pajzo Secure API Proxy.' }]);
+            const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+            setMessages(prev => [...prev, { role: 'assistant', content: `Connection error: ${errorMsg}` }]);
         } finally {
             fullNetworkBufferRef.current = '';
             displayIndexRef.current = 0;
