@@ -1,4 +1,5 @@
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useState, Suspense, lazy, useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -96,6 +97,7 @@ function App() {
 
       <FloatingChat />
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
