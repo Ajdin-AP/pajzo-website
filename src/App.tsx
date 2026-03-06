@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react"
 import { useState, Suspense, lazy, useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -94,6 +95,7 @@ function App() {
       </Suspense>
 
       <FloatingChat />
+      <Analytics />
     </div>
   );
 }
