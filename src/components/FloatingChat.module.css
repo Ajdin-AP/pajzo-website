@@ -200,6 +200,8 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
   pointer-events: auto;
+  position: relative;
+  z-index: 50;
 }
 
 @media (max-width: 480px) {
