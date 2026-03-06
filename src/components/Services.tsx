@@ -10,12 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================
 
 const Section = styled.section`
-    background: #050505;
+    background: #fdfdfd;
     padding: 150px 20px;
     position: relative;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #f5f5f5;
+    color: #111111;
 `;
 
 const Container = styled.div`
@@ -36,7 +36,7 @@ const Header = styled.div`
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 700;
-        color: #ffffff;
+        color: #111111;
         letter-spacing: -0.04em;
         line-height: 1.05;
         margin: 0;
@@ -67,13 +67,11 @@ const AccordionContainer = styled.div`
 const Panel = styled.div<{ $isActive: boolean }>`
     position: relative;
     height: 100%;
-    background: ${props => props.$isActive ? 'rgba(18, 18, 18, 0.8)' : 'rgba(18, 18, 18, 0.4)'};
+    background: #ffffff;
     border-radius: 32px;
-    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.3)' : 'rgba(255, 255, 255, 0.05)'};
+    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.15)' : 'rgba(0, 0, 0, 0.04)'};
     overflow: hidden;
     cursor: pointer;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     
     /* 
      Flex magic: 
@@ -86,12 +84,14 @@ const Panel = styled.div<{ $isActive: boolean }>`
     transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     
     box-shadow: ${props => props.$isActive
-        ? '0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 68, 0, 0.1)'
-        : '0 4px 12px rgba(0, 0, 0, 0.2)'};
+        ? '0 30px 60px rgba(0, 0, 0, 0.06), 0 10px 20px rgba(0, 0, 0, 0.02)'
+        : '0 4px 12px rgba(0, 0, 0, 0.02)'};
 
     &:hover {
-        border-color: ${props => props.$isActive ? 'rgba(255, 68, 0, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
-        background: ${props => props.$isActive ? 'rgba(18, 18, 18, 0.9)' : 'rgba(255, 255, 255, 0.03)'};
+        border-color: ${props => props.$isActive ? 'rgba(255, 68, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'};
+        box-shadow: ${props => props.$isActive
+        ? '0 30px 60px rgba(0, 0, 0, 0.06)'
+        : '0 8px 20px rgba(0, 0, 0, 0.04)'};
     }
 
     @media (max-width: 1024px) {
@@ -141,24 +141,24 @@ const IconWrapper = styled.div<{ $isActive: boolean }>`
     height: 64px;
     min-width: 64px; /* Prevent shrink */
     border-radius: 20px;
-    background: ${props => props.$isActive ? 'linear-gradient(135deg, #ff4400, #ff8800)' : 'rgba(255, 255, 255, 0.05)'};
+    background: ${props => props.$isActive ? 'linear-gradient(135deg, #ff4400, #ff8800)' : '#f5f5f7'};
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: ${props => props.$isActive ? '0 8px 24px rgba(255, 68, 0, 0.4)' : 'none'};
-    border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(255, 255, 255, 0.1)'};
+    box-shadow: ${props => props.$isActive ? '0 8px 24px rgba(255, 68, 0, 0.25)' : 'none'};
+    border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(0, 0, 0, 0.03)'};
     transition: all 0.5s ease;
 
     i {
         font-size: 1.5rem;
-        color: #ffffff;
+        color: ${props => props.$isActive ? '#ffffff' : '#1d1d1f'};
     }
 `;
 
 const Title = styled.h3<{ $isActive: boolean }>`
     font-size: 1.75rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #111111;
     margin: 0;
     white-space: nowrap;
     transition: all 0.8s ease;
@@ -174,7 +174,7 @@ const Title = styled.h3<{ $isActive: boolean }>`
         margin-top: ${props => props.$isActive ? '0' : '80px'};
         margin-left: ${props => props.$isActive ? '0' : '-20px'};
         
-        opacity: ${props => props.$isActive ? '1' : '0.4'};
+        opacity: ${props => props.$isActive ? '1' : '0.5'};
     }
     
     @media (max-width: 1024px) {
@@ -206,7 +206,7 @@ const ExpandedContent = styled.div<{ $isActive: boolean }>`
 const Description = styled.p`
     font-size: 1.25rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.6);
+    color: #4a4a4f;
     margin: 0;
     font-weight: 400;
     max-width: 85%;
@@ -225,13 +225,13 @@ const Tags = styled.div`
     span {
         font-family: 'Inter', sans-serif;
         font-size: 0.85rem;
-        color: #ffffff;
+        color: #111111;
         padding: 8px 16px;
         border-radius: 100px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #f8f9fa;
+        border: 1px solid rgba(0, 0, 0, 0.05);
         font-weight: 500;
-        backdrop-filter: blur(4px);
+        transition: background 0.3s ease;
     }
 `;
 
@@ -241,7 +241,7 @@ const NumberBadge = styled.div<{ $isActive: boolean }>`
     right: 40px;
     font-size: 4rem;
     font-weight: 800;
-    color: ${props => props.$isActive ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.00)'}; /* Only show big number when active */
+    color: ${props => props.$isActive ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.00)'}; /* Only show big number when active */
     transition: color 0.8s ease;
     user-select: none;
 `;
@@ -263,17 +263,15 @@ const MobileContainer = styled.div`
 `;
 
 const MobileCard = styled.div`
-    background: rgba(18, 18, 18, 0.4);
+    background: #ffffff;
     border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     padding: 40px 30px;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
 `;
 
 const MobileCardHeader = styled.div`
@@ -288,7 +286,7 @@ const MobileCardHeader = styled.div`
 const MobileTitle = styled.h3`
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #111111;
     margin: 0;
     letter-spacing: -0.02em;
 `;
@@ -296,7 +294,7 @@ const MobileTitle = styled.h3`
 const MobileDescription = styled.p`
     font-size: 1.1rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.6);
+    color: #4a4a4f;
     margin: 0 0 25px 0;
     font-weight: 400;
     position: relative;
@@ -309,7 +307,7 @@ const MobileNumberBadge = styled.div`
     right: 15px;
     font-size: 6rem;
     font-weight: 800;
-    color: rgba(255,255,255,0.02);
+    color: rgba(0,0,0,0.02);
     user-select: none;
     line-height: 1;
     z-index: 1;
