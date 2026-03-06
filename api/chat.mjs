@@ -1,3 +1,4 @@
+// Pajzo AI API - Vercel Serverless Function (v2)
 import Anthropic from '@anthropic-ai/sdk';
 
 // Initialize the Anthropic client securely on the backend
