@@ -10,12 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================
 
 const Section = styled.section`
-    background: #ffffff;
+    background: #050505;
     padding: 150px 20px;
     position: relative;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #1d1d1f;
+    color: #f5f5f5;
 `;
 
 const Container = styled.div`
@@ -36,13 +36,16 @@ const Header = styled.div`
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 700;
-        color: #1d1d1f;
+        color: #ffffff;
         letter-spacing: -0.04em;
         line-height: 1.05;
         margin: 0;
         
         span {
-            color: #86868b;
+            /* Text gradient */
+            background: linear-gradient(135deg, #ff4400, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     }
 `;
@@ -64,11 +67,13 @@ const AccordionContainer = styled.div`
 const Panel = styled.div<{ $isActive: boolean }>`
     position: relative;
     height: 100%;
-    background: #fdfdfd;
+    background: ${props => props.$isActive ? 'rgba(18, 18, 18, 0.8)' : 'rgba(18, 18, 18, 0.4)'};
     border-radius: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.3)' : 'rgba(255, 255, 255, 0.05)'};
     overflow: hidden;
     cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     
     /* 
      Flex magic: 
@@ -78,11 +83,16 @@ const Panel = styled.div<{ $isActive: boolean }>`
     flex: ${props => props.$isActive ? '5' : '1'};
     min-width: ${props => props.$isActive ? '40%' : '120px'};
     
-    transition: all 1s cubic-bezier(0.25, 1, 0.3, 1);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     
     box-shadow: ${props => props.$isActive
-        ? '0 30px 60px rgba(0, 0, 0, 0.08), 0 10px 20px rgba(0, 0, 0, 0.03)'
-        : '0 4px 12px rgba(0, 0, 0, 0.02)'};
+        ? '0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 68, 0, 0.1)'
+        : '0 4px 12px rgba(0, 0, 0, 0.2)'};
+
+    &:hover {
+        border-color: ${props => props.$isActive ? 'rgba(255, 68, 0, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
+        background: ${props => props.$isActive ? 'rgba(18, 18, 18, 0.9)' : 'rgba(255, 255, 255, 0.03)'};
+    }
 
     @media (max-width: 1024px) {
         min-height: ${props => props.$isActive ? 'auto' : '100px'};
@@ -126,28 +136,29 @@ const HeaderSection = styled.div<{ $isActive: boolean }>`
     }
 `;
 
-const IconWrapper = styled.div`
+const IconWrapper = styled.div<{ $isActive: boolean }>`
     width: 64px;
     height: 64px;
     min-width: 64px; /* Prevent shrink */
     border-radius: 20px;
-    background: #ffffff;
+    background: ${props => props.$isActive ? 'linear-gradient(135deg, #ff4400, #ff8800)' : 'rgba(255, 255, 255, 0.05)'};
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    border: 1px solid rgba(0,0,0,0.02);
+    box-shadow: ${props => props.$isActive ? '0 8px 24px rgba(255, 68, 0, 0.4)' : 'none'};
+    border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(255, 255, 255, 0.1)'};
+    transition: all 0.5s ease;
 
     i {
         font-size: 1.5rem;
-        color: #1d1d1f;
+        color: #ffffff;
     }
 `;
 
 const Title = styled.h3<{ $isActive: boolean }>`
     font-size: 1.75rem;
     font-weight: 700;
-    color: #1d1d1f;
+    color: #ffffff;
     margin: 0;
     white-space: nowrap;
     transition: all 0.8s ease;
@@ -163,7 +174,7 @@ const Title = styled.h3<{ $isActive: boolean }>`
         margin-top: ${props => props.$isActive ? '0' : '80px'};
         margin-left: ${props => props.$isActive ? '0' : '-20px'};
         
-        opacity: ${props => props.$isActive ? '1' : '0.6'};
+        opacity: ${props => props.$isActive ? '1' : '0.4'};
     }
     
     @media (max-width: 1024px) {
@@ -178,8 +189,8 @@ const Title = styled.h3<{ $isActive: boolean }>`
 const ExpandedContent = styled.div<{ $isActive: boolean }>`
     opacity: ${props => props.$isActive ? 1 : 0};
     transform: ${props => props.$isActive ? 'translateY(0)' : 'translateY(20px)'};
-    transition: all 0.8s cubic-bezier(0.25, 1, 0.3, 1);
-    transition-delay: ${props => props.$isActive ? '0.3s' : '0s'}; /* Wait for expansion to fade in */
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: ${props => props.$isActive ? '0.2s' : '0s'}; /* Wait for expansion to fade in */
     pointer-events: ${props => props.$isActive ? 'auto' : 'none'};
     
     display: flex;
@@ -195,7 +206,7 @@ const ExpandedContent = styled.div<{ $isActive: boolean }>`
 const Description = styled.p`
     font-size: 1.25rem;
     line-height: 1.6;
-    color: #4a4a4f;
+    color: rgba(255, 255, 255, 0.6);
     margin: 0;
     font-weight: 400;
     max-width: 85%;
@@ -214,13 +225,13 @@ const Tags = styled.div`
     span {
         font-family: 'Inter', sans-serif;
         font-size: 0.85rem;
-        color: #1d1d1f;
+        color: #ffffff;
         padding: 8px 16px;
         border-radius: 100px;
-        background: #ffffff;
-        border: 1px solid rgba(0,0,0,0.08);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         font-weight: 500;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        backdrop-filter: blur(4px);
     }
 `;
 
@@ -230,7 +241,7 @@ const NumberBadge = styled.div<{ $isActive: boolean }>`
     right: 40px;
     font-size: 4rem;
     font-weight: 800;
-    color: ${props => props.$isActive ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.00)'}; /* Only show big number when active */
+    color: ${props => props.$isActive ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.00)'}; /* Only show big number when active */
     transition: color 0.8s ease;
     user-select: none;
 `;
@@ -252,15 +263,17 @@ const MobileContainer = styled.div`
 `;
 
 const MobileCard = styled.div`
-    background: #fdfdfd;
+    background: rgba(18, 18, 18, 0.4);
     border-radius: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 40px 30px;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 `;
 
 const MobileCardHeader = styled.div`
@@ -275,7 +288,7 @@ const MobileCardHeader = styled.div`
 const MobileTitle = styled.h3`
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1d1d1f;
+    color: #ffffff;
     margin: 0;
     letter-spacing: -0.02em;
 `;
@@ -283,7 +296,7 @@ const MobileTitle = styled.h3`
 const MobileDescription = styled.p`
     font-size: 1.1rem;
     line-height: 1.6;
-    color: #4a4a4f;
+    color: rgba(255, 255, 255, 0.6);
     margin: 0 0 25px 0;
     font-weight: 400;
     position: relative;
@@ -296,7 +309,7 @@ const MobileNumberBadge = styled.div`
     right: 15px;
     font-size: 6rem;
     font-weight: 800;
-    color: rgba(0,0,0,0.02);
+    color: rgba(255,255,255,0.02);
     user-select: none;
     line-height: 1;
     z-index: 1;
@@ -407,7 +420,7 @@ const Services: React.FC = () => {
                                 <PanelContent>
                                     <div>
                                         <HeaderSection $isActive={isActive}>
-                                            <IconWrapper>
+                                            <IconWrapper $isActive={isActive}>
                                                 <i className={service.icon}></i>
                                             </IconWrapper>
                                             <Title $isActive={isActive}>{service.title}</Title>
@@ -437,7 +450,7 @@ const Services: React.FC = () => {
                     {SERVICES_DATA.map((service, index) => (
                         <MobileCard key={index} className="mobile-service-card">
                             <MobileCardHeader>
-                                <IconWrapper>
+                                <IconWrapper $isActive={true}>
                                     <i className={service.icon}></i>
                                 </IconWrapper>
                                 <MobileTitle>{service.title}</MobileTitle>
