@@ -16,38 +16,8 @@ declare global {
 export function MessageInput({ onSend, disabled }: MessageInputProps) {
     const [content, setContent] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [isListening, setIsListening] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const recognitionRef = useRef<any>(null);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                const recognition = new SpeechRecognition();
-                recognition.continuous = true;
-                recognition.interimResults = true;
-
-                recognition.onresult = (event: any) => {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript;
-                    }
-                    setContent(prev => {
-                        // For simplicity in this local MVP, we append the spoken text
-                        return prev + (prev.length > 0 && !prev.endsWith(' ') ? ' ' : '') + transcript;
-                    });
-                };
-
-                recognition.onstart = () => setIsListening(true);
-                recognition.onend = () => setIsListening(false);
-                recognition.onerror = () => setIsListening(false);
-
-                recognitionRef.current = recognition;
-            }
-        }
-    }, []);
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -55,18 +25,6 @@ export function MessageInput({ onSend, disabled }: MessageInputProps) {
             textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
         }
     }, [content]);
-
-    const toggleListening = () => {
-        if (!recognitionRef.current) {
-            alert("Speech recognition is not supported in this browser. Please use Chrome or Safari.");
-            return;
-        }
-        if (isListening) {
-            recognitionRef.current.stop();
-        } else {
-            recognitionRef.current.start();
-        }
-    };
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -180,21 +138,7 @@ export function MessageInput({ onSend, disabled }: MessageInputProps) {
                     onChange={handleImageSelect}
                     style={{ display: 'none' }}
                 />
-                <button
-                    type="button"
-                    className={`${styles.actionBtn} ${isListening ? styles.listeningActive : ''}`}
-                    onClick={toggleListening}
-                    disabled={disabled}
-                    title="Dictate message"
-                    aria-label="Toggle voice dictation"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                        <line x1="12" y1="19" x2="12" y2="23"></line>
-                        <line x1="8" y1="23" x2="16" y2="23"></line>
-                    </svg>
-                </button>
+
                 <button
                     type="button"
                     className={styles.actionBtn}
@@ -210,7 +154,7 @@ export function MessageInput({ onSend, disabled }: MessageInputProps) {
                 <textarea
                     ref={textareaRef}
                     className={styles.textarea}
-                    placeholder="Message Pajzo AI or attach an image..."
+                    placeholder="Message Pajzo AI..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     onKeyDown={handleKeyDown}

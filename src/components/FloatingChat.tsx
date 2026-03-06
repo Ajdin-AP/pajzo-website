@@ -47,7 +47,9 @@ export function FloatingChat() {
             >
                 <div className={styles.chatHeader}>
                     <div className={styles.headerLeft}>
-                        <img src="/hero.svg" alt="Pajzo Logo" className={styles.logo} />
+                        <div className={styles.logoContainer}>
+                            <img src="/hero.svg" alt="Pajzo Logo" className={styles.logo} />
+                        </div>
                         <div>
                             <h3>PAJZO AI</h3>
                             <span className={styles.status}>Online</span>

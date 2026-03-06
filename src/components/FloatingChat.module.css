@@ -102,13 +102,22 @@
   gap: 0.65rem;
 }
 
-.logo {
+.logoContainer {
   width: 34px;
   height: 34px;
+  min-width: 34px;
   border-radius: 50%;
-  object-fit: cover;
   background: linear-gradient(135deg, #ff4400, #ff8800);
-  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 68, 0, 0.4);
+}
+
+.logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
   filter: brightness(0) invert(1);
 }
 
