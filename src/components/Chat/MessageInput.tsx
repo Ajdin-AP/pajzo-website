@@ -22,7 +22,8 @@ export function MessageInput({ onSend, disabled }: MessageInputProps) {
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+            // Force a minimum height of 24px so it never collapses to 0 when empty
+            textareaRef.current.style.height = `${Math.max(24, Math.min(textareaRef.current.scrollHeight, 120))}px`;
         }
     }, [content]);
 
