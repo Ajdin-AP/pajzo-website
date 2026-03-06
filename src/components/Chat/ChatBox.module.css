@@ -1,10 +1,10 @@
 .chatBox {
     flex: 1;
     overflow-y: auto;
-    padding: 2rem 1rem;
+    padding: 1rem 0;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     scroll-behavior: smooth;
     mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);

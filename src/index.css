@@ -1,10 +1,34 @@
 :root {
   --bg-color: #e5e5e5;
+  --bg-color-2: #111111;
+  /* Dark tertiary bg */
+
   /* Distinct Light Gray */
   --primary: #6366f1;
   --text-light: #1a1a1a;
+
+  /* Chatbot Theme Colors */
+  --glass-bg: rgba(18, 18, 18, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.2);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --user-msg-grad: linear-gradient(135deg, #ff4400, #ff8800);
+  --user-msg-text: #ffffff;
+
+  --bot-msg-bg: rgba(30, 30, 30, 0.8);
+  --bot-msg-border: rgba(255, 255, 255, 0.05);
+  --bot-msg-text: #eaeaea;
+
+  --text-main: #f5f5f5;
+  --text-muted: #999999;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
   --glass: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.2);
   --font-main: 'Inter', sans-serif;
 }
 
