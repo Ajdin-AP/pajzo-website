@@ -1,0 +1,207 @@
+.floatingContainer {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none; /* Let clicks pass through container */
+}
+
+.floatingContainer > * {
+  pointer-events: auto; /* Re-enable clicks for children */
+}
+
+/* --- Floating Button --- */
+.floatingButton {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 68, 0, 0.9);
+  border: 1px solid rgba(255, 100, 50, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 68, 0, 0.4);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+.floatingButton:hover {
+  transform: scale(1.1);
+  background: rgba(255, 80, 20, 1);
+}
+
+.floatingButton.hidden {
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.botIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.glowEffect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  animation: pulseGlow 3s infinite;
+  z-index: 1;
+}
+
+@keyframes pulseGlow {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+
+/* --- Chat Window --- */
+.chatWindow {
+  width: clamp(320px, 90vw, 420px);
+  height: clamp(400px, 80vh, 700px);
+  background: rgba(18, 18, 18, 0.85); /* Deep dark glassmorphism */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 68, 0, 0.5));
+}
+
+.headerLeft h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.status {
+  font-size: 0.75rem;
+  color: #ff4400; /* Warm accent */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #ff4400;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ff4400;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.chatBody {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  /* Make sure internal ChatBox handles its own padding or we add it here */
+  height: 100%;
+}
+
+.chatFooter {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Adjusting child padding to look better in widget layout */
+.chatBody > div {
+  padding: 1rem;
+  height: 100%;
+}
+
+@media (max-width: 480px) {
+  .floatingContainer {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    pointer-events: none;
+  }
+  
+  .chatWindow {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    margin-bottom: 0;
+    border: none;
+  }
+
+  .floatingButton {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    pointer-events: auto;
+  }
+
+  .chatWindow.visible {
+    pointer-events: auto;
+  }
+}
