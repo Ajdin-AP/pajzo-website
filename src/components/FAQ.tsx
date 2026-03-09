@@ -13,8 +13,9 @@ const Section = styled.section`
     position: relative;
     padding: 60px 20px;
     background: #ffffff;
-    color: #1e293b;
+    color: #111111;
     z-index: 10;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 `;
 
 const Container = styled.div`
@@ -47,8 +48,8 @@ const StickyColumn = styled.div`
 const Label = styled.span`
     display: inline-block;
     padding: 8px 16px;
-    background: rgba(99, 102, 241, 0.1);
-    color: #4f46e5;
+    background: rgba(255, 68, 0, 0.1);
+    color: #ff4400;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -61,20 +62,16 @@ const Label = styled.span`
 const Title = styled.h2`
     font-size: clamp(3rem, 5vw, 4.5rem);
     font-weight: 800;
-    color: #0f172a;
+    color: #111111;
     letter-spacing: -0.03em;
     line-height: 1.1;
     margin-bottom: 24px;
-
-    background: linear-gradient(180deg, #0f172a 0%, #475569 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 `;
 
 const Subtitle = styled.p`
     font-size: 1.1rem;
     line-height: 1.7;
-    color: #64748b;
+    color: #4a4a4f;
     margin-bottom: 40px;
     max-width: 400px;
     
@@ -103,15 +100,15 @@ const ContactCard = styled.div`
     h4 {
         margin: 0;
         font-size: 1.2rem;
-        color: #1e293b;
+        color: #111111;
     }
     p {
         margin: 0;
         font-size: 0.95rem;
-        color: #64748b;
+        color: #4a4a4f;
     }
     a {
-        color: #4f46e5;
+        color: #ff4400;
         font-weight: 600;
         text-decoration: none;
         display: inline-flex;
@@ -139,12 +136,12 @@ const AccordionStack = styled.div`
 const AccordionItem = styled.div<{ $isOpen: boolean }>`
     background: ${props => props.$isOpen ? '#ffffff' : 'rgba(255, 255, 255, 0.5)'};
     backdrop-filter: blur(20px);
-    border: 1px solid ${props => props.$isOpen ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.6)'};
+    border: 1px solid ${props => props.$isOpen ? 'rgba(255, 68, 0, 0.2)' : 'rgba(0, 0, 0, 0.04)'};
     border-radius: 20px;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: ${props => props.$isOpen
-        ? '0 20px 40px -10px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99,102,241,0.1)'
+        ? '0 20px 40px -10px rgba(255, 68, 0, 0.15), 0 0 0 1px rgba(255, 68, 0, 0.1)'
         : '0 4px 6px -1px rgba(0,0,0,0.02)'};
         
     &:hover {
@@ -169,7 +166,7 @@ const AccordionHeader = styled.button`
     span {
         font-size: 1.15rem;
         font-weight: 700;
-        color: #1e293b;
+        color: #111111;
         padding-right: 20px;
     }
 
@@ -185,8 +182,8 @@ const IconWrapper = styled.div<{ $isOpen: boolean }>`
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: ${props => props.$isOpen ? '#4f46e5' : '#f1f5f9'};
-    color: ${props => props.$isOpen ? '#fff' : '#64748b'};
+    background: ${props => props.$isOpen ? '#ff4400' : '#f8f9fa'};
+    color: ${props => props.$isOpen ? '#fff' : '#111111'};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -209,7 +206,7 @@ const AccordionContent = styled.div`
 
 const ContentInner = styled.div`
     padding: 0 32px 32px 32px;
-    color: #475569;
+    color: #4a4a4f;
     line-height: 1.7;
     font-size: 1rem;
     max-width: 90%;

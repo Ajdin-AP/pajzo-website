@@ -61,6 +61,12 @@ const LogoText = styled.a<{ $scrolled: boolean }>`
     @media(max-width: 480px) {
         font-size: 20px;
     }
+
+    @media (hover: hover) {
+        &:hover {
+            color: #ff4400; /* Orange hover effect */
+        }
+    }
 `;
 
 const Nav = styled.nav`
@@ -94,7 +100,9 @@ const MagneticBtn = styled.button<{ $scrolled: boolean }>`
 
     @media (hover: hover) {
         &:hover {
-            background: #e6e6e6; /* Slight dim on hover */
+            background: #ff4400; /* Orange hover */
+            color: #ffffff;      /* White text */
+            box-shadow: 0 0 20px rgba(255, 68, 0, 0.4);
         }
     }
     

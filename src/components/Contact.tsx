@@ -135,10 +135,11 @@ const CloseButton = styled.button`
     @media (hover: hover) {
         &:hover {
             transform: scale(1.1);
-            background: #fff;
+            background: #ff4400;
+            border-color: #ff4400;
             svg {
                 transform: rotate(90deg);
-                stroke: #000;
+                stroke: #fff;
             }
         }
     }
@@ -171,7 +172,7 @@ const ProgressBar = styled.div`
 
 const ProgressFill = styled.div<{ $progress: number }>`
     height: 100%;
-    background: #fff;
+    background: linear-gradient(135deg, #ff4400, #ff8800);
     width: ${props => props.$progress}%;
     transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 `;
@@ -203,7 +204,7 @@ const SuperTitle = styled.h1`
     text-align: center;
     
     span.highlight {
-        color: #666;
+        color: #ff4400;
         font-weight: 400;
         display: block;
         font-size: 0.6em;
@@ -403,8 +404,8 @@ const DiagonallyExpandingTextarea = ({ value, placeholder, ...props }: any) => {
 // --- BUTTONS ---
 
 const PrimaryButton = styled.button`
-    background: #fff;
-    color: #000;
+    background: #ff4400;
+    color: #fff;
     border: none;
     padding: 24px 60px;
     border-radius: 100px;
@@ -421,7 +422,7 @@ const PrimaryButton = styled.button`
     @media (hover: hover) {
         &:not(:disabled):hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(255, 68, 0, 0.4);
         }
     }
 
@@ -432,7 +433,7 @@ const PrimaryButton = styled.button`
 
 const SecondaryButton = styled.button`
     background: transparent;
-    color: #666;
+    color: #888;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 16px 32px;
     border-radius: 100px;
@@ -444,8 +445,9 @@ const SecondaryButton = styled.button`
 
     @media (hover: hover) {
         &:hover {
-            color: #fff;
-            border-color: #fff;
+            color: #ff4400;
+            border-color: #ff4400;
+            box-shadow: 0 0 15px rgba(255, 68, 0, 0.2);
         }
     }
 `;
@@ -474,11 +476,11 @@ const ServiceGrid = styled.div`
 `;
 
 const ServiceCard = styled.div<{ $selected: boolean }>`
-    background: ${props => props.$selected ? '#fff' : 'rgba(255,255,255,0.05)'};
-    color: ${props => props.$selected ? '#000' : '#fff'};
+    background: ${props => props.$selected ? 'rgba(255, 68, 0, 0.1)' : 'rgba(255,255,255,0.05)'};
+    color: ${props => props.$selected ? '#ff4400' : '#fff'};
     padding: 30px;
     border-radius: 24px;
-    border: 1px solid ${props => props.$selected ? '#fff' : 'rgba(255,255,255,0.1)'};
+    border: 1px solid ${props => props.$selected ? '#ff4400' : 'rgba(255,255,255,0.1)'};
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
@@ -491,8 +493,8 @@ const ServiceCard = styled.div<{ $selected: boolean }>`
     @media (hover: hover) {
         &:hover {
             transform: translateY(-5px);
-            background: ${props => props.$selected ? '#fff' : 'rgba(255,255,255,0.1)'};
-            border-color: ${props => props.$selected ? '#fff' : 'rgba(255,255,255,0.3)'};
+            background: ${props => props.$selected ? 'rgba(255, 68, 0, 0.1)' : 'rgba(255,255,255,0.1)'};
+            border-color: ${props => props.$selected ? '#ff4400' : 'rgba(255, 68, 0, 0.4)'};
         }
     }
 
@@ -549,15 +551,16 @@ const RangeInput = styled.input`
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        background: #fff;
+        background: #ff4400;
         cursor: pointer;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 20px rgba(255, 68, 0, 0.5);
         transition: transform 0.2s ease;
     }
     
     @media (hover: hover) {
         &::-webkit-slider-thumb:hover {
             transform: scale(1.2);
+            box-shadow: 0 0 30px rgba(255, 68, 0, 0.7);
         }
     }
 `;

@@ -68,6 +68,12 @@ const IntroText = styled.h1`
   padding-right: 0.05em; /* Compensate for negative letter spacing */
   transform: translateY(110%); /* Start hidden (pushed down) */
   will-change: transform;
+
+  span {
+      background: linear-gradient(135deg, #ff4400, #ff8800);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+  }
 `;
 
 const BrandLogoContainer = styled.div`
@@ -80,7 +86,7 @@ const BrandLogo = styled.img`
   width: clamp(250px, 45vw, 700px);
   height: auto;
   display: block;
-  filter: invert(1) brightness(2);
+  filter: invert(1) brightness(2) drop-shadow(0 0 40px rgba(255, 68, 0, 0.4));
   backface-visibility: hidden;
 `;
 
@@ -179,12 +185,12 @@ const Hero: React.FC = () => {
         <ContentContainer>
           {/* Text 1 Wrapper for Clipping */}
           <IntroTextWrapper>
-            <IntroText ref={text1Ref}>Built to scale.</IntroText>
+            <IntroText ref={text1Ref}>Built to <span>scale.</span></IntroText>
           </IntroTextWrapper>
 
           {/* Text 2 Wrapper for Clipping */}
           <IntroTextWrapper>
-            <IntroText ref={text2Ref}>Designed to win.</IntroText>
+            <IntroText ref={text2Ref}>Designed to <span>win.</span></IntroText>
           </IntroTextWrapper>
 
           <BrandLogoContainer ref={logoContainerRef}>

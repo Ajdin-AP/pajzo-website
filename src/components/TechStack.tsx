@@ -35,7 +35,7 @@ const Header = styled.div`
         font-weight: 600;
         letter-spacing: 0.25em;
         text-transform: uppercase;
-        color: #86868b;
+        color: #4a4a4f;
         margin-bottom: 24px;
         display: inline-block;
     }
@@ -43,7 +43,7 @@ const Header = styled.div`
     .main-title {
         font-size: clamp(3.5rem, 7vw, 6rem);
         font-weight: 700;
-        color: #1d1d1f;
+        color: #111111;
         letter-spacing: -0.05em;
         line-height: 1.05;
         margin: 0;
@@ -52,7 +52,7 @@ const Header = styled.div`
         
         span {
             display: inline-block;
-            background: linear-gradient(120deg, #1d1d1f 30%, #86868b 80%);
+            background: linear-gradient(135deg, #ff4400, #ff8800);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -131,8 +131,8 @@ const BentoCard = styled.div<{ $brandColor: string }>`
 
     @media (hover: hover) {
         &:hover {
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.08);
-            border-color: rgba(0, 0, 0, 0.08);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
+            border-color: rgba(255, 68, 0, 0.3);
 
             &::before {
                 opacity: 1;
@@ -157,7 +157,7 @@ const TopRightIcon = styled.i`
     top: 40px;
     right: 40px;
     font-size: 2.5rem;
-    color: #d2d2d7; /* Light Apple Gray */
+    color: rgba(0,0,0,0.05); /* Light Apple Gray */
     transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     transform-style: preserve-3d;
 `;
@@ -167,7 +167,7 @@ const Tag = styled.span`
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #86868b;
+    color: #ff4400;
     margin-bottom: 12px;
     display: block;
 `;
@@ -175,7 +175,7 @@ const Tag = styled.span`
 const Title = styled.h3`
     font-size: 2rem;
     font-weight: 700;
-    color: #1d1d1f;
+    color: #111111;
     margin: 0 0 12px 0;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -183,7 +183,7 @@ const Title = styled.h3`
 
 const Description = styled.p`
     font-size: 1.1rem;
-    color: #86868b;
+    color: #4a4a4f;
     line-height: 1.5;
     margin: 0;
     max-width: 90%;
@@ -200,7 +200,7 @@ const TECH_DATA = [
         title: "React & Beyond.",
         desc: "We engineer lightning-fast interfaces using React and modern server-side rendering for optimal Core Web Vitals.",
         icon: "fab fa-react",
-        color: "#00d8ff", // React Blue
+        color: "#ff4400", // Orange
         colSpan: 2,
         rowSpan: 1
     },
@@ -209,7 +209,7 @@ const TECH_DATA = [
         title: "Fluid Dynamics.",
         desc: "Hardware-accelerated animations powered by GSAP. No jank, pure buttery smoothness at 60fps.",
         icon: "fas fa-fan",
-        color: "#88ce02", // GSAP Green
+        color: "#ff8800", // Light orange
         colSpan: 1,
         rowSpan: 1
     },
@@ -218,7 +218,7 @@ const TECH_DATA = [
         title: "Headless CMS.",
         desc: "Decoupled architecture utilizing Shopify Plus and custom Node.js middleware for infinite scale.",
         icon: "fab fa-shopify",
-        color: "#95bf47", // Shopify Green
+        color: "#ff4400", // Orange
         colSpan: 1,
         rowSpan: 2 // Tall box
     },
@@ -227,7 +227,7 @@ const TECH_DATA = [
         title: "Cloud Native.",
         desc: "Serverless edge functions and distributed databases ensuring zero downtime globally.",
         icon: "fas fa-cloud",
-        color: "#f56565", // Cloud Red/Orange
+        color: "#ff8800", // Light orange
         colSpan: 1,
         rowSpan: 1
     },
@@ -236,7 +236,7 @@ const TECH_DATA = [
         title: "Data Dominance.",
         desc: "Custom tracking pixels, server-side tagging, and real-time BI dashboards.",
         icon: "fas fa-chart-pie",
-        color: "#6366f1", // Indigo
+        color: "#ff4400", // Orange
         colSpan: 2,
         rowSpan: 1
     }

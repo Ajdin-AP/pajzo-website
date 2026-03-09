@@ -41,13 +41,16 @@ const HeaderContainer = styled.div`
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 700;
-        color: #1d1d1f;
+        color: #111111;
         letter-spacing: -0.04em;
         line-height: 1.05;
         margin: 0;
 
         span {
-            color: #86868b;
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4400, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     }
 `;
@@ -80,7 +83,7 @@ const HorizontalTrack = styled.div`
 const ProjectCard = styled.div`
     width: 600px;
     height: 480px;
-    background: #fdfdfd;
+    background: #ffffff;
     border-radius: 36px;
     border: 1px solid rgba(0, 0, 0, 0.05);
     padding: 40px;
@@ -104,8 +107,8 @@ const ProjectCard = styled.div`
     }
 
     &:hover {
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
+        border-color: rgba(255, 68, 0, 0.3);
         transform: translateY(-10px);
 
         .mock-image {
@@ -114,7 +117,12 @@ const ProjectCard = styled.div`
 
         .project-arrow {
             transform: translate(5px, -5px);
-            color: #1d1d1f;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff4400, #ff8800);
+            box-shadow: 0 8px 24px rgba(255, 68, 0, 0.25);
+            i {
+                color: #ffffff;
+            }
         }
     }
 `;
@@ -163,14 +171,14 @@ const TextContent = styled.div`
     h3 {
         font-size: 2rem;
         font-weight: 700;
-        color: #1d1d1f;
+        color: #111111;
         margin: 0 0 10px 0;
         letter-spacing: -0.03em;
     }
 
     p {
         font-size: 1.1rem;
-        color: #86868b;
+        color: #4a4a4f;
         margin: 0;
         font-weight: 400;
     }
@@ -185,16 +193,18 @@ const TagRow = styled.div`
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 
     span {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #4a4a4f;
-        background: #f5f5f7;
-        padding: 6px 14px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        color: #111111;
+        padding: 8px 16px;
         border-radius: 100px;
+        background: #f8f9fa;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        font-weight: 500;
+        transition: background 0.3s ease;
     }
 `;
 
@@ -207,10 +217,11 @@ const ArrowBox = styled.div`
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
 
     i {
         font-size: 1.2rem;
-        color: #86868b;
+        color: #111111;
         transition: all 0.3s ease;
     }
 `;

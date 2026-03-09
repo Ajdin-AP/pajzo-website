@@ -19,6 +19,7 @@ const Section = styled.section`
     justify-content: center;
     overflow: hidden;
     z-index: 5; /* Ensure it sits nicely in the stack */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 `;
 
 const BackgroundVideo = styled.video`
@@ -64,13 +65,11 @@ const Headline = styled.h2`
     opacity: 0;
     transform: translateY(30px);
     
-    background: linear-gradient(to right, #ffffff 20%, #94a3b8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff;
     
     /* Ensure the span inherits the gradient or has its own color */
     span {
-        background: linear-gradient(to right, #6366f1, #818cf8);
+        background: linear-gradient(135deg, #ff4400, #ff8800);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -80,7 +79,7 @@ const Cursor = styled.span`
     display: inline-block;
     width: 0.1em;
     height: 1em;
-    background-color: #6366f1;
+    background-color: #ff4400;
     margin-left: 0.1em;
     vertical-align: middle;
     animation: blink 1s step-end infinite;
@@ -94,7 +93,7 @@ const Cursor = styled.span`
 const DecoratorLine = styled.div`
     width: 2px;
     height: 100px;
-    background: linear-gradient(to bottom, #6366f1, transparent);
+    background: linear-gradient(to bottom, #ff4400, transparent);
     margin: 0 auto;
     opacity: 0;
     transform: scaleY(0);

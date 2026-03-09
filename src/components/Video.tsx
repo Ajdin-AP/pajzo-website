@@ -11,9 +11,9 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================
 
 const pulseGlow = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-  70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 68, 0, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(255, 68, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 68, 0, 0); }
 `;
 
 const Section = styled.section`
@@ -36,7 +36,7 @@ const Spotlight = styled.div`
     transform: translate(-50%, -50%);
     width: 80%;
     height: 80%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+    background: radial-gradient(circle, rgba(255, 68, 0, 0.08) 0%, rgba(0,0,0,0) 70%);
     pointer-events: none;
     z-index: 1;
 `;
@@ -75,8 +75,8 @@ const PreviewCard = styled.div`
 
     &:hover {
         transform: scale(1.02);
-        border-color: rgba(99, 102, 241, 0.5);
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+        border-color: rgba(255, 68, 0, 0.5);
+        box-shadow: 0 0 30px rgba(255, 68, 0, 0.15);
     }
 `;
 
@@ -133,7 +133,7 @@ const PlayButton = styled.div`
         position: absolute;
         inset: -2px;
         border-radius: 50%;
-        border: 2px solid rgba(99, 102, 241, 0.5);
+        border: 2px solid rgba(255, 68, 0, 0.5);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -141,8 +141,8 @@ const PlayButton = styled.div`
     ${PreviewCard}:hover & {
         transform: scale(1.1);
         background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(99, 102, 241, 0.8);
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        border-color: rgba(255, 68, 0, 0.8);
+        box-shadow: 0 0 30px rgba(255, 68, 0, 0.4);
         animation: ${pulseGlow} 2s infinite;
 
         &::after {
@@ -255,10 +255,10 @@ const ProgressBarContainer = styled.div`
 */
 const ProgressFill = styled.div`
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #818cf8);
+    background: linear-gradient(135deg, #ff4400, #ff8800);
     border-radius: 3px;
     position: relative;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 15px rgba(255, 68, 0, 0.6);
     width: 0%; /* Intial width */
     
     /* Head */
@@ -397,7 +397,7 @@ const CloseButton = styled.button`
 
     &:hover {
         opacity: 1;
-        color: #6366f1;
+        color: #ff4400;
     }
 `;
 

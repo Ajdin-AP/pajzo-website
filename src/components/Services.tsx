@@ -10,7 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 // ==========================================
 
 const Section = styled.section`
-    background: #fdfdfd;
+    background: #ffffff;
     padding: 150px 20px;
     position: relative;
     overflow: hidden;

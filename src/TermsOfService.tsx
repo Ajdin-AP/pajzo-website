@@ -26,14 +26,14 @@ const ContentWrapper = styled.div`
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 40px;
-    background: linear-gradient(90deg, #111, #555);
+    background: linear-gradient(135deg, #ff4400, #ff8800);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   h2 {
     font-size: 1.8rem;
-    color: #111;
+    color: #111111;
     margin-top: 40px;
     margin-bottom: 20px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -44,7 +44,7 @@ const ContentWrapper = styled.div`
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 20px;
-    color: #444;
+    color: #4a4a4f;
   }
 
   ul {
@@ -54,7 +54,7 @@ const ContentWrapper = styled.div`
     
     li {
       margin-bottom: 10px;
-      color: #444;
+      color: #4a4a4f;
     }
   }
 `;
@@ -62,16 +62,16 @@ const ContentWrapper = styled.div`
 const BackButton = styled.a`
   display: inline-block;
   margin-bottom: 40px;
-  color: #111;
+  color: #111111;
   text-decoration: none;
   font-weight: 500;
   opacity: 0.7;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
   cursor: pointer;
   
   &:hover {
     opacity: 1;
-    text-decoration: underline;
+    color: #ff4400;
   }
 `;
 

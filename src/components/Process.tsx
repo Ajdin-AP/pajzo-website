@@ -601,6 +601,7 @@ const Section = styled.section`
   background: #000000;
   color: #ffffff;
   position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 `;
 
 const Header = styled.div`
@@ -608,21 +609,27 @@ const Header = styled.div`
   margin-bottom: 80px;
   
   h2 {
-    font-size: 3.5rem;
+    font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 700;
-    letter-spacing: -2px;
-    background: linear-gradient(to right, #ffffff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
     margin-bottom: 20px;
+
+    span {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff4400, #ff8800);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
   
   p {
-    font-family: 'JetBrains Mono', monospace;
-    color: #64748b;
-    font-size: 0.8rem;
-    letter-spacing: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
+    color: #86868b;
   }
 `;
 
@@ -669,9 +676,10 @@ const StepItem = styled.div`
 `;
 
 const StepIndex = styled.span`
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
-  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ff4400;
+  letter-spacing: 0.1em;
   margin-bottom: 20px;
   display: block;
 `;
@@ -682,11 +690,12 @@ const StepTitle = styled.h3`
   margin-bottom: 20px;
   color: #ffffff;
   line-height: 1.2;
+  letter-spacing: -0.03em;
 `;
 
 const StepDesc = styled.p`
   font-size: 1.1rem;
-  color: #94a3b8;
+  color: #86868b;
   line-height: 1.6;
   max-width: 450px;
 `;
@@ -762,7 +771,7 @@ const Process: React.FC = () => {
   return (
     <Section id="process" ref={containerRef}>
       <Header>
-        <h2>Our Process</h2>
+        <h2>Our <span>Process</span></h2>
         <p>Streamlined Execution</p>
       </Header>
 

@@ -38,7 +38,7 @@ const Header = styled.div`
         font-weight: 600;
         letter-spacing: 0.25em;
         text-transform: uppercase;
-        color: #86868b; /* Apple Gray */
+        color: #4a4a4f;
         margin-bottom: 24px;
         display: inline-block;
     }
@@ -46,7 +46,7 @@ const Header = styled.div`
     .main-title {
         font-size: clamp(3.5rem, 7vw, 6rem);
         font-weight: 700;
-        color: #1d1d1f; /* Apple Dark Text */
+        color: #111111;
         letter-spacing: -0.05em;
         line-height: 1.05;
         margin: 0;
@@ -58,9 +58,8 @@ const Header = styled.div`
         padding-bottom: 10px;
 
         span {
-            color: #1d1d1f;
             display: inline-block;
-            background: linear-gradient(120deg, #1d1d1f 30%, #86868b 80%);
+            background: linear-gradient(135deg, #ff4400, #ff8800);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -110,10 +109,8 @@ const Card = styled.div`
     will-change: transform;
 
     &:hover {
-        box-shadow: 
-            0 30px 60px rgba(0, 0, 0, 0.12),
-            0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
+        border-color: rgba(255, 68, 0, 0.3);
     }
 `;
 
@@ -129,23 +126,35 @@ const IconWrapper = styled.div`
     width: 64px;
     height: 64px;
     border-radius: 20px;
-    background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+    background: #f5f5f7;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 2px 4px rgba(255,255,255,0.8),
-                0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: all 0.5s ease;
+
+    ${Card}:hover & {
+        background: linear-gradient(135deg, #ff4400, #ff8800);
+        box-shadow: 0 8px 24px rgba(255, 68, 0, 0.25);
+        border: 1px solid transparent;
+        
+        i {
+            color: #ffffff;
+        }
+    }
 `;
 
 const StatIcon = styled.i`
     font-size: 1.8rem;
-    color: #1d1d1f;
+    color: #111111;
+    transition: all 0.5s ease;
 `;
 
 const StatNumber = styled.div`
     font-size: 1.5rem;
     font-weight: 600;
-    color: #86868b;
+    color: rgba(0,0,0,0.15);
     font-variant-numeric: tabular-nums;
 `;
 
@@ -157,7 +166,7 @@ const ContentSection = styled.div`
 const Title = styled.h3`
     font-size: 2.25rem;
     font-weight: 700;
-    color: #1d1d1f;
+    color: #111111;
     margin: 0 0 24px 0;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -165,7 +174,7 @@ const Title = styled.h3`
 
 const Description = styled.p`
     font-size: 1.125rem;
-    color: #86868b;
+    color: #4a4a4f;
     line-height: 1.5;
     margin: 0;
     font-weight: 400;
@@ -231,7 +240,7 @@ const MobileContentSection = styled.div`
 const MobileTitle = styled.h3`
     font-size: 1.75rem;
     font-weight: 700;
-    color: #1d1d1f;
+    color: #111111;
     margin: 0;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -239,7 +248,7 @@ const MobileTitle = styled.h3`
 
 const MobileDescription = styled.p`
     font-size: 1.1rem;
-    color: #86868b;
+    color: #4a4a4f;
     line-height: 1.5;
     margin: 0;
     font-weight: 400;

@@ -132,9 +132,9 @@ const MagneticLink = styled.a`
 
     @media (hover: hover) {
         &:hover {
-            color: #fff;
+            color: #ff4400;
             transform: translateX(5px);
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            text-shadow: 0 0 10px rgba(255, 68, 0, 0.4);
         }
     }
 `;
@@ -213,7 +213,7 @@ const CTAContainer = styled.button`
         transform: translate(-20px, 20px);
         transition: all 0.5s ease;
         display: inline-block;
-        color: #fff;
+        color: #ff4400;
     }
 
     @media (hover: hover) {
@@ -240,7 +240,7 @@ const AnimatedCTA: React.FC<{ onClick: () => void }> = ({ onClick }) => {
         // Wave In
         gsap.to(chars, {
             y: -20,
-            color: '#fff',
+            color: '#ff4400',
             stagger: 0.03,
             duration: 0.4,
             ease: 'back.out(1.7)',
@@ -385,8 +385,8 @@ const MarqueeItem = styled.span`
 
     @media (hover: hover) {
         &:hover {
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            color: #ff4400;
+            text-shadow: 0 0 20px rgba(255, 68, 0, 0.3);
             /* Removed letter-spacing change to prevent jitter/layout shift */
             transform: scale(1.05); /* Smooth scale instead */
         }
