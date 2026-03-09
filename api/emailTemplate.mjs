@@ -1,6 +1,9 @@
+import fs from 'fs';
+import path from 'path';
+
 export function getContactEmailHtml(data) {
     const { name, email, company, website, industry, businessDesc, services, budget, message } = data;
-    
+
     // Replace nullish/empty values with 'Not provided'
     const safeData = {
         name: name || 'Not provided',
@@ -14,266 +17,51 @@ export function getContactEmailHtml(data) {
         message: message || 'Not provided'
     };
 
-    return `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
-    xmlns:o="urn:schemas-microsoft-com:office:office">
+    try {
+        let template = fs.readFileSync(path.join(process.cwd(), 'email', 'notification.html'), 'utf8');
+        template = template.replace(/{{NAME}}/g, safeData.name);
+        template = template.replace(/{{EMAIL}}/g, safeData.email);
+        template = template.replace(/{{COMPANY}}/g, safeData.company);
+        template = template.replace(/{{WEBSITE}}/g, safeData.website);
+        template = template.replace(/{{INDUSTRY}}/g, safeData.industry);
+        template = template.replace(/{{DESC}}/g, safeData.businessDesc);
+        template = template.replace(/{{SERVICES}}/g, safeData.services);
+        template = template.replace(/{{BUDGET}}/g, safeData.budget);
+        template = template.replace(/{{MESSAGE}}/g, safeData.message);
+        return template;
+    } catch (e) {
+        console.error("Error loading notification template:", e);
+        return `<p>New lead received from ${safeData.name}.<br><br>Company: ${safeData.company}<br>Email: ${safeData.email}<br>Budget: ${safeData.budget}</p>`;
+    }
+}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>New Project Inquiry</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <style>
-        /* Base Resets */
-        body,
-        table,
-        td,
-        a {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
+export function getAutoreplyEmailHtml(data) {
+    const { name, company, website, industry, businessDesc, services, budget, message } = data;
 
-        table,
-        td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-        }
+    const safeData = {
+        name: name || 'Not provided',
+        company: company || 'Not provided',
+        website: website || 'Not provided',
+        industry: industry || 'Not provided',
+        businessDesc: businessDesc || 'Not provided',
+        services: services || 'Not provided',
+        budget: budget || 'Not provided',
+        message: message || 'Not provided'
+    };
 
-        img {
-            -ms-interpolation-mode: bicubic;
-            border: 0;
-            outline: none;
-            text-decoration: none;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100% !important;
-            background-color: transparent;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        table {
-            border-collapse: collapse !important;
-        }
-
-        /* Mobile Breakpoint */
-        @media screen and (max-width: 600px) {
-            .email-container {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: auto !important;
-                border-radius: 0 !important;
-            }
-
-            .fluid-pad {
-                padding: 0 !important;
-            }
-
-            .header-pad {
-                padding: 30px 20px !important;
-            }
-
-            .log-pad {
-                padding: 20px !important;
-            }
-
-            .grid-block {
-                display: block !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding-bottom: 15px !important;
-                text-align: left !important;
-            }
-
-            .grid-top {
-                padding-bottom: 5px !important;
-                font-size: 12px !important;
-            }
-        }
-    </style>
-</head>
-
-<body style="margin: 0; padding: 0; background-color: transparent;">
-    <!-- INVISIBLE PREHEADER -->
-    <div
-        style="display: none; font-size: 1px; color: transparent; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
-        New Lead Submission: ${safeData.company} - ${safeData.budget}
-    </div>
-
-    <!-- MAIN WRAPPER -->
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: transparent;">
-        <tr>
-            <td align="left" style="padding: 0;">
-
-                <!-- EMAIL CARD -->
-                <table border="0" cellpadding="0" cellspacing="0" class="email-container" width="100%"
-                    style="background-color: #ffffff; overflow: hidden;">
-
-                    <!-- HERO: ACCENT HEADER -->
-                    <tr>
-                        <td class="header-pad"
-                            style="background-color: #111111; padding: 40px 40px; text-align: left; border-top: 4px solid #ffffff;">
-                            <!-- Meta status -->
-                            <div
-                                style="font-family: 'Inter', sans-serif; font-size: 11px; color: #888888; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; font-weight: 700;">
-                                // INTERNAL SYSTEM REPORT
-                            </div>
-                            <!-- Title -->
-                            <div
-                                style="font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px; color: #ffffff;">
-                                New Project Lead.
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- WHITE BODY -->
-                    <tr>
-                        <td style="padding: 40px 40px;" class="header-pad">
-
-                            <p
-                                style="margin: 0 0 30px 0; font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.5; color: #444444;">
-                                A new project inquiry has been submitted via the terminal interface by <strong
-                                    style="color: #000000;">${safeData.name}</strong>.
-                            </p>
-
-                            <!-- CLIENT IDENTITY AREA -->
-                            <div style="margin-bottom: 30px;">
-                                <div
-                                    style="font-family: 'Inter', sans-serif; font-size: 12px; color: #aaaaaa; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-                                    Identity & Contact
-                                </div>
-
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                    style="table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Name
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 15px; color: #111111; font-weight: 600; padding-bottom: 15px;">
-                                            ${safeData.name}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Email
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 15px; color: #111111; font-weight: 600; padding-bottom: 15px;">
-                                            <a href="mailto:${safeData.email}"
-                                                style="color: #0056b3; text-decoration: none;">${safeData.email}</a>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                            <!-- BUSINESS PROFILE AREA -->
-                            <div style="margin-bottom: 30px;">
-                                <div
-                                    style="font-family: 'Inter', sans-serif; font-size: 12px; color: #aaaaaa; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-                                    Business Profile
-                                </div>
-
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                    style="table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Company
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 15px; color: #111111; font-weight: 600; padding-bottom: 15px;">
-                                            ${safeData.company}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Website
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 15px; color: #111111; font-weight: 600; padding-bottom: 15px;">
-                                            <a href="${safeData.website}" target="_blank"
-                                                style="color: #0056b3; text-decoration: none;">${safeData.website}</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Industry
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 15px; color: #111111; font-weight: 600; padding-bottom: 15px;">
-                                            ${safeData.industry}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Description
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 14px; color: #444444; line-height: 1.6; padding-bottom: 15px; white-space: pre-line;">
-                                            ${safeData.businessDesc}</td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                            <!-- PROJECT REQUIREMENTS AREA -->
-                            <div style="margin-bottom: 40px;">
-                                <div
-                                    style="font-family: 'Inter', sans-serif; font-size: 12px; color: #aaaaaa; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-                                    Project Scope
-                                </div>
-
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                    style="table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Budget
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 18px; color: #000000; font-weight: 800; padding-bottom: 15px; font-variant-numeric: tabular-nums;">
-                                            ${safeData.budget}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Services
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 14px; color: #111111; font-weight: 600; padding-bottom: 15px; line-height: 1.8; white-space: pre-line;">
-                                            ${safeData.services}</td>
-                                    </tr>
-                                    <tr>
-                                        <td width="25%" valign="top" class="grid-block grid-top"
-                                            style="font-family: 'Inter', sans-serif; font-size: 13px; color: #888888; padding-bottom: 15px;">
-                                            Message
-                                        </td>
-                                        <td width="75%" valign="top" class="grid-block"
-                                            style="font-family: 'Inter', sans-serif; font-size: 14px; color: #333333; line-height: 1.6; padding-bottom: 15px; border-left: 3px solid #eeeeee; padding-left: 15px; white-space: pre-line;">
-                                            ${safeData.message}</td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </td>
-                    </tr>
-
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-
-</html>`;
+    try {
+        let template = fs.readFileSync(path.join(process.cwd(), 'email', 'autoreply.html'), 'utf8');
+        template = template.replace(/{{NAME}}/g, safeData.name);
+        template = template.replace(/{{COMPANY}}/g, safeData.company);
+        template = template.replace(/{{WEBSITE}}/g, safeData.website);
+        template = template.replace(/{{INDUSTRY}}/g, safeData.industry);
+        template = template.replace(/{{DESC}}/g, safeData.businessDesc);
+        template = template.replace(/{{SERVICES}}/g, safeData.services);
+        template = template.replace(/{{BUDGET}}/g, safeData.budget);
+        template = template.replace(/{{MESSAGE}}/g, safeData.message);
+        return template;
+    } catch (e) {
+        console.error("Error loading autoreply template:", e);
+        return `<p>Hi ${safeData.name},<br><br>Thank you for reaching out to PAJZO. We have officially received your project details and our team is currently reviewing them.<br><br>The PAJZO Team</p>`;
+    }
 }

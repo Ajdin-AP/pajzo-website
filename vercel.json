@@ -4,5 +4,10 @@
             "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
-    ]
+    ],
+    "functions": {
+        "api/**/*.mjs": {
+            "includeFiles": "email/**/*.html"
+        }
+    }
 }

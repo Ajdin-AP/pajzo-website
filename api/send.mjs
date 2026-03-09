@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { getContactEmailHtml } from './emailTemplate.mjs';
+import { getContactEmailHtml, getAutoreplyEmailHtml } from './emailTemplate.mjs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -14,15 +14,23 @@ export default async function handler(req, res) {
     const { name, email } = data;
 
     try {
-        const responseData = await resend.emails.send({
-            // The testing address provided by Resend
-            from: 'Acme <onboarding@resend.dev>',
-            // Your actual email address from the screenshot
-            to: 'ajdin.pajazetovic.ap@gmail.com',
-            reply_to: email, // Allows you to click 'reply' directly in your email client
-            subject: `New Contact Form Submission from ${name || 'Lead'}`,
-            html: getContactEmailHtml(data)
-        });
+        const responseData = await Promise.all([
+            // 1. Send internal notification to the site owner
+            resend.emails.send({
+                from: 'PAJZO Leads <onboarding@resend.dev>',
+                to: 'ajdin.pajazetovic.ap@gmail.com',
+                reply_to: email, // Allows you to click 'reply' directly in your email client
+                subject: `New Project Lead: ${data.company || name || 'Inquiry'}`,
+                html: getContactEmailHtml(data)
+            }),
+            // 2. Send the autoreply to the customer
+            resend.emails.send({
+                from: 'PAJZO <onboarding@resend.dev>',
+                to: email,
+                subject: "We've received your project inquiry - PAJZO",
+                html: getAutoreplyEmailHtml(data)
+            })
+        ]);
 
         return res.status(200).json({ success: true, data });
     } catch (error) {
