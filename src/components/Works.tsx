@@ -13,8 +13,19 @@ const Section = styled.section`
     background: #ffffff;
     /* We don't pad top/bottom heavily because ScrollTrigger pinning handles spacing naturally */
     position: relative;
-    overflow: hidden;
+    /* overflow: visible allows the massive drop shadow to bleed down onto the black section cleanly */
+    overflow: visible; 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* 
+       Premium Creative Transition (Closing the Arch):
+       This curves the bottom of the white block and casts a deep ambient shadow downwards,
+       transforming the entire multi-section white block into a single floating 'pill'.
+    */
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+    z-index: 10;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 `;
 
 // This container dictates the height of the pinning effect

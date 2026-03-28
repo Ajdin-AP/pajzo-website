@@ -60,7 +60,7 @@ const DataGridScan = React.memo(({ isActive }: VisualProps) => {
     // Configuration
     const cols = 20;
     const rows = 15;
-    const dots: { x: number; y: number; active: number }[] = [];
+    const dots: { x: number; y: number; active: number; baseOpacity: number }[] = [];
 
     const initGrid = () => {
       dots.length = 0;
@@ -71,7 +71,8 @@ const DataGridScan = React.memo(({ isActive }: VisualProps) => {
           dots.push({
             x: c * cellWidth + cellWidth / 2,
             y: r * cellHeight + cellHeight / 2,
-            active: 0
+            active: 0,
+            baseOpacity: Math.random() * 0.15 + 0.05
           });
         }
       }
@@ -89,11 +90,10 @@ const DataGridScan = React.memo(({ isActive }: VisualProps) => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    let scanY = 0;
+    let scanY = -50;
 
     const render = () => {
       if (!activeRef.current) {
-        // throttling: check back in 100ms
         setTimeout(() => {
           animationFrameId = requestAnimationFrame(render);
         }, 100);
@@ -104,25 +104,38 @@ const DataGridScan = React.memo(({ isActive }: VisualProps) => {
 
       // Move Scan Line
       scanY += 2;
-      if (scanY > height + 20) scanY = -20;
+      if (scanY > height + 50) scanY = -50;
 
       // Draw Grid
       dots.forEach(dot => {
         // Activate if scan line touches
-        if (Math.abs(dot.y - scanY) < 10) {
-          dot.active = 1.0;
+        const dist = Math.abs(dot.y - scanY);
+        if (dist < 30) {
+          dot.active = 1.0 - (dist / 30);
         } else {
-          dot.active *= 0.92; // Fast fade
+          dot.active *= 0.95; // Fast fade
         }
 
-        const opacity = 0.1 + dot.active * 0.9;
-        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.fillRect(dot.x - 2, dot.y - 2, 4, 4); // Small square dots
+        const opacity = dot.baseOpacity + dot.active * 0.85;
+        // Orange color: #ff4400 / rgb(255, 68, 0)
+        ctx.fillStyle = `rgba(255, 68, 0, ${opacity})`;
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 2, 0, Math.PI * 2);
+        ctx.fill();
       });
 
+      // Draw Scan Line focus area
+      const gradient = ctx.createLinearGradient(0, scanY - 30, 0, scanY + 30);
+      gradient.addColorStop(0, 'rgba(255, 68, 0, 0)');
+      gradient.addColorStop(0.5, 'rgba(255, 68, 0, 0.15)');
+      gradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, scanY - 30, width, 60);
+
       // Draw Scan Line
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fillRect(0, scanY, width, 1); // Razor thin line
+      ctx.fillStyle = 'rgba(255, 136, 0, 0.8)';
+      ctx.fillRect(0, scanY, width, 1);
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -164,9 +177,9 @@ const NeuralConstellation = React.memo(({ isActive }: VisualProps) => {
     let animationFrameId: number;
 
     // Configuration
-    const particleCount = 40;
-    const connectionDistance = 100;
-    const particles: { x: number; y: number; vx: number; vy: number; }[] = [];
+    const particleCount = 45;
+    const connectionDistance = 120;
+    const particles: { x: number; y: number; vx: number; vy: number; radius: number; opacity: number }[] = [];
 
     // Initialize Particles
     const initParticles = () => {
@@ -175,8 +188,10 @@ const NeuralConstellation = React.memo(({ isActive }: VisualProps) => {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          radius: Math.random() * 2 + 1,
+          opacity: Math.random() * 0.5 + 0.3
         });
       }
     };
@@ -217,10 +232,15 @@ const NeuralConstellation = React.memo(({ isActive }: VisualProps) => {
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        // Draw Node
+        // Pulse opacity
+        p.opacity += (Math.random() - 0.5) * 0.02;
+        if (p.opacity < 0.2) p.opacity = 0.2;
+        if (p.opacity > 0.8) p.opacity = 0.8;
+
+        // Draw Node (#ff4400 / #ff8800)
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 136, 0, ${p.opacity})`;
         ctx.fill();
 
         // Connect
@@ -232,8 +252,9 @@ const NeuralConstellation = React.memo(({ isActive }: VisualProps) => {
 
           if (dist < connectionDistance) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist / connectionDistance})`;
-            ctx.lineWidth = 0.5;
+            const strokeOpacity = (1 - dist / connectionDistance) * 0.5;
+            ctx.strokeStyle = `rgba(255, 68, 0, ${strokeOpacity})`;
+            ctx.lineWidth = 1;
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
@@ -282,9 +303,9 @@ const OrbitalSynthesis = React.memo(({ isActive }: VisualProps) => {
 
     // Configuration
     const rings = [
-      { radius: 100, speedX: 0.02, speedY: 0.01, speedZ: 0.005, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255,255,255,0.8)', width: 2 },
-      { radius: 150, speedX: -0.015, speedY: 0.02, speedZ: -0.01, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255,255,255,0.5)', width: 1, dashed: true },
-      { radius: 210, speedX: 0.01, speedY: -0.01, speedZ: 0.02, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255,255,255,0.3)', width: 1 }
+      { radius: 90, speedX: 0.025, speedY: 0.015, speedZ: 0.005, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255, 136, 0, 0.8)', width: 2.5 },
+      { radius: 140, speedX: -0.015, speedY: 0.025, speedZ: -0.01, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255, 68, 0, 0.5)', width: 1.5, dashed: true },
+      { radius: 200, speedX: 0.01, speedY: -0.015, speedZ: 0.02, rotation: { x: 0, y: 0, z: 0 }, color: 'rgba(255, 68, 0, 0.3)', width: 1 }
     ];
 
     // Resize Handler
@@ -312,21 +333,21 @@ const OrbitalSynthesis = React.memo(({ isActive }: VisualProps) => {
 
       const cx = width / 2;
       const cy = height / 2;
-      const perspective = 500; // Increased perspective for larger items
+      const perspective = 600;
 
-      // Draw Core
-      const coreGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
-      coreGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      coreGradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.4)');
-      coreGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      // Draw Core (Glowing Orange)
+      const coreGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 45);
+      coreGradient.addColorStop(0, 'rgba(255, 136, 0, 1)');
+      coreGradient.addColorStop(0.3, 'rgba(255, 68, 0, 0.5)');
+      coreGradient.addColorStop(1, 'rgba(255, 68, 0, 0)');
       ctx.fillStyle = coreGradient;
       ctx.beginPath();
-      ctx.arc(cx, cy, 40, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 45, 0, Math.PI * 2);
       ctx.fill();
 
 
       // Draw Rings
-      rings.forEach(ring => {
+      rings.forEach((ring, idx) => {
         ring.rotation.x += ring.speedX;
         ring.rotation.y += ring.speedY;
         ring.rotation.z += ring.speedZ;
@@ -335,16 +356,15 @@ const OrbitalSynthesis = React.memo(({ isActive }: VisualProps) => {
         ctx.strokeStyle = ring.color;
         ctx.lineWidth = ring.width;
         if (ring.dashed) {
-          ctx.setLineDash([5, 10]);
+          ctx.setLineDash([8, 12]);
         } else {
           ctx.setLineDash([]);
         }
 
         // Draw ring segments
-        const segments = 60;
+        const segments = 80;
         for (let i = 0; i <= segments; i++) {
           const theta = (i / segments) * Math.PI * 2;
-          // Base Circle in XY plane? Or XZ? Let's say XZ plane (y=0)
           const px = Math.cos(theta) * ring.radius;
           const py = Math.sin(theta) * ring.radius;
           const pz = 0;
@@ -365,7 +385,7 @@ const OrbitalSynthesis = React.memo(({ isActive }: VisualProps) => {
           const rz3 = rz2;
 
           // Project
-          const scale = perspective / (perspective + rz3 + 200);
+          const scale = perspective / (perspective + rz3);
           const x2d = cx + rx3 * scale;
           const y2d = cy + ry3 * scale;
 
@@ -379,37 +399,43 @@ const OrbitalSynthesis = React.memo(({ isActive }: VisualProps) => {
 
         // Draw "Data Particle" orbiting on the ring
         if (!ring.dashed) {
-          const theta = Date.now() * 0.002 * (ring.speedX > 0 ? 1 : -1);
-          const px = Math.cos(theta) * ring.radius;
-          const py = Math.sin(theta) * ring.radius;
-          const pz = 0;
+          const particleCount = idx === 0 ? 2 : 3;
+          for (let pIdx = 0; pIdx < particleCount; pIdx++) {
+            const thetaOffset = (Math.PI * 2 / particleCount) * pIdx;
+            const theta = Date.now() * 0.0015 * (ring.speedX > 0 ? 1 : -1) + thetaOffset;
+            const px = Math.cos(theta) * ring.radius;
+            const py = Math.sin(theta) * ring.radius;
+            const pz = 0;
 
-          // Apply same rotations
-          // Rotate X
-          const rx1 = px;
-          const ry1 = py * Math.cos(ring.rotation.x) - pz * Math.sin(ring.rotation.x);
-          const rz1 = py * Math.sin(ring.rotation.x) + pz * Math.cos(ring.rotation.x);
-          // Rotate Y
-          const rx2 = rx1 * Math.cos(ring.rotation.y) + rz1 * Math.sin(ring.rotation.y);
-          const ry2 = ry1;
-          const rz2 = -rx1 * Math.sin(ring.rotation.y) + rz1 * Math.cos(ring.rotation.y);
-          // Rotate Z
-          const rx3 = rx2 * Math.cos(ring.rotation.z) - ry2 * Math.sin(ring.rotation.z);
-          const ry3 = rx2 * Math.sin(ring.rotation.z) + ry2 * Math.cos(ring.rotation.z);
-          const rz3 = rz2;
+            // Apply same rotations
+            const rx1 = px;
+            const ry1 = py * Math.cos(ring.rotation.x) - pz * Math.sin(ring.rotation.x);
+            const rz1 = py * Math.sin(ring.rotation.x) + pz * Math.cos(ring.rotation.x);
+            const rx2 = rx1 * Math.cos(ring.rotation.y) + rz1 * Math.sin(ring.rotation.y);
+            const ry2 = ry1;
+            const rz2 = -rx1 * Math.sin(ring.rotation.y) + rz1 * Math.cos(ring.rotation.y);
+            const rx3 = rx2 * Math.cos(ring.rotation.z) - ry2 * Math.sin(ring.rotation.z);
+            const ry3 = rx2 * Math.sin(ring.rotation.z) + ry2 * Math.cos(ring.rotation.z);
+            const rz3 = rz2;
 
-          const scale = perspective / (perspective + rz3 + 200);
-          if (scale > 0) {
-            const x2d = cx + rx3 * scale;
-            const y2d = cy + ry3 * scale;
+            const scale = perspective / (perspective + rz3);
+            if (scale > 0) {
+              const x2d = cx + rx3 * scale;
+              const y2d = cy + ry3 * scale;
 
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(x2d, y2d, 4 * scale, 0, Math.PI * 2);
-            ctx.fill();
+              ctx.fillStyle = '#ffccaa'; // subtle orange tint
+              ctx.beginPath();
+              ctx.arc(x2d, y2d, 3 * scale, 0, Math.PI * 2);
+              ctx.fill();
+              
+              // Halo
+              ctx.fillStyle = 'rgba(255, 136, 0, 0.4)';
+              ctx.beginPath();
+              ctx.arc(x2d, y2d, 8 * scale, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
         }
-
       });
 
       animationFrameId = requestAnimationFrame(render);
@@ -452,10 +478,10 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
     let animationFrameId: number;
 
     // Configuration
-    const sphereRadius = 180; // Bigger radius
-    const particleCount = 200; // More particles
-    const rotationSpeed = 0.003;
-    const particles: { x: number; y: number; z: number; x2d: number; y2d: number; scale: number; }[] = [];
+    const sphereRadius = 160; 
+    const particleCount = 250; 
+    const rotationSpeed = 0.002;
+    const particles: { x: number; y: number; z: number; x2d: number; y2d: number; scale: number; baseAlpha: number }[] = [];
 
     // Fibonacci Sphere Algorithm
     const initParticles = () => {
@@ -476,7 +502,8 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
           z: z * sphereRadius,
           x2d: 0,
           y2d: 0,
-          scale: 1
+          scale: 1,
+          baseAlpha: Math.random() * 0.5 + 0.5
         });
       }
     };
@@ -496,6 +523,7 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
 
     let angleY = 0;
     let angleX = 0;
+    let time = 0;
 
     // Animation Loop
     const render = () => {
@@ -510,13 +538,14 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
 
       const cx = width / 2;
       const cy = height / 2;
-      const perspective = 500; // Increased perspective for size
+      const perspective = 600; 
 
       angleY += rotationSpeed;
-      angleX += rotationSpeed * 0.2;
+      angleX += rotationSpeed * 0.3;
+      time += 0.02;
 
       // Rotate & Project
-      particles.forEach(p => {
+      particles.forEach((p, idx) => {
         // Rotation Y
         const cosY = Math.cos(angleY);
         const sinY = Math.sin(angleY);
@@ -529,44 +558,56 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
         let y2 = p.y * cosX - z1 * sinX;
         let z2 = z1 * cosX + p.y * sinX;
 
+        // Pulse effect based on time and index
+        const pulse = (Math.sin(time + idx * 0.1) + 1) * 0.5; // 0 to 1
+
         // Projection
-        const scale = perspective / (perspective + z2 + 250);
+        const scale = perspective / (perspective + z2);
         p.x2d = cx + x1 * scale;
         p.y2d = cy + y2 * scale;
         p.scale = scale;
+        
+        // Store visual alpha based on pulse
+        (p as any).visualAlpha = (0.2 + pulse * 0.8) * p.baseAlpha;
       });
 
       // Draw Particles
       particles.forEach(p => {
-        if (p.scale < 0.4) return; // Cull back faces
+        if (p.scale < 0.5) return; // Cull back faces
 
-        // Brighter / Whiter
-        const alpha = Math.max(0.3, p.scale - 0.2);
+        const alpha = Math.max(0.1, (p.scale - 0.5) * 2 * (p as any).visualAlpha);
 
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(255, 136, 0, ${alpha})`;
         ctx.beginPath();
-        ctx.arc(p.x2d, p.y2d, 2 * p.scale, 0, Math.PI * 2);
+        ctx.arc(p.x2d, p.y2d, 2.5 * p.scale, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Glow for bright ones
+        if (alpha > 0.6) {
+          ctx.fillStyle = `rgba(255, 68, 0, ${alpha * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(p.x2d, p.y2d, 6 * p.scale, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
 
       // Draw Connections (Brighter)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; // Higher base opacity
-
       for (let i = 0; i < particleCount; i++) {
         const p1 = particles[i];
-        if (p1.scale < 0.7) continue;
+        if (p1.scale < 0.8) continue; // Only connect front-facing
 
         for (let j = i + 1; j < particleCount; j++) {
           const p2 = particles[j];
-          if (p2.scale < 0.7) continue;
+          if (p2.scale < 0.8) continue;
 
           const dx = p1.x2d - p2.x2d;
           const dy = p1.y2d - p2.y2d;
-          // Distance threshold
-          if (dx * dx + dy * dy < 2500) {
+          
+          if (dx * dx + dy * dy < 3000) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.4 * p1.scale})`;
-            ctx.lineWidth = 0.8;
+            const connAlpha = Math.min((p1 as any).visualAlpha, (p2 as any).visualAlpha) * 0.3 * p1.scale;
+            ctx.strokeStyle = `rgba(255, 68, 0, ${connAlpha})`;
+            ctx.lineWidth = 1;
             ctx.moveTo(p1.x2d, p1.y2d);
             ctx.lineTo(p2.x2d, p2.y2d);
             ctx.stroke();
@@ -597,11 +638,15 @@ const SignalPropagation = React.memo(({ isActive }: VisualProps) => {
 // ==========================================
 
 const Section = styled.section`
-  padding: 100px 5%;
+  padding: 160px 5% 100px 5%; /* Increased top padding dramatically to absorb the negative margin */
   background: #000000;
   color: #ffffff;
   position: relative;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Slides strictly underneath the white section overhang from above */
+  margin-top: -60px;
+  z-index: 1;
 `;
 
 const Header = styled.div`

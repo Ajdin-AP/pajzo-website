@@ -1,6 +1,5 @@
 import { Suspense, lazy } from 'react';
 import Hero from './components/Hero';
-import SectionDivider from './components/SectionDivider';
 
 // Lazy Load Heavy/Below-Fold Components
 const Stats = lazy(() => import('./components/Stats'));
@@ -12,6 +11,7 @@ const FAQ = lazy(() => import('./components/FAQ'));
 const TechStack = lazy(() => import('./components/TechStack'));
 const Works = lazy(() => import('./components/Works'));
 const Partners = lazy(() => import('./components/Partners'));
+const AISection = lazy(() => import('./components/AISection'));
 
 // Loading Fallback (for lazy loaded chunks after splash)
 const SectionLoader = () => (
@@ -27,17 +27,13 @@ const Home = () => {
             <Hero />
 
             <Suspense fallback={<SectionLoader />}>
-                <SectionDivider variant="curve" />
                 {/* Services first now that Platforms/Partners is moved */}
                 <Services />
 
-                <SectionDivider variant="prism" />
                 <Stats />
 
-                <SectionDivider variant="mist" />
                 <Works />
 
-                <SectionDivider variant="void" />
                 <Process />
 
                 {/* Moved reentry divider to AFTER Video */}
@@ -45,13 +41,12 @@ const Home = () => {
 
                 <Impact />
 
-                <SectionDivider variant="reentry" />
                 <TechStack />
 
-                <SectionDivider variant="mist" />
+                <AISection />
+
                 <Partners />
 
-                <SectionDivider variant="prism" />
                 <FAQ />
             </Suspense>
         </main>

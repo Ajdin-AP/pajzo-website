@@ -15,11 +15,20 @@ const Section = styled.section`
     position: relative;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #111111;
+    
+    /* 
+       Premium Creative Transition: 
+       Overlapping Card Arch Architecture (Pulls the White Section UP to physically overlap the Black Section)
+    */
+    border-top-left-radius: 60px;
+    border-top-right-radius: 60px;
+    margin-top: -60px;
+    z-index: 10;
+    box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.6);
 `;
 
 const Container = styled.div`
-    max-width: 1500px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
     position: relative;
@@ -35,7 +44,7 @@ const Header = styled.div`
     
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
-        font-weight: 700;
+        font-weight: 800;
         color: #111111;
         letter-spacing: -0.04em;
         line-height: 1.05;
@@ -55,7 +64,7 @@ const AccordionContainer = styled.div`
     width: 100%;
     height: 600px; /* Fixed height for the accordion */
     gap: 16px;
-    padding: 0 20px;
+    perspective: 2000px;
 
     /* Completely hide the accordion on mobile/tablets */
     @media (max-width: 1024px) {
@@ -67,141 +76,146 @@ const AccordionContainer = styled.div`
 const Panel = styled.div<{ $isActive: boolean }>`
     position: relative;
     height: 100%;
-    background: #ffffff;
-    border-radius: 32px;
-    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.15)' : 'rgba(0, 0, 0, 0.04)'};
+    background: ${props => props.$isActive ? '#ffffff' : '#f0f0f3'};
+    border-radius: 40px;
+    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.25)' : 'rgba(0, 0, 0, 0.03)'};
     overflow: hidden;
     cursor: pointer;
     
-    /* 
-     Flex magic: 
-     Inactive panels take up 1 part of the space (min-width logic prevents crushing).
-     Active panel jumps to taking up significantly more space (flex-grow: 4 or 5).
-    */
-    flex: ${props => props.$isActive ? '5' : '1'};
-    min-width: ${props => props.$isActive ? '40%' : '120px'};
+    /* Smooth flex interpolation */
+    flex: ${props => props.$isActive ? '6' : '1'};
+    min-width: ${props => props.$isActive ? '45%' : '100px'};
     
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: flex 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                min-width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                background 0.5s ease, 
+                border-color 0.5s ease,
+                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     
     box-shadow: ${props => props.$isActive
-        ? '0 30px 60px rgba(0, 0, 0, 0.06), 0 10px 20px rgba(0, 0, 0, 0.02)'
+        ? '0 40px 80px rgba(255, 68, 0, 0.08), 0 10px 30px rgba(0, 0, 0, 0.04)'
         : '0 4px 12px rgba(0, 0, 0, 0.02)'};
 
     &:hover {
-        border-color: ${props => props.$isActive ? 'rgba(255, 68, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'};
-        box-shadow: ${props => props.$isActive
-        ? '0 30px 60px rgba(0, 0, 0, 0.06)'
-        : '0 8px 20px rgba(0, 0, 0, 0.04)'};
+        background: ${props => props.$isActive ? '#ffffff' : '#eaeaea'};
+        transform: ${props => props.$isActive ? 'none' : 'translateY(-2px)'};
     }
 
-    @media (max-width: 1024px) {
-        min-height: ${props => props.$isActive ? 'auto' : '100px'};
-        width: 100%;
-        padding: ${props => props.$isActive ? '40px 30px' : '0'};
+    /* Ambient glow for active card */
+    &::before {
+        content: '';
+        position: absolute;
+        top: -30%;
+        left: -30%;
+        width: 160%;
+        height: 160%;
+        background: radial-gradient(circle, rgba(255,68,0,0.06) 0%, transparent 60%);
+        opacity: ${props => props.$isActive ? 1 : 0};
+        transition: opacity 1s ease;
+        pointer-events: none;
+        z-index: 0;
     }
 `;
 
-const PanelContent = styled.div`
+// Container for the fully expanded view
+const ActiveContent = styled.div<{ $isActive: boolean }>`
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 40px;
+    inset: 0;
+    padding: 50px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    
-    /* To keep text from wrapping strangely during the flex transition, 
-       we use a fixed width for the content wrapper inside the dynamic panel */
-    min-width: 500px; 
-    
-    @media (max-width: 1024px) {
-        position: relative;
-        padding: 0;
-        min-width: 100%;
-    }
+    opacity: ${props => props.$isActive ? 1 : 0};
+    visibility: ${props => props.$isActive ? 'visible' : 'hidden'};
+    transition: opacity 0.6s ease ${props => props.$isActive ? '0.4s' : '0s'},
+                visibility 0.6s;
+    z-index: 2;
+    min-width: 500px;
 `;
 
-const HeaderSection = styled.div<{ $isActive: boolean }>`
+// Container for the collapsed sidebar view
+const InactiveContent = styled.div<{ $isActive: boolean }>`
+    position: absolute;
+    inset: 0;
+    padding: 40px 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    
-    /* When inactive, we want the title to rotate vertically on desktop */
-    @media (min-width: 1025px) {
-        flex-direction: ${props => props.$isActive ? 'row' : 'column'};
-        align-items: flex-start;
-        padding-top: ${props => props.$isActive ? '0' : '20px'};
-    }
+    justify-content: flex-start;
+    opacity: ${props => props.$isActive ? 0 : 1};
+    visibility: ${props => props.$isActive ? 'hidden' : 'visible'};
+    transition: opacity 0.4s ease, visibility 0.4s;
+    z-index: 2;
 `;
 
-const IconWrapper = styled.div<{ $isActive: boolean }>`
-    width: 64px;
-    height: 64px;
-    min-width: 64px; /* Prevent shrink */
-    border-radius: 20px;
-    background: ${props => props.$isActive ? 'linear-gradient(135deg, #ff4400, #ff8800)' : '#f5f5f7'};
+const ActiveIconBox = styled.div`
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ff4400, #ff8800);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: ${props => props.$isActive ? '0 8px 24px rgba(255, 68, 0, 0.25)' : 'none'};
-    border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(0, 0, 0, 0.03)'};
-    transition: all 0.5s ease;
+    box-shadow: 0 15px 30px rgba(255, 68, 0, 0.35);
+    
+    i {
+        font-size: 2rem;
+        color: #fff;
+    }
+`;
+
+const InactiveIconBox = styled.div`
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.04);
 
     i {
         font-size: 1.5rem;
-        color: ${props => props.$isActive ? '#ffffff' : '#1d1d1f'};
+        color: #111;
+        opacity: 0.6;
     }
 `;
 
-const Title = styled.h3<{ $isActive: boolean }>`
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #111111;
+const ActiveHeader = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 25px;
+`;
+
+const ActiveTitle = styled.h3`
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #111;
     margin: 0;
-    white-space: nowrap;
-    transition: all 0.8s ease;
-
-    @media (min-width: 1025px) {
-        /* Rotate the title when standing vertically */
-        transform-origin: left top;
-        transform: ${props => props.$isActive
-        ? 'none'
-        : 'rotate(90deg) translateY(-100%) translateX(20px)'};
-        
-        /* Adjust positioning when rotated so it sits below the icon */
-        margin-top: ${props => props.$isActive ? '0' : '80px'};
-        margin-left: ${props => props.$isActive ? '0' : '-20px'};
-        
-        opacity: ${props => props.$isActive ? '1' : '0.5'};
-    }
-    
-    @media (max-width: 1024px) {
-        padding: ${props => !props.$isActive ? '35px 20px' : '0'}; /* Click area padding on mobile */
-    }
-
-    @media (max-width: 768px) {
-        font-size: 1.35rem; /* Better fit for small screens */
-    }
+    letter-spacing: -0.03em;
 `;
 
-const ExpandedContent = styled.div<{ $isActive: boolean }>`
-    opacity: ${props => props.$isActive ? 1 : 0};
-    transform: ${props => props.$isActive ? 'translateY(0)' : 'translateY(20px)'};
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: ${props => props.$isActive ? '0.2s' : '0s'}; /* Wait for expansion to fade in */
-    pointer-events: ${props => props.$isActive ? 'auto' : 'none'};
+const InactiveTitle = styled.h3`
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    letter-spacing: -0.02em;
+    opacity: 0.4;
     
+    /* Elegant vertical text rendering */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    margin-top: 50px;
+    white-space: nowrap;
+`;
+
+const ActiveBody = styled.div`
     display: flex;
     flex-direction: column;
     gap: 30px;
-    
-    @media (max-width: 1024px) {
-        display: ${props => props.$isActive ? 'flex' : 'none'}; /* Hard hide on mobile to save space */
-        margin-top: 30px;
-    }
-`;
+    max-width: 85%;
+`;   
 
 const Description = styled.p`
     font-size: 1.25rem;
@@ -209,41 +223,43 @@ const Description = styled.p`
     color: #4a4a4f;
     margin: 0;
     font-weight: 400;
-    max-width: 85%;
-    
-    @media (max-width: 1024px) {
-        max-width: 100%;
-        font-size: 1.1rem;
-    }
 `;
 
 const Tags = styled.div`
     display: flex;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
 
     span {
         font-family: 'Inter', sans-serif;
-        font-size: 0.85rem;
-        color: #111111;
-        padding: 8px 16px;
+        font-size: 0.9rem;
+        color: #ff4400;
+        padding: 8px 18px;
         border-radius: 100px;
-        background: #f8f9fa;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        font-weight: 500;
-        transition: background 0.3s ease;
+        background: rgba(255, 68, 0, 0.06);
+        border: 1px solid rgba(255, 68, 0, 0.15);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: #ff4400;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 68, 0, 0.2);
+        }
     }
 `;
 
-const NumberBadge = styled.div<{ $isActive: boolean }>`
+const NumberBadge = styled.div`
     position: absolute;
-    bottom: 40px;
+    bottom: 30px;
     right: 40px;
-    font-size: 4rem;
-    font-weight: 800;
-    color: ${props => props.$isActive ? 'rgba(0,0,0,0.03)' : 'rgba(0,0,0,0.00)'}; /* Only show big number when active */
-    transition: color 0.8s ease;
+    font-size: 8rem;
+    font-weight: 900;
+    color: rgba(0,0,0,0.02);
+    line-height: 1;
     user-select: none;
+    z-index: 1;
 `;
 
 // ==========================================
@@ -272,6 +288,17 @@ const MobileCard = styled.div`
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #ff4400, #ff8800);
+        opacity: 0.9;
+    }
 `;
 
 const MobileCardHeader = styled.div`
@@ -284,15 +311,15 @@ const MobileCardHeader = styled.div`
 `;
 
 const MobileTitle = styled.h3`
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.6rem;
+    font-weight: 800;
     color: #111111;
     margin: 0;
     letter-spacing: -0.02em;
 `;
 
 const MobileDescription = styled.p`
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     line-height: 1.6;
     color: #4a4a4f;
     margin: 0 0 25px 0;
@@ -306,8 +333,8 @@ const MobileNumberBadge = styled.div`
     bottom: -10px;
     right: 15px;
     font-size: 6rem;
-    font-weight: 800;
-    color: rgba(0,0,0,0.02);
+    font-weight: 900;
+    color: rgba(0,0,0,0.03);
     user-select: none;
     line-height: 1;
     z-index: 1;
@@ -355,38 +382,36 @@ const SERVICES_DATA = [
 
 const Services: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const [activeIndex, setActiveIndex] = useState(0); // Default to first panel open
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Intro animation for the whole accordion block (Desktop)
+            // Creative 3D fan-out animation for desktop panels
             gsap.fromTo(".accordion-panel",
-                { y: 60, opacity: 0 },
+                { x: 100, opacity: 0, rotationY: 15 },
                 {
-                    y: 0, opacity: 1,
-                    duration: 1.5,
-                    stagger: 0.2,
-                    ease: "power3.out",
+                    x: 0, opacity: 1, rotationY: 0,
+                    duration: 1.2,
+                    stagger: 0.15,
+                    ease: "expo.out",
                     scrollTrigger: {
                         trigger: sectionRef.current,
-                        start: "top 70%"
+                        start: "top 75%"
                     }
                 }
             );
 
-            // Intro animation for Mobile Cards (Scroll Reveal)
+            // Staggered reveal for mobile cards
             gsap.fromTo(".mobile-service-card",
                 { y: 50, opacity: 0 },
                 {
                     y: 0, opacity: 1,
                     duration: 1.2,
                     stagger: 0.25,
-                    ease: "power3.out",
+                    ease: "expo.out",
                     scrollTrigger: {
                         trigger: ".mobile-services-container",
                         start: "top 85%",
-                        // Adjust end/scrub if you want it tied to scroll progress, 
-                        // but a simple one-time trigger feels more native app-like.
                     }
                 }
             );
@@ -415,42 +440,51 @@ const Services: React.FC = () => {
                                 $isActive={isActive}
                                 onMouseEnter={() => setActiveIndex(index)}
                             >
-                                <PanelContent>
-                                    <div>
-                                        <HeaderSection $isActive={isActive}>
-                                            <IconWrapper $isActive={isActive}>
-                                                <i className={service.icon}></i>
-                                            </IconWrapper>
-                                            <Title $isActive={isActive}>{service.title}</Title>
-                                        </HeaderSection>
+                                {/* Inactive Sidebar View */}
+                                <InactiveContent $isActive={isActive}>
+                                    <InactiveIconBox>
+                                        <i className={service.icon}></i>
+                                    </InactiveIconBox>
+                                    <InactiveTitle>{service.title}</InactiveTitle>
+                                </InactiveContent>
 
-                                        <ExpandedContent $isActive={isActive}>
+                                {/* Active Expanded View */}
+                                <ActiveContent $isActive={isActive}>
+                                    <div>
+                                        <ActiveHeader>
+                                            <ActiveIconBox>
+                                                <i className={service.icon}></i>
+                                            </ActiveIconBox>
+                                            <ActiveTitle>{service.title}</ActiveTitle>
+                                        </ActiveHeader>
+
+                                        <ActiveBody style={{ marginTop: '40px' }}>
                                             <Description>{service.desc}</Description>
                                             <Tags>
                                                 {service.tags.map((t, idx) => (
                                                     <span key={idx}>{t}</span>
                                                 ))}
                                             </Tags>
-                                        </ExpandedContent>
+                                        </ActiveBody>
                                     </div>
 
-                                    <NumberBadge $isActive={isActive}>
+                                    <NumberBadge>
                                         {service.id}
                                     </NumberBadge>
-                                </PanelContent>
+                                </ActiveContent>
                             </Panel>
                         );
                     })}
                 </AccordionContainer>
 
-                {/* Mobile Specific Layout (Hidden on Desktop) */}
+                {/* Mobile Specific Layout */}
                 <MobileContainer className="mobile-services-container">
                     {SERVICES_DATA.map((service, index) => (
                         <MobileCard key={index} className="mobile-service-card">
                             <MobileCardHeader>
-                                <IconWrapper $isActive={true}>
-                                    <i className={service.icon}></i>
-                                </IconWrapper>
+                                <ActiveIconBox style={{ width: 60, height: 60 }}>
+                                    <i className={service.icon} style={{ fontSize: '1.5rem' }}></i>
+                                </ActiveIconBox>
                                 <MobileTitle>{service.title}</MobileTitle>
                             </MobileCardHeader>
 

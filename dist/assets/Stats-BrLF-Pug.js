@@ -1,15 +1,4 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import styled from 'styled-components';
-
-gsap.registerPlugin(ScrollTrigger);
-
-// ==========================================
-// STYLED COMPONENTS (High-Contrast Liquid Glass)
-// ==========================================
-
-const StatsSection = styled.section`
+import{r as s,g as n,j as e,c as t,S as C}from"./index-BT_7v_Bk.js";n.registerPlugin(C);const S=t.section`
     position: relative;
     padding: 160px 20px;
     background: #e2e2e8; /* Deeper cool gray background for absolute premium contrast */
@@ -33,27 +22,21 @@ const StatsSection = styled.section`
         -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
         pointer-events: none;
     }
-`;
-
-const TopDivider = styled.div`
+`,M=t.div`
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 180px;
     background: linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0) 100%);
     z-index: 3;
     pointer-events: none;
-`;
-
-const BottomDivider = styled.div`
+`,T=t.div`
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 180px;
     background: linear-gradient(to top, #ffffff 0%, rgba(255,255,255,0) 100%);
     z-index: 3;
     pointer-events: none;
-`;
-
-const OrbContainer = styled.div`
+`,R=t.div`
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -97,9 +80,7 @@ const OrbContainer = styled.div`
         0% { transform: translate(0, 0) scale(1); }
         100% { transform: translate(150px, 100px) scale(1.1); }
     }
-`;
-
-const Container = styled.div`
+`,I=t.div`
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
@@ -108,9 +89,7 @@ const Container = styled.div`
     align-items: center;
     position: relative;
     z-index: 2;
-`;
-
-const Header = styled.div`
+`,O=t.div`
     text-align: center;
     margin-bottom: 120px;
     position: relative;
@@ -148,9 +127,7 @@ const Header = styled.div`
             -webkit-text-fill-color: transparent;
         }
     }
-`;
-
-const Grid = styled.div`
+`,E=t.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
@@ -161,16 +138,12 @@ const Grid = styled.div`
     @media (max-width: 1024px) {
         display: none;
     }
-`;
-
-const CardContainer = styled.div`
+`,d=t.div`
     height: 520px;
     width: 100%;
     position: relative;
     transform-style: preserve-3d;
-`;
-
-const Card = styled.div`
+`,N=t.div`
     position: relative;
     height: 100%;
     width: 100%;
@@ -225,7 +198,7 @@ const Card = styled.div`
     }
 
     /* Bug Fix: Bind hover states to the un-tilted Container box to eliminate raycast flicker */
-    ${CardContainer}:hover & {
+    ${d}:hover & {
         border-color: rgba(255, 255, 255, 1);
         box-shadow: 
             0 40px 80px rgba(0, 0, 0, 0.1),
@@ -233,12 +206,10 @@ const Card = styled.div`
             inset 0 0 60px rgba(255, 255, 255, 0.5);
     }
     
-    ${CardContainer}:hover &::after {
+    ${d}:hover &::after {
         opacity: 1;
     }
-`;
-
-const TopSection = styled.div`
+`,B=t.div`
     width: 100%;
     transform: translateZ(50px); /* 3D pop so it floats above the glass */
     display: flex;
@@ -246,9 +217,7 @@ const TopSection = styled.div`
     align-items: center;
     position: relative;
     z-index: 2;
-`;
-
-const IconWrapper = styled.div`
+`,m=t.div`
     width: 68px;
     height: 68px;
     border-radius: 20px;
@@ -262,7 +231,7 @@ const IconWrapper = styled.div`
     transition: all 0.4s ease;
 
     /* Bug Fix: Bind hover state to container */
-    ${CardContainer}:hover & {
+    ${d}:hover & {
         background: linear-gradient(135deg, #ff4400, #ff8800);
         box-shadow: 0 10px 30px rgba(255, 68, 0, 0.3);
         border: 1px solid transparent;
@@ -272,50 +241,34 @@ const IconWrapper = styled.div`
             color: #ffffff;
         }
     }
-`;
-
-const StatIcon = styled.i`
+`,v=t.i`
     font-size: 1.8rem;
     color: #111111;
     transition: all 0.4s ease;
-`;
-
-const StatNumber = styled.div`
+`,P=t.div`
     font-size: 1.5rem;
     font-weight: 700;
     color: rgba(0, 0, 0, 0.1);
     font-variant-numeric: tabular-nums;
-`;
-
-const ContentSection = styled.div`
+`,D=t.div`
     margin-top: auto;
     transform: translateZ(40px); /* Closer 3D pop for text */
     position: relative;
     z-index: 2;
-`;
-
-const Title = styled.h3`
+`,$=t.h3`
     font-size: 2.25rem;
     font-weight: 800;
     color: #111111;
     margin: 0 0 24px 0;
     letter-spacing: -0.03em;
     line-height: 1.1;
-`;
-
-const Description = styled.p`
+`,X=t.p`
     font-size: 1.15rem;
     color: #4a4a4f;
     line-height: 1.6;
     margin: 0;
     font-weight: 400;
-`;
-
-// ==========================================
-// MOBILE STYLED COMPONENTS (Sticky Stacking Liquid Cards)
-// ==========================================
-
-const MobileStickyContainer = styled.div`
+`,W=t.div`
     display: none;
     width: 100%;
     flex-direction: column;
@@ -326,11 +279,9 @@ const MobileStickyContainer = styled.div`
     @media (max-width: 1024px) {
         display: flex;
     }
-`;
-
-const MobileStickyCard = styled.div<{ $index: number }>`
+`,F=t.div`
     position: sticky;
-    top: ${props => 120 + (props.$index * 20)}px;
+    top: ${a=>120+a.$index*20}px;
     
     /* OPTIMIZED FOR MOBILE: Removed heavy backdrop filters */
     background: rgba(255, 255, 255, 0.45); 
@@ -366,42 +317,32 @@ const MobileStickyCard = styled.div<{ $index: number }>`
         pointer-events: none;
         z-index: 1;
     }
-`;
-
-const MobileTopSection = styled.div`
+`,L=t.div`
     display: flex;
     justify-content: flex-start;
     margin-bottom: 30px;
     position: relative;
     z-index: 2;
-`;
-
-const MobileContentSection = styled.div`
+`,Y=t.div`
     display: flex;
     flex-direction: column;
     gap: 15px;
     position: relative;
     z-index: 2;
-`;
-
-const MobileTitle = styled.h3`
+`,A=t.h3`
     font-size: 1.75rem;
     font-weight: 800;
     color: #111111;
     margin: 0;
     letter-spacing: -0.03em;
     line-height: 1.1;
-`;
-
-const MobileDescription = styled.p`
+`,Z=t.p`
     font-size: 1.1rem;
     color: #4a4a4f;
     line-height: 1.5;
     margin: 0;
     font-weight: 400;
-`;
-
-const MobileWatermark = styled.div`
+`,U=t.div`
     position: absolute;
     bottom: -10px;
     right: 18px;
@@ -411,201 +352,4 @@ const MobileWatermark = styled.div`
     user-select: none;
     line-height: 1;
     z-index: 1;
-`;
-
-// ==========================================
-// DATA
-// ==========================================
-
-const CORE_VALUES = [
-    {
-        id: "01",
-        label: "Precision Engineered.",
-        desc: "Uncompromising standards. We don't just build websites; we craft digital architecture with mathematical exactness.",
-        icon: "fas fa-crosshairs"
-    },
-    {
-        id: "02",
-        label: "Built for Velocity.",
-        desc: "Speed is a feature. We deploy next-generation frameworks designed to instantly outpace market evolution.",
-        icon: "fas fa-bolt"
-    },
-    {
-        id: "03",
-        label: "Maximum Impact.",
-        desc: "Measured purely in dominance. We focus entirely on performance metrics that aggressively shift your bottom line.",
-        icon: "fas fa-chart-line"
-    }
-];
-
-// ==========================================
-// COMPONENT
-// ==========================================
-
-const Stats: React.FC = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const gridRef = useRef<HTMLDivElement>(null);
-    const cardContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const cardInnerRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            // Header Reveal
-            gsap.fromTo(".stats-header-sub",
-                { y: 30, opacity: 0 },
-                {
-                    y: 0, opacity: 1,
-                    duration: 1, ease: "power3.out",
-                    scrollTrigger: { trigger: containerRef.current, start: "top 75%" }
-                }
-            );
-
-            gsap.fromTo(".stats-header-main",
-                { y: 60, opacity: 0, rotationX: -20 },
-                {
-                    y: 0, opacity: 1, rotationX: 0,
-                    duration: 1.2, ease: "expo.out",
-                    scrollTrigger: { trigger: containerRef.current, start: "top 70%" }
-                }
-            );
-
-            // Cards Staggered Reveal
-            gsap.fromTo(".stat-card-container",
-                { y: 100, opacity: 0, scale: 0.95 },
-                {
-                    y: 0, opacity: 1, scale: 1,
-                    duration: 1.4,
-                    stagger: 0.15,
-                    ease: "expo.out",
-                    scrollTrigger: {
-                        trigger: gridRef.current,
-                        start: "top 80%"
-                    }
-                }
-            );
-        }, containerRef);
-
-        return () => ctx.revert();
-    }, []);
-
-    // 3D Hover Interaction Logic
-    const handleCardMouseMoveTilt = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
-        const container = cardContainerRefs.current[index];
-        const innerCard = cardInnerRefs.current[index];
-        if (!container || !innerCard) return;
-
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        // Spotlight Glow Tracker
-        innerCard.style.setProperty('--mouse-x', `${x}px`);
-        innerCard.style.setProperty('--mouse-y', `${y}px`);
-
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -12; // Deeper rotation for liquid feel
-        const rotateY = ((x - centerX) / centerX) * 12;
-
-        /* CRITICAL PERFORMANCE OPTIMIZATION: overwrite: "auto" kills orphaned Javascript loops */
-        gsap.to(innerCard, {
-            rotationX: rotateX,
-            rotationY: rotateY,
-            scale: 1.02,
-            duration: 0.6,
-            ease: 'power2.out',
-            transformOrigin: 'center center',
-            overwrite: "auto"
-        });
-    };
-
-    const handleCardMouseLeave = (index: number) => {
-        const innerCard = cardInnerRefs.current[index];
-        if (!innerCard) return;
-
-        gsap.to(innerCard, {
-            rotationX: 0,
-            rotationY: 0,
-            scale: 1,
-            duration: 1.2, 
-            ease: 'elastic.out(1, 0.4)', 
-            overwrite: "auto"
-        });
-    };
-
-    return (
-        <StatsSection ref={containerRef}>
-            
-            {/* Seamless Section Dividers */}
-            <TopDivider />
-            <BottomDivider />
-
-            {/* Background Orbs for Liquid Glass Refraction */}
-            <OrbContainer>
-                <div className="orb-1"></div>
-                <div className="orb-2"></div>
-            </OrbContainer>
-
-            <Container>
-                <Header>
-                    <h2 className="stats-header-sub">Core Philosophy</h2>
-                    <h3 className="main-title stats-header-main">
-                        The foundation of <span>scale.</span>
-                    </h3>
-                </Header>
-
-                <Grid ref={gridRef}>
-                    {CORE_VALUES.map((item, index) => (
-                        <CardContainer
-                            key={index}
-                            className="stat-card-container"
-                            ref={el => { cardContainerRefs.current[index] = el; }}
-                            onMouseMove={(e) => handleCardMouseMoveTilt(e, index)}
-                            onMouseLeave={() => handleCardMouseLeave(index)}
-                        >
-                            <Card 
-                                className="inner-card" 
-                                ref={el => { cardInnerRefs.current[index] = el; }}
-                            >
-                                <TopSection>
-                                    <IconWrapper>
-                                        <StatIcon className={item.icon} />
-                                    </IconWrapper>
-                                    <StatNumber>{item.id}</StatNumber>
-                                </TopSection>
-
-                                <ContentSection>
-                                    <Title>{item.label}</Title>
-                                    <Description>{item.desc}</Description>
-                                </ContentSection>
-                            </Card>
-                        </CardContainer>
-                    ))}
-                </Grid>
-
-                {/* Mobile Specific Layout: Sticky Stacking Cards */}
-                <MobileStickyContainer>
-                    {CORE_VALUES.map((item, index) => (
-                        <MobileStickyCard key={index} $index={index}>
-                            <MobileTopSection>
-                                <IconWrapper>
-                                    <StatIcon className={item.icon} />
-                                </IconWrapper>
-                            </MobileTopSection>
-
-                            <MobileContentSection>
-                                <MobileTitle>{item.label}</MobileTitle>
-                                <MobileDescription>{item.desc}</MobileDescription>
-                            </MobileContentSection>
-
-                            <MobileWatermark>{item.id}</MobileWatermark>
-                        </MobileStickyCard>
-                    ))}
-                </MobileStickyContainer>
-            </Container>
-        </StatsSection>
-    );
-};
-
-export default Stats;
+`,y=[{id:"01",label:"Precision Engineered.",desc:"Uncompromising standards. We don't just build websites; we craft digital architecture with mathematical exactness.",icon:"fas fa-crosshairs"},{id:"02",label:"Built for Velocity.",desc:"Speed is a feature. We deploy next-generation frameworks designed to instantly outpace market evolution.",icon:"fas fa-bolt"},{id:"03",label:"Maximum Impact.",desc:"Measured purely in dominance. We focus entirely on performance metrics that aggressively shift your bottom line.",icon:"fas fa-chart-line"}],V=()=>{const a=s.useRef(null),g=s.useRef(null),x=s.useRef([]),p=s.useRef([]);s.useEffect(()=>{const r=n.context(()=>{n.fromTo(".stats-header-sub",{y:30,opacity:0},{y:0,opacity:1,duration:1,ease:"power3.out",scrollTrigger:{trigger:a.current,start:"top 75%"}}),n.fromTo(".stats-header-main",{y:60,opacity:0,rotationX:-20},{y:0,opacity:1,rotationX:0,duration:1.2,ease:"expo.out",scrollTrigger:{trigger:a.current,start:"top 70%"}}),n.fromTo(".stat-card-container",{y:100,opacity:0,scale:.95},{y:0,opacity:1,scale:1,duration:1.4,stagger:.15,ease:"expo.out",scrollTrigger:{trigger:g.current,start:"top 80%"}})},a);return()=>r.revert()},[]);const w=(r,i)=>{const o=x.current[i],l=p.current[i];if(!o||!l)return;const c=o.getBoundingClientRect(),b=r.clientX-c.left,f=r.clientY-c.top;l.style.setProperty("--mouse-x",`${b}px`),l.style.setProperty("--mouse-y",`${f}px`);const h=c.width/2,u=c.height/2,j=(f-u)/u*-12,z=(b-h)/h*12;n.to(l,{rotationX:j,rotationY:z,scale:1.02,duration:.6,ease:"power2.out",transformOrigin:"center center",overwrite:"auto"})},k=r=>{const i=p.current[r];i&&n.to(i,{rotationX:0,rotationY:0,scale:1,duration:1.2,ease:"elastic.out(1, 0.4)",overwrite:"auto"})};return e.jsxs(S,{ref:a,children:[e.jsx(M,{}),e.jsx(T,{}),e.jsxs(R,{children:[e.jsx("div",{className:"orb-1"}),e.jsx("div",{className:"orb-2"})]}),e.jsxs(I,{children:[e.jsxs(O,{children:[e.jsx("h2",{className:"stats-header-sub",children:"Core Philosophy"}),e.jsxs("h3",{className:"main-title stats-header-main",children:["The foundation of ",e.jsx("span",{children:"scale."})]})]}),e.jsx(E,{ref:g,children:y.map((r,i)=>e.jsx(d,{className:"stat-card-container",ref:o=>{x.current[i]=o},onMouseMove:o=>w(o,i),onMouseLeave:()=>k(i),children:e.jsxs(N,{className:"inner-card",ref:o=>{p.current[i]=o},children:[e.jsxs(B,{children:[e.jsx(m,{children:e.jsx(v,{className:r.icon})}),e.jsx(P,{children:r.id})]}),e.jsxs(D,{children:[e.jsx($,{children:r.label}),e.jsx(X,{children:r.desc})]})]})},i))}),e.jsx(W,{children:y.map((r,i)=>e.jsxs(F,{$index:i,children:[e.jsx(L,{children:e.jsx(m,{children:e.jsx(v,{className:r.icon})})}),e.jsxs(Y,{children:[e.jsx(A,{children:r.label}),e.jsx(Z,{children:r.desc})]}),e.jsx(U,{children:r.id})]},i))})]})]})};export{V as default};

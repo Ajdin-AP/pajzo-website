@@ -1,4 +1,4 @@
-import{r as s,g as i,j as t,c as n,p as h,S as b}from"./index-C5nTu8Ee.js";i.registerPlugin(b);const v=h`
+import{r as s,g as i,j as t,c as n,p as h,S as b}from"./index-BT_7v_Bk.js";i.registerPlugin(b);const v=h`
   0% { transform: translateX(0); }
   100% { transform: translateX(-33.333%); } /* Moves exactly 1/3 of the width (one set) */
 `,k=n.section`

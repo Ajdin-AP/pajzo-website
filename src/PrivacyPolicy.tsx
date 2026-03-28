@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import SectionDivider from './components/SectionDivider';
 
 // Simple event-based navigation helper
 const navigate = (path: string) => {
@@ -144,10 +143,7 @@ const PrivacyPolicy = () => {
           Phone: +386 71 391 382
         </p>
 
-        <div style={{ height: '50px' }}></div>
       </ContentWrapper>
-
-      <SectionDivider variant="curve" />
 
     </PolicyContainer>
   );

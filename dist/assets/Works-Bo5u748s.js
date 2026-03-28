@@ -1,9 +1,20 @@
-import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPlugin(p);const f=t.section`
+import{r as s,g as n,S as f,j as e,c as t}from"./index-BT_7v_Bk.js";n.registerPlugin(f);const x=t.section`
     background: #ffffff;
     /* We don't pad top/bottom heavily because ScrollTrigger pinning handles spacing naturally */
     position: relative;
-    overflow: hidden;
+    /* overflow: visible allows the massive drop shadow to bleed down onto the black section cleanly */
+    overflow: visible; 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* 
+       Premium Creative Transition (Closing the Arch):
+       This curves the bottom of the white block and casts a deep ambient shadow downwards,
+       transforming the entire multi-section white block into a single floating 'pill'.
+    */
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+    z-index: 10;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 `,h=t.div`
     height: 100vh;
     display: flex;
@@ -25,13 +36,16 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
         font-weight: 700;
-        color: #1d1d1f;
+        color: #111111;
         letter-spacing: -0.04em;
         line-height: 1.05;
         margin: 0;
 
         span {
-            color: #86868b;
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4400, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     }
 `,m=t.div`
@@ -56,10 +70,10 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
         }
         scrollbar-width: none;
     }
-`,u=t.div`
+`,b=t.div`
     width: 600px;
     height: 480px;
-    background: #fdfdfd;
+    background: #ffffff;
     border-radius: 36px;
     border: 1px solid rgba(0, 0, 0, 0.05);
     padding: 40px;
@@ -83,8 +97,8 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
     }
 
     &:hover {
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
+        border-color: rgba(255, 68, 0, 0.3);
         transform: translateY(-10px);
 
         .mock-image {
@@ -93,10 +107,15 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
 
         .project-arrow {
             transform: translate(5px, -5px);
-            color: #1d1d1f;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff4400, #ff8800);
+            box-shadow: 0 8px 24px rgba(255, 68, 0, 0.25);
+            i {
+                color: #ffffff;
+            }
         }
     }
-`,b=t.div`
+`,u=t.div`
     position: absolute;
     top: 5%;
     left: 5%;
@@ -132,14 +151,14 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
     h3 {
         font-size: 2rem;
         font-weight: 700;
-        color: #1d1d1f;
+        color: #111111;
         margin: 0 0 10px 0;
         letter-spacing: -0.03em;
     }
 
     p {
         font-size: 1.1rem;
-        color: #86868b;
+        color: #4a4a4f;
         margin: 0;
         font-weight: 400;
     }
@@ -148,22 +167,24 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
         h3 { font-size: 1.5rem; }
         p { font-size: 1rem; }
     }
-`,y=t.div`
+`,k=t.div`
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 
     span {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #4a4a4f;
-        background: #f5f5f7;
-        padding: 6px 14px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        color: #111111;
+        padding: 8px 16px;
         border-radius: 100px;
+        background: #f8f9fa;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        font-weight: 500;
+        transition: background 0.3s ease;
     }
-`,k=t.div`
+`,y=t.div`
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -172,10 +193,11 @@ import{r as s,g as a,S as p,j as e,c as t}from"./index-C5nTu8Ee.js";a.registerPl
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
 
     i {
         font-size: 1.2rem;
-        color: #86868b;
+        color: #111111;
         transition: all 0.3s ease;
     }
-`,j=[{title:"Lumina Engine",client:"Fintech Enterprise",tags:["React","Blockchain","UI API"],colors:["#6366f1","#a855f7"]},{title:"Aura Commerce",client:"Luxury Retailer",tags:["Shopify Plus","Next.js","ThreeJS"],colors:["#ec4899","#f43f5e"]},{title:"Nexus Dashboard",client:"SaaS Analytics",tags:["Vue","Node","Real-time"],colors:["#14b8a6","#3b82f6"]},{title:"Equinox Protocol",client:"Defi Startup",tags:["Web3","Solidity","Design System"],colors:["#f59e0b","#ef4444"]}],R=()=>{const o=s.useRef(null),l=s.useRef(null);return s.useEffect(()=>{let i=a.context(()=>{const r=l.current;if(!r)return;a.matchMedia().add("(min-width: 769px)",()=>{const n=()=>-(r.scrollWidth-window.innerWidth),x=a.to(r,{x:n,ease:"none"});p.create({trigger:o.current,start:"top top",end:()=>`+=${n()*-1}`,pin:!0,animation:x,scrub:1,invalidateOnRefresh:!0})})},o);return()=>i.revert()},[]),e.jsx(f,{id:"work",ref:o,children:e.jsxs(h,{children:[e.jsx(g,{children:e.jsxs("h2",{children:["Selected ",e.jsx("span",{children:"Works."})]})}),e.jsx(m,{ref:l,children:j.map((i,r)=>e.jsxs(u,{children:[e.jsxs(b,{className:"mock-image",children:[e.jsx(c,{$color:i.colors[0],$delay:0,style:{width:"150px",height:"150px",top:"10%",left:"20%"}}),e.jsx(c,{$color:i.colors[1],$delay:1.5,style:{width:"200px",height:"200px",bottom:"10%",right:"10%"}})]}),e.jsxs(w,{children:[e.jsxs(v,{children:[e.jsx(y,{children:i.tags.map((d,n)=>e.jsx("span",{children:d},n))}),e.jsx("h3",{children:i.title}),e.jsx("p",{children:i.client})]}),e.jsx(k,{className:"project-arrow",children:e.jsx("i",{className:"fas fa-arrow-right"})})]})]},r))})]})})};export{R as default};
+`,j=[{title:"Lumina Engine",client:"Fintech Enterprise",tags:["React","Blockchain","UI API"],colors:["#6366f1","#a855f7"]},{title:"Aura Commerce",client:"Luxury Retailer",tags:["Shopify Plus","Next.js","ThreeJS"],colors:["#ec4899","#f43f5e"]},{title:"Nexus Dashboard",client:"SaaS Analytics",tags:["Vue","Node","Real-time"],colors:["#14b8a6","#3b82f6"]},{title:"Equinox Protocol",client:"Defi Startup",tags:["Web3","Solidity","Design System"],colors:["#f59e0b","#ef4444"]}],R=()=>{const o=s.useRef(null),l=s.useRef(null);return s.useEffect(()=>{let i=n.context(()=>{const r=l.current;if(!r)return;n.matchMedia().add("(min-width: 769px)",()=>{const a=()=>-(r.scrollWidth-window.innerWidth),p=n.to(r,{x:a,ease:"none"});f.create({trigger:o.current,start:"top top",end:()=>`+=${a()*-1}`,pin:!0,animation:p,scrub:1,invalidateOnRefresh:!0})})},o);return()=>i.revert()},[]),e.jsx(x,{id:"work",ref:o,children:e.jsxs(h,{children:[e.jsx(g,{children:e.jsxs("h2",{children:["Selected ",e.jsx("span",{children:"Works."})]})}),e.jsx(m,{ref:l,children:j.map((i,r)=>e.jsxs(b,{children:[e.jsxs(u,{className:"mock-image",children:[e.jsx(c,{$color:i.colors[0],$delay:0,style:{width:"150px",height:"150px",top:"10%",left:"20%"}}),e.jsx(c,{$color:i.colors[1],$delay:1.5,style:{width:"200px",height:"200px",bottom:"10%",right:"10%"}})]}),e.jsxs(w,{children:[e.jsxs(v,{children:[e.jsx(k,{children:i.tags.map((d,a)=>e.jsx("span",{children:d},a))}),e.jsx("h3",{children:i.title}),e.jsx("p",{children:i.client})]}),e.jsx(y,{className:"project-arrow",children:e.jsx("i",{className:"fas fa-arrow-right"})})]})]},r))})]})})};export{R as default};

@@ -13,7 +13,7 @@ import Home from './Home';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
 
-import { FloatingChat } from './components/FloatingChat';
+
 
 // Lazy Load Contact Interface (Modal)
 const Contact = lazy(() => import('./components/Contact'));
@@ -95,7 +95,7 @@ function App() {
         <Contact isOpen={isFormOpen} onClose={closeForm} />
       </Suspense>
 
-      <FloatingChat />
+
       <Analytics />
       <SpeedInsights />
     </div>

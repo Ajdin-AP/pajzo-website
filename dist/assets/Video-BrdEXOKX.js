@@ -1,7 +1,7 @@
-import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js";var _=A();h.registerPlugin(O);const H=D`
-  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-  70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-BT_7v_Bk.js";var _=A();h.registerPlugin(O);const H=D`
+  0% { box-shadow: 0 0 0 0 rgba(255, 68, 0, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(255, 68, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 68, 0, 0); }
 `,J=n.section`
     position: relative;
     padding-top: 80vh;
@@ -20,7 +20,7 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
     transform: translate(-50%, -50%);
     width: 80%;
     height: 80%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+    background: radial-gradient(circle, rgba(255, 68, 0, 0.08) 0%, rgba(0,0,0,0) 70%);
     pointer-events: none;
     z-index: 1;
 `,L=n.div`
@@ -52,8 +52,8 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
 
     &:hover {
         transform: scale(1.02);
-        border-color: rgba(99, 102, 241, 0.5);
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+        border-color: rgba(255, 68, 0, 0.5);
+        box-shadow: 0 0 30px rgba(255, 68, 0, 0.15);
     }
 `,W=n.video`
     width: 100%;
@@ -104,7 +104,7 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
         position: absolute;
         inset: -2px;
         border-radius: 50%;
-        border: 2px solid rgba(99, 102, 241, 0.5);
+        border: 2px solid rgba(255, 68, 0, 0.5);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -112,8 +112,8 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
     ${y}:hover & {
         transform: scale(1.1);
         background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(99, 102, 241, 0.8);
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+        border-color: rgba(255, 68, 0, 0.8);
+        box-shadow: 0 0 30px rgba(255, 68, 0, 0.4);
         animation: ${H} 2s infinite;
 
         &::after {
@@ -207,10 +207,10 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
     }
 `,re=n.div`
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #818cf8);
+    background: linear-gradient(135deg, #ff4400, #ff8800);
     border-radius: 3px;
     position: relative;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 15px rgba(255, 68, 0, 0.6);
     width: 0%; /* Intial width */
     
     /* Head */
@@ -333,6 +333,6 @@ import{a as A,r as o,g as h,j as e,c as n,p as D,S as O}from"./index-C5nTu8Ee.js
 
     &:hover {
         opacity: 1;
-        color: #6366f1;
+        color: #ff4400;
     }
 `,R=s=>{if(isNaN(s))return"00:00";const p=Math.floor(s/60),c=Math.floor(s%60);return`${p.toString().padStart(2,"0")}:${c.toString().padStart(2,"0")}`},ue=()=>{const[s,p]=o.useState(!1),c=o.useRef(null),v=o.useRef(null),t=o.useRef(null),l=o.useRef(null),[x,d]=o.useState(!1),[P,M]=o.useState(0),[$,B]=o.useState(0),[F,u]=o.useState(1),[w,g]=o.useState(!1),a=o.useRef(null),k=o.useRef(0);o.useEffect(()=>{const r=h.context(()=>{h.fromTo(v.current,{y:50,opacity:0,scale:.95,filter:"blur(10px)"},{y:0,opacity:1,scale:1,filter:"blur(0px)",duration:1.2,ease:"power3.out",scrollTrigger:{trigger:c.current,start:"top 70%"}})},c);return()=>r.revert()},[]),o.useEffect(()=>{const r=document.body;if(r)if(s)k.current=window.scrollY,r.style.position="fixed",r.style.top=`-${k.current}px`,r.style.width="100%",r.style.overflowY="scroll";else{const i=r.style.top;r.style.position="",r.style.top="",r.style.width="",r.style.overflowY="",window.scrollTo(0,parseInt(i||"0")*-1)}},[s]);const b=o.useCallback(()=>{if(!t.current||!l.current)return;const r=t.current.currentTime,i=t.current.duration;if(i>0){const f=r/i*100;l.current.style.width=`${f}%`}!t.current.paused&&!t.current.ended&&(a.current=requestAnimationFrame(b))},[]);o.useEffect(()=>(x?a.current=requestAnimationFrame(b):a.current&&cancelAnimationFrame(a.current),()=>{a.current&&cancelAnimationFrame(a.current)}),[x,b]);const j=o.useCallback(()=>{t.current&&(t.current.paused?(t.current.play().catch(console.error),d(!0)):(t.current.pause(),d(!1)))},[]),E=()=>{t.current&&(M(t.current.currentTime),B(t.current.duration))},N=r=>{if(!t.current)return;const f=r.currentTarget.getBoundingClientRect(),S=(r.clientX-f.left)/f.width;t.current.currentTime=S*t.current.duration,l.current&&(l.current.style.width=`${S*100}%`)},V=r=>{const i=parseFloat(r.target.value);u(i),t.current&&(t.current.volume=i,t.current.muted=i===0,g(i===0))},Y=()=>{if(!t.current)return;const r=!w;g(r),t.current.muted=r,u(r?0:1)},I=()=>{var r;t.current&&(document.fullscreenElement?document.exitFullscreen():(r=t.current.parentElement)==null||r.requestFullscreen())},q=()=>{p(!0),setTimeout(()=>{t.current&&(t.current.currentTime=0,t.current.muted=!1,u(1),g(!1),t.current.play().catch(console.error),d(!0))},100)},C=()=>{p(!1),d(!1),t.current&&t.current.pause()};return e.jsxs(J,{ref:c,id:"presentation",children:[e.jsx(L,{}),e.jsx(X,{}),e.jsx(U,{children:e.jsxs(y,{ref:v,onClick:q,children:[e.jsx(W,{src:"https://assets.mixkit.co/videos/preview/mixkit-white-abstract-technology-network-background-2775-large.mp4",autoPlay:!0,muted:!0,loop:!0,playsInline:!0}),e.jsxs(G,{children:[e.jsx(K,{children:e.jsx("i",{className:"fas fa-play"})}),e.jsxs(Q,{children:[e.jsx("span",{children:"Mission Briefing"})," // v2.0"]})]})]})}),typeof document<"u"&&document.body&&_.createPortal(e.jsx(z,{className:s?"open":"",onClick:C,children:e.jsxs(Z,{onClick:r=>r.stopPropagation(),children:[e.jsxs(le,{onClick:C,children:["Close Briefing ",e.jsx("i",{className:"fas fa-times"})]}),e.jsx(ee,{children:e.jsx("video",{ref:t,src:"https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4",style:{width:"100%",height:"100%",objectFit:"contain",display:"block"},playsInline:!0,onClick:j,onTimeUpdate:E,onEnded:()=>{d(!1)}})}),e.jsxs(te,{children:[e.jsx(T,{onClick:N,children:e.jsx(re,{ref:l})}),e.jsxs(ne,{children:[e.jsxs(oe,{children:[e.jsx(m,{onClick:j,children:e.jsx("i",{className:`fas fa-${x?"pause":"play"}`})}),e.jsxs(se,{children:[e.jsx(m,{onClick:Y,children:e.jsx("i",{className:`fas fa-volume-${w?"mute":"up"}`})}),e.jsx(ae,{className:"volume-slider",type:"range",min:"0",max:"1",step:"0.1",value:F,onChange:V})]}),e.jsxs(ce,{children:[e.jsx("span",{children:R(P)})," / ",R($)]})]}),e.jsx(ie,{children:e.jsx(m,{onClick:I,children:e.jsx("i",{className:"fas fa-expand"})})})]})]})]})}),document.body)]})};export{ue as default};

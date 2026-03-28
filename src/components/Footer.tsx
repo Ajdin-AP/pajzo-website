@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import styled, { keyframes } from 'styled-components';
@@ -6,7 +6,7 @@ import styled, { keyframes } from 'styled-components';
 gsap.registerPlugin(ScrollTrigger);
 
 // ==========================================
-// STYLED COMPONENTS (Premium Dark)
+// STYLED COMPONENTS (Premium Dark Parallax)
 // ==========================================
 
 const marqueeAnim = keyframes`
@@ -14,19 +14,52 @@ const marqueeAnim = keyframes`
     100% { transform: translateX(-50%); }
 `;
 
+/* 
+   Creative Transition 6: The "Floating Parallax Reveal"
+   This is the holy grail of modern agency transitions. 
+   1. The white layout elegantly curves inwards to close itself out (Pill Shape).
+   2. It casts a massive shadow over the footer.
+   3. The footer sits in a parallax well behind it and scrolls slower than the page, 
+      causing it to be "revealed" like a cinematic curtain drawing back.
+*/
+
+const FooterWrapper = styled.div`
+    position: relative;
+    overflow: hidden; /* Contains the parallax movement to this box only */
+    background: #050505;
+`;
+
+const FloatingPillClosure = styled.div`
+    position: absolute;
+    top: -1px; /* Stitch to the FAQ section perfectly */
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: #ffffff; /* Exact match to FAQ section */
+    border-bottom-left-radius: 80px;
+    border-bottom-right-radius: 80px;
+    z-index: 30;
+    pointer-events: none; /* Let clicks pass through if needed */
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+
+    @media (max-width: 768px) {
+        height: 80px;
+        border-bottom-left-radius: 40px;
+        border-bottom-right-radius: 40px;
+    }
+`;
+
 const FooterRoot = styled.footer`
     background: #050505;
     color: #fff;
     position: relative;
-    overflow: hidden;
-    padding-top: 180px; /* Increased to accommodate divider */
+    padding-top: 220px; /* Absorbs the pill overlay and gives breathing room */
     font-family: 'Inter', sans-serif;
-    overflow: visible; /* Allow divider to stand out */
+    will-change: transform; /* Optimize parallax rendering */
 
     @media (max-width: 768px) {
-        padding-top: 100px;
+        padding-top: 150px;
     }
-
     
     /* Background Grid for Tech Feel */
     &::before {
@@ -40,68 +73,7 @@ const FooterRoot = styled.footer`
         background-size: 50px 50px;
         pointer-events: none;
         opacity: 0.5;
-    }
-`;
-
-const waveAnimFront = keyframes`
-    0% { transform: scaleY(1); }
-    50% { transform: scaleY(1.15); }
-    100% { transform: scaleY(1); }
-`;
-
-const waveAnimBack = keyframes`
-    0% { transform: scaleY(1) translateX(0); }
-    50% { transform: scaleY(1.1) translateX(-5%); }
-    100% { transform: scaleY(1) translateX(0); }
-`;
-
-const waveAnimMiddle = keyframes`
-    0% { transform: scaleY(1) translateX(0); }
-    50% { transform: scaleY(0.9) translateX(5%); }
-    100% { transform: scaleY(1) translateX(0); }
-`;
-
-const IntegratedDivider = styled.div`
-    position: absolute;
-    top: 0;
-    left: -10%; /* Significant overlap for sway */
-    width: 120%; /* Much wider to prevent gaps during sway */
-    transform: translateY(-99%); /* Move it UP outside the footer to overlap previous section */
-    overflow: hidden;
-    line-height: 0;
-    z-index: 20;
-    pointer-events: none;
-    
-    svg {
-        position: relative;
-        display: block;
-        width: 100%;
-        height: 150px;
-        fill: #050505;
-        transform: scaleY(-1); /* Flip vertically */
-        
-        @media (max-width: 768px) {
-            height: 80px;
-        }
-    }
-
-    .shape-fill {
-        fill: #050505;
-        transform-origin: 0 0; /* Anchor to SVG top (visual bottom) */
-        will-change: transform;
-    }
-
-    /* Complex Parallax Animation */
-    path:nth-child(1) {
-        animation: ${waveAnimBack} 15s ease-in-out infinite;
-        opacity: 0.3;
-    }
-    path:nth-child(2) {
-        animation: ${waveAnimMiddle} 12s ease-in-out infinite;
-        opacity: 0.6;
-    }
-    path:nth-child(3) {
-        animation: ${waveAnimFront} 6s ease-in-out infinite;
+        z-index: 1;
     }
 `;
 
@@ -139,7 +111,6 @@ const MagneticLink = styled.a`
     }
 `;
 
-
 // --- MASSIVE CTA ---
 
 const CTARow = styled.div`
@@ -154,8 +125,6 @@ const CTARow = styled.div`
         margin-bottom: 80px;
     }
 `;
-
-
 
 // --- ANIMATED CTA COMPONENT ---
 
@@ -175,7 +144,6 @@ const CTAContainer = styled.button`
         font-weight: 900;
         color: #fff;
         margin: 0;
-        /* User: "cut on bottom letters" -> increased line-height and added padding */
         line-height: 1.0; 
         padding-bottom: 20px;
         letter-spacing: -0.04em;
@@ -228,13 +196,12 @@ const AnimatedCTA: React.FC<{ onClick: () => void }> = ({ onClick }) => {
     const text = "Let's build your legacy.";
 
     const words = text.split(" ");
-    const containerRef = React.useRef<HTMLButtonElement>(null);
+    const containerRef = useRef<HTMLButtonElement>(null);
 
     const handleMouseEnter = () => {
         if (!containerRef.current) return;
         const chars = containerRef.current.querySelectorAll('.char');
 
-        // Kill previous tweens
         gsap.killTweensOf(chars);
 
         // Wave In
@@ -301,7 +268,6 @@ const AnimatedCTA: React.FC<{ onClick: () => void }> = ({ onClick }) => {
     );
 };
 
-
 // --- BOTTOM GRID ---
 
 const BottomGrid = styled.div`
@@ -348,8 +314,6 @@ const Col = styled.div<{ $alignRight?: boolean }>`
     }
 `;
 
-
-
 // --- INFINITE MARQUEE ---
 
 const MarqueeWrapper = styled.div`
@@ -372,13 +336,11 @@ const MarqueeTrack = styled.div`
 const MarqueeItem = styled.span`
     font-size: 4rem;
     font-weight: 900;
-    /* User: "lines inside" -> Removed stroke effects. Now Solid Dark Grey. */
     color: #222; 
     -webkit-text-stroke: 0;
     text-transform: uppercase;
     letter-spacing: -2px;
     padding: 0 40px;
-    /* User: "smoother" -> Increased duration and eased curve */
     transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     font-family: 'Inter', sans-serif;
     user-select: none;
@@ -387,7 +349,6 @@ const MarqueeItem = styled.span`
         &:hover {
             color: #ff4400;
             text-shadow: 0 0 20px rgba(255, 68, 0, 0.3);
-            /* Removed letter-spacing change to prevent jitter/layout shift */
             transform: scale(1.05); /* Smooth scale instead */
         }
     }
@@ -402,9 +363,29 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ onOpenForm }) => {
-    // Stagger reveal on scroll
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const footerRef = useRef<HTMLElement>(null);
+
+    // Stagger reveal on scroll & Parallax
     useEffect(() => {
         const ctx = gsap.context(() => {
+            
+            // 1. The Parallax Reveal physics
+            gsap.fromTo(footerRef.current,
+                { yPercent: -30 }, // Starts 30% pushed up under the pill
+                {
+                    yPercent: 0,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: wrapperRef.current,
+                        start: 'top bottom', // Start parallax as soon as wrapper enters viewport
+                        end: 'bottom bottom', // End precisely when the footer reaches its final position
+                        scrub: true
+                    }
+                }
+            );
+
+            // 2. The Text Entrance
             gsap.fromTo('.footer-col',
                 { y: 50, opacity: 0 },
                 {
@@ -414,8 +395,8 @@ const Footer: React.FC<FooterProps> = ({ onOpenForm }) => {
                     duration: 0.8,
                     ease: 'power3.out',
                     scrollTrigger: {
-                        trigger: 'footer',
-                        start: 'top 80%',
+                        trigger: wrapperRef.current,
+                        start: 'top 60%',
                     }
                 }
             );
@@ -424,68 +405,63 @@ const Footer: React.FC<FooterProps> = ({ onOpenForm }) => {
     }, []);
 
     return (
-        <FooterRoot>
-            <IntegratedDivider>
-                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" className="shape-fill"></path>
-                    <path d="M0,0V15.81C13,36.92,47.64,50.79,98.28,60.47c59.84,11.43,124.5,12,185.52,1.52,70.62-12.13,132.89-42.58,202.9-49.63,90.54-9.11,180.89,17.43,264,55.9,81.44,37.64,166.45,43.23,249.79,15.75,69.09-22.81,149.25-63.18,199.51-100.32V0Z" opacity=".5" className="shape-fill"></path>
-                    <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" className="shape-fill"></path>
-                </svg>
-            </IntegratedDivider>
-
-            <MainContent>
-                <CTARow>
-                    <div style={{ width: '100%' }}>
-                        <AnimatedCTA onClick={onOpenForm} />
-                    </div>
-                </CTARow>
-
-                <BottomGrid>
-                    <Col className="footer-col">
-                        <h4>Socials</h4>
-                        <MagneticLink href="https://x.com/Pajzo_">Twitter / X</MagneticLink>
-                        <MagneticLink href="https://www.instagram.com/pajzo_/">Instagram</MagneticLink>
-                    </Col>
-
-                    <Col className="footer-col">
-                        <h4>Legal</h4>
-                        <MagneticLink href="/privacy-policy" onClick={(e) => {
-                            e.preventDefault();
-                            window.history.pushState({}, '', '/privacy-policy');
-                            window.dispatchEvent(new PopStateEvent('popstate'));
-                        }}>Privacy Policy</MagneticLink>
-                        <MagneticLink href="/terms-of-service" onClick={(e) => {
-                            e.preventDefault();
-                            window.history.pushState({}, '', '/terms-of-service');
-                            window.dispatchEvent(new PopStateEvent('popstate'));
-                        }}>Terms of Service</MagneticLink>
-                    </Col>
-
-                    <Col className="footer-col" $alignRight>
-                        <div style={{ opacity: 0.4, fontSize: '0.85rem' }}>
-                            © {new Date().getFullYear()} PAJZO. All rights reserved.
+        <FooterWrapper ref={wrapperRef} id="footer">
+            <FloatingPillClosure />
+            <FooterRoot ref={footerRef}>
+                <MainContent>
+                    <CTARow>
+                        <div style={{ width: '100%' }}>
+                            <AnimatedCTA onClick={onOpenForm} />
                         </div>
-                    </Col>
-                </BottomGrid>
-            </MainContent>
+                    </CTARow>
 
-            <MarqueeWrapper>
-                <MarqueeTrack>
-                    {Array(4).fill(null).map((_, i) => (
-                        <React.Fragment key={i}>
-                            <MarqueeItem>STRATEGY</MarqueeItem>
-                            <MarqueeItem>•</MarqueeItem>
-                            <MarqueeItem>BRANDING</MarqueeItem>
-                            <MarqueeItem>•</MarqueeItem>
-                            <MarqueeItem>PERFORMANCE</MarqueeItem>
-                            <MarqueeItem>•</MarqueeItem>
-                            <MarqueeItem>GLOBAL</MarqueeItem>
-                            <MarqueeItem>•</MarqueeItem>
-                        </React.Fragment>
-                    ))}
-                </MarqueeTrack>
-            </MarqueeWrapper>
-        </FooterRoot>
+                    <BottomGrid>
+                        <Col className="footer-col">
+                            <h4>Socials</h4>
+                            <MagneticLink href="https://x.com/Pajzo_">Twitter / X</MagneticLink>
+                            <MagneticLink href="https://www.instagram.com/pajzo_/">Instagram</MagneticLink>
+                        </Col>
+
+                        <Col className="footer-col">
+                            <h4>Legal</h4>
+                            <MagneticLink href="/privacy-policy" onClick={(e) => {
+                                e.preventDefault();
+                                window.history.pushState({}, '', '/privacy-policy');
+                                window.dispatchEvent(new PopStateEvent('popstate'));
+                            }}>Privacy Policy</MagneticLink>
+                            <MagneticLink href="/terms-of-service" onClick={(e) => {
+                                e.preventDefault();
+                                window.history.pushState({}, '', '/terms-of-service');
+                                window.dispatchEvent(new PopStateEvent('popstate'));
+                            }}>Terms of Service</MagneticLink>
+                        </Col>
+
+                        <Col className="footer-col" $alignRight>
+                            <div style={{ opacity: 0.4, fontSize: '0.85rem' }}>
+                                © {new Date().getFullYear()} PAJZO. All rights reserved.
+                            </div>
+                        </Col>
+                    </BottomGrid>
+                </MainContent>
+
+                <MarqueeWrapper>
+                    <MarqueeTrack>
+                        {Array(4).fill(null).map((_, i) => (
+                            <React.Fragment key={i}>
+                                <MarqueeItem>STRATEGY</MarqueeItem>
+                                <MarqueeItem>•</MarqueeItem>
+                                <MarqueeItem>BRANDING</MarqueeItem>
+                                <MarqueeItem>•</MarqueeItem>
+                                <MarqueeItem>PERFORMANCE</MarqueeItem>
+                                <MarqueeItem>•</MarqueeItem>
+                                <MarqueeItem>GLOBAL</MarqueeItem>
+                                <MarqueeItem>•</MarqueeItem>
+                            </React.Fragment>
+                        ))}
+                    </MarqueeTrack>
+                </MarqueeWrapper>
+            </FooterRoot>
+        </FooterWrapper>
     );
 };
 

@@ -11,10 +11,21 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Section = styled.section`
     background: #ffffff;
-    padding: 180px 20px;
+    /* Adjusted padding now that the diagonal slant is gone */
+    padding: 150px 20px;
     position: relative;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* 
+       Premium Creative Transition: 
+       Overlapping Pill Geometry (Matches the Services section to create structural consistency)
+    */
+    border-top-left-radius: 60px;
+    border-top-right-radius: 60px;
+    margin-top: -60px;
+    z-index: 10;
+    box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.4);
 `;
 
 const Container = styled.div`
