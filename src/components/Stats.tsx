@@ -14,10 +14,19 @@ const StatsSection = styled.section`
     padding: 160px 20px;
     background: #e2e2e8; /* Deeper cool gray background for absolute premium contrast */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    z-index: 5;
+    z-index: 20; /* Must be 20 to strictly overlap the Works section sliding beneath it */
     display: flex;
     justify-content: center;
-    overflow: hidden;
+    overflow: visible; /* Must be visible to allow the box-shadow to bleed downward seamlessly */
+
+    /* 
+       Premium Creative Transition (Closing the Arch):
+       Curves the bottom of the white block and casts a deep ambient shadow downwards
+       over the dark Stealth Mode Works section below it.
+    */
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
 
     /* Architectural Math Grid Background */
     &::before {
@@ -44,21 +53,15 @@ const TopDivider = styled.div`
     pointer-events: none;
 `;
 
-const BottomDivider = styled.div`
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 180px;
-    background: linear-gradient(to top, #ffffff 0%, rgba(255,255,255,0) 100%);
-    z-index: 3;
-    pointer-events: none;
-`;
-
 const OrbContainer = styled.div`
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 1;
     overflow: hidden;
+    /* Force clipping to match parent curve to prevent neon from spilling over Works */
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
     opacity: 0.85; 
     
     /* 
@@ -539,7 +542,6 @@ const Stats: React.FC = () => {
             
             {/* Seamless Section Dividers */}
             <TopDivider />
-            <BottomDivider />
 
             {/* Background Orbs for Liquid Glass Refraction */}
             <OrbContainer>

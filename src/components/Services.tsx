@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import styled from 'styled-components';
@@ -6,14 +6,13 @@ import styled from 'styled-components';
 gsap.registerPlugin(ScrollTrigger);
 
 // ==========================================
-// STYLED COMPONENTS (Interactive White Accordion)
+// STYLED COMPONENTS (Sticky Stacking Layout)
 // ==========================================
 
 const Section = styled.section`
-    background: #ffffff;
-    padding: 150px 20px;
+    background: #f8f9fa; /* Subtle off-white for premium contrast against pure white cards */
+    padding: 100px 0 0 0;
     position: relative;
-    overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
     /* 
@@ -23,24 +22,15 @@ const Section = styled.section`
     border-top-left-radius: 60px;
     border-top-right-radius: 60px;
     margin-top: -60px;
-    z-index: 10;
+    z-index: 30; /* Restored to ensure it overlaps Stats and hides upward shadows */
     box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.6);
 `;
 
-const Container = styled.div`
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
+const HeaderContainer = styled.div`
+    text-align: center;
+    padding-bottom: 20px;
     position: relative;
     z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`;
-
-const Header = styled.div`
-    text-align: center;
-    margin-bottom: 80px;
     
     h2 {
         font-size: clamp(3rem, 6vw, 5rem);
@@ -57,289 +47,221 @@ const Header = styled.div`
             -webkit-text-fill-color: transparent;
         }
     }
-`;
 
-const AccordionContainer = styled.div`
-    display: flex;
-    width: 100%;
-    height: 600px; /* Fixed height for the accordion */
-    gap: 16px;
-    perspective: 2000px;
-
-    /* Completely hide the accordion on mobile/tablets */
-    @media (max-width: 1024px) {
-        display: none;
+    p {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 20px;
+        max-width: 600px;
+        margin-inline: auto;
     }
 `;
 
-// Represents a single accordion slice
-const Panel = styled.div<{ $isActive: boolean }>`
+const StackingContainer = styled.div`
     position: relative;
-    height: 100%;
-    background: ${props => props.$isActive ? '#ffffff' : '#f0f0f3'};
-    border-radius: 40px;
-    border: 1px solid ${props => props.$isActive ? 'rgba(255, 68, 0, 0.25)' : 'rgba(0, 0, 0, 0.03)'};
-    overflow: hidden;
-    cursor: pointer;
-    
-    /* Smooth flex interpolation */
-    flex: ${props => props.$isActive ? '6' : '1'};
-    min-width: ${props => props.$isActive ? '45%' : '100px'};
-    
-    transition: flex 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
-                min-width 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                background 0.5s ease, 
-                border-color 0.5s ease,
-                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    
-    box-shadow: ${props => props.$isActive
-        ? '0 40px 80px rgba(255, 68, 0, 0.08), 0 10px 30px rgba(0, 0, 0, 0.04)'
-        : '0 4px 12px rgba(0, 0, 0, 0.02)'};
-
-    &:hover {
-        background: ${props => props.$isActive ? '#ffffff' : '#eaeaea'};
-        transform: ${props => props.$isActive ? 'none' : 'translateY(-2px)'};
-    }
-
-    /* Ambient glow for active card */
-    &::before {
-        content: '';
-        position: absolute;
-        top: -30%;
-        left: -30%;
-        width: 160%;
-        height: 160%;
-        background: radial-gradient(circle, rgba(255,68,0,0.06) 0%, transparent 60%);
-        opacity: ${props => props.$isActive ? 1 : 0};
-        transition: opacity 1s ease;
-        pointer-events: none;
-        z-index: 0;
-    }
+    padding-bottom: 10vh; /* Extra padding after the final card */
 `;
 
-// Container for the fully expanded view
-const ActiveContent = styled.div<{ $isActive: boolean }>`
-    position: absolute;
-    inset: 0;
-    padding: 50px;
+const CardWrapper = styled.div<{ $index: number }>`
+    position: sticky;
+    top: 0;
+    height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    opacity: ${props => props.$isActive ? 1 : 0};
-    visibility: ${props => props.$isActive ? 'visible' : 'hidden'};
-    transition: opacity 0.6s ease ${props => props.$isActive ? '0.4s' : '0s'},
-                visibility 0.6s;
-    z-index: 2;
-    min-width: 500px;
-`;
-
-// Container for the collapsed sidebar view
-const InactiveContent = styled.div<{ $isActive: boolean }>`
-    position: absolute;
-    inset: 0;
-    padding: 40px 0;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    opacity: ${props => props.$isActive ? 0 : 1};
-    visibility: ${props => props.$isActive ? 'hidden' : 'visible'};
-    transition: opacity 0.4s ease, visibility 0.4s;
-    z-index: 2;
+    justify-content: center;
+    /* The offset ensures that cards peeking from underneath build a visual hierarchy */
+    padding-top: calc(8vh + ${props => props.$index * 30}px);
+    width: 100%;
+    
+    /* On mobile, disable the sticky stack and rely on natural flow */
+    @media (max-width: 1024px) {
+        position: relative;
+        height: auto;
+        padding-top: 40px;
+        padding-bottom: 20px;
+    }
 `;
 
-const ActiveIconBox = styled.div`
-    width: 76px;
-    height: 76px;
-    border-radius: 24px;
+const CardInner = styled.div`
+    width: 100%;
+    max-width: 1200px;
+    min-height: 500px;
+    margin: 0 20px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+    display: flex;
+    transform-origin: top center;
+    overflow: hidden;
+    position: relative;
+    will-change: transform, opacity, filter;
+
+    @media (max-width: 1024px) {
+        flex-direction: column;
+        border-radius: 32px;
+        min-height: auto;
+    }
+`;
+
+const DynamicGlow = styled.div`
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,68,0,0.08) 0%, transparent 70%);
+    top: -300px;
+    right: -200px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+`;
+
+const CardContent = styled.div`
+    flex: 1;
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+
+    @media (max-width: 1024px) {
+        padding: 40px 30px;
+    }
+`;
+
+const TopMeta = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+`;
+
+const IconBox = styled.div`
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
     background: linear-gradient(135deg, #ff4400, #ff8800);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 15px 30px rgba(255, 68, 0, 0.35);
+    box-shadow: 0 15px 30px rgba(255, 68, 0, 0.25);
     
     i {
-        font-size: 2rem;
+        font-size: 1.8rem;
         color: #fff;
     }
-`;
 
-const InactiveIconBox = styled.div`
-    width: 60px;
-    height: 60px;
-    border-radius: 20px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.04);
-
-    i {
-        font-size: 1.5rem;
-        color: #111;
-        opacity: 0.6;
+    @media (max-width: 1024px) {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        i { font-size: 1.4rem; }
     }
 `;
 
-const ActiveHeader = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 25px;
+const IdText = styled.span`
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ff4400;
+    letter-spacing: 0.1em;
 `;
 
-const ActiveTitle = styled.h3`
-    font-size: 2.2rem;
+const Title = styled.h3`
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
     font-weight: 800;
     color: #111;
-    margin: 0;
+    margin: 0 0 30px 0;
     letter-spacing: -0.03em;
+    line-height: 1.1;
 `;
-
-const InactiveTitle = styled.h3`
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111;
-    margin: 0;
-    letter-spacing: -0.02em;
-    opacity: 0.4;
-    
-    /* Elegant vertical text rendering */
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    margin-top: 50px;
-    white-space: nowrap;
-`;
-
-const ActiveBody = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    max-width: 85%;
-`;   
 
 const Description = styled.p`
     font-size: 1.25rem;
     line-height: 1.6;
-    color: #4a4a4f;
-    margin: 0;
-    font-weight: 400;
+    color: #555;
+    margin: 0 0 40px 0;
+    max-width: 500px;
+
+    @media (max-width: 1024px) {
+        font-size: 1.1rem;
+        margin: 0 0 30px 0;
+    }
 `;
 
-const Tags = styled.div`
+const TagsRow = styled.div`
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
 
     span {
-        font-family: 'Inter', sans-serif;
         font-size: 0.9rem;
-        color: #ff4400;
-        padding: 8px 18px;
+        color: #111;
+        padding: 8px 20px;
         border-radius: 100px;
-        background: rgba(255, 68, 0, 0.06);
-        border: 1px solid rgba(255, 68, 0, 0.15);
+        background: rgba(0, 0, 0, 0.04);
         font-weight: 600;
         transition: all 0.3s ease;
-        
+        border: 1px solid transparent;
+
         &:hover {
-            background: #ff4400;
-            color: #ffffff;
+            background: #ffffff;
+            color: #ff4400;
+            border-color: rgba(255, 68, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 68, 0, 0.2);
         }
     }
 `;
 
-const NumberBadge = styled.div`
-    position: absolute;
-    bottom: 30px;
-    right: 40px;
-    font-size: 8rem;
-    font-weight: 900;
-    color: rgba(0,0,0,0.02);
-    line-height: 1;
-    user-select: none;
-    z-index: 1;
-`;
-
-// ==========================================
-// MOBILE STYLED COMPONENTS (New Stacked Protocol)
-// ==========================================
-
-const MobileContainer = styled.div`
-    display: none;
-    width: 100%;
-    flex-direction: column;
-    gap: 30px;
-    padding: 0 20px;
+const VisualSection = styled.div<{ $index: number }>`
+    flex: 0.8;
+    background: #fdfdfd;
+    position: relative;
+    border-left: 1px solid rgba(0,0,0,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 
     @media (max-width: 1024px) {
-        display: flex;
+        display: none;
     }
 `;
 
-const MobileCard = styled.div`
-    background: #ffffff;
-    border-radius: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 40px 30px;
+// Creates a neat geometric motif per card
+const GeometricMotif = styled.div<{ $index: number }>`
+    width: 250px;
+    height: 250px;
+    border-radius: ${props => props.$index % 2 === 0 ? '50%' : '30px'};
+    background: linear-gradient(135deg, rgba(255,68,0,0.1), rgba(255,136,0,0.1));
     position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(255,68,0,0.2);
     
+    /* Add an inner shape for 3D look */
     &::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 6px;
-        background: linear-gradient(90deg, #ff4400, #ff8800);
-        opacity: 0.9;
+        inset: 20px;
+        border-radius: inherit;
+        background: linear-gradient(135deg, #ff4400, #ff8800);
+        opacity: 0.1;
+        transform: rotate(15deg);
     }
 `;
 
-const MobileCardHeader = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
-    position: relative;
-    z-index: 2;
-`;
-
-const MobileTitle = styled.h3`
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #111111;
-    margin: 0;
-    letter-spacing: -0.02em;
-`;
-
-const MobileDescription = styled.p`
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #4a4a4f;
-    margin: 0 0 25px 0;
-    font-weight: 400;
-    position: relative;
-    z-index: 2;
-`;
-
-const MobileNumberBadge = styled.div`
+const GiantNumber = styled.div`
     position: absolute;
-    bottom: -10px;
-    right: 15px;
-    font-size: 6rem;
+    bottom: -20px;
+    right: 20px;
+    font-size: 16rem;
     font-weight: 900;
-    color: rgba(0,0,0,0.03);
-    user-select: none;
+    color: rgba(0, 0, 0, 0.02);
     line-height: 1;
-    z-index: 1;
+    z-index: 0;
+    pointer-events: none;
 `;
-
 
 // ==========================================
 // DATA
@@ -382,40 +304,69 @@ const SERVICES_DATA = [
 
 const Services: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const [activeIndex, setActiveIndex] = useState(0);
+    const wrappersRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            // Creative 3D fan-out animation for desktop panels
-            gsap.fromTo(".accordion-panel",
-                { x: 100, opacity: 0, rotationY: 15 },
-                {
-                    x: 0, opacity: 1, rotationY: 0,
-                    duration: 1.2,
-                    stagger: 0.15,
-                    ease: "expo.out",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 75%"
-                    }
-                }
-            );
+        // We only want the stacking scroll effect on Desktop where heights make sense
+        let ctx = gsap.context(() => {
+            const isDesktop = window.innerWidth > 1024;
+            
+            if (isDesktop) {
+                // Animate each card wrapper as it scrolls
+                wrappersRef.current.forEach((wrapper, index) => {
+                    if (!wrapper) return;
+                    
+                    const cardInner = wrapper.querySelector('.card-inner');
+                    const geometric = wrapper.querySelector('.geometric-motif');
+                    if (!cardInner) return;
 
-            // Staggered reveal for mobile cards
-            gsap.fromTo(".mobile-service-card",
-                { y: 50, opacity: 0 },
-                {
-                    y: 0, opacity: 1,
-                    duration: 1.2,
-                    stagger: 0.25,
-                    ease: "expo.out",
-                    scrollTrigger: {
-                        trigger: ".mobile-services-container",
-                        start: "top 85%",
+                    // Float animation for the geometric motif
+                    if (geometric) {
+                        gsap.to(geometric, {
+                            y: -30,
+                            rotation: 10,
+                            ease: "sine.inOut",
+                            duration: 3,
+                            yoyo: true,
+                            repeat: -1,
+                            delay: index * 0.2
+                        });
                     }
-                }
-            );
 
+                    // If it's the last card, we don't shrink it immediately
+                    if (index === SERVICES_DATA.length - 1) return;
+
+                    // As we scroll exactly ONE card height further down (100vh),
+                    // the CURRENT card should shrink and darken, pushed back by the next card.
+                    gsap.to(cardInner, {
+                        scale: 0.92,
+                        opacity: 0.4,
+                        y: -30,
+                        scrollTrigger: {
+                            trigger: wrapper,
+                            start: "top top", 
+                            end: "+=100%", // Over the course of scrolling 100vh past the sticky trigger
+                            scrub: true,
+                            invalidateOnRefresh: true,
+                        }
+                    });
+                });
+            } else {
+                // Mobile fade in animation
+                gsap.fromTo('.card-inner', 
+                    { y: 50, opacity: 0 },
+                    { 
+                        y: 0, opacity: 1, 
+                        duration: 0.8,
+                        stagger: 0.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: ".stacking-container",
+                            start: "top 80%",
+                        }
+                    }
+                );
+            }
         }, sectionRef);
 
         return () => ctx.revert();
@@ -423,88 +374,48 @@ const Services: React.FC = () => {
 
     return (
         <Section id="services" ref={sectionRef}>
-            <Container>
-                <Header>
-                    <h2>
-                        Specialized <span>Capabilities.</span>
-                    </h2>
-                </Header>
+            <HeaderContainer>
+                <h2>
+                    Specialized <span>Capabilities.</span>
+                </h2>
+                <p>Engineered to scale revenue, elevate design, and secure absolute market dominance.</p>
+            </HeaderContainer>
 
-                <AccordionContainer>
-                    {SERVICES_DATA.map((service, index) => {
-                        const isActive = index === activeIndex;
-                        return (
-                            <Panel
-                                key={index}
-                                className="accordion-panel"
-                                $isActive={isActive}
-                                onMouseEnter={() => setActiveIndex(index)}
-                            >
-                                {/* Inactive Sidebar View */}
-                                <InactiveContent $isActive={isActive}>
-                                    <InactiveIconBox>
+            <StackingContainer className="stacking-container">
+                {SERVICES_DATA.map((service, index) => (
+                    <CardWrapper 
+                        key={index} 
+                        $index={index}
+                        ref={el => { wrappersRef.current[index] = el; }}
+                    >
+                        <CardInner className="card-inner">
+                            <DynamicGlow />
+                            <CardContent>
+                                <TopMeta>
+                                    <IconBox>
                                         <i className={service.icon}></i>
-                                    </InactiveIconBox>
-                                    <InactiveTitle>{service.title}</InactiveTitle>
-                                </InactiveContent>
+                                    </IconBox>
+                                    <IdText>{service.id}.</IdText>
+                                </TopMeta>
+                                
+                                <Title>{service.title}</Title>
+                                <Description>{service.desc}</Description>
+                                
+                                <TagsRow>
+                                    {service.tags.map((t, idx) => (
+                                        <span key={idx}>{t}</span>
+                                    ))}
+                                </TagsRow>
+                            </CardContent>
 
-                                {/* Active Expanded View */}
-                                <ActiveContent $isActive={isActive}>
-                                    <div>
-                                        <ActiveHeader>
-                                            <ActiveIconBox>
-                                                <i className={service.icon}></i>
-                                            </ActiveIconBox>
-                                            <ActiveTitle>{service.title}</ActiveTitle>
-                                        </ActiveHeader>
-
-                                        <ActiveBody style={{ marginTop: '40px' }}>
-                                            <Description>{service.desc}</Description>
-                                            <Tags>
-                                                {service.tags.map((t, idx) => (
-                                                    <span key={idx}>{t}</span>
-                                                ))}
-                                            </Tags>
-                                        </ActiveBody>
-                                    </div>
-
-                                    <NumberBadge>
-                                        {service.id}
-                                    </NumberBadge>
-                                </ActiveContent>
-                            </Panel>
-                        );
-                    })}
-                </AccordionContainer>
-
-                {/* Mobile Specific Layout */}
-                <MobileContainer className="mobile-services-container">
-                    {SERVICES_DATA.map((service, index) => (
-                        <MobileCard key={index} className="mobile-service-card">
-                            <MobileCardHeader>
-                                <ActiveIconBox style={{ width: 60, height: 60 }}>
-                                    <i className={service.icon} style={{ fontSize: '1.5rem' }}></i>
-                                </ActiveIconBox>
-                                <MobileTitle>{service.title}</MobileTitle>
-                            </MobileCardHeader>
-
-                            <MobileDescription>
-                                {service.desc}
-                            </MobileDescription>
-
-                            <Tags style={{ zIndex: 2, position: 'relative' }}>
-                                {service.tags.map((t, idx) => (
-                                    <span key={idx}>{t}</span>
-                                ))}
-                            </Tags>
-
-                            <MobileNumberBadge>
-                                {service.id}
-                            </MobileNumberBadge>
-                        </MobileCard>
-                    ))}
-                </MobileContainer>
-            </Container>
+                            <VisualSection $index={index}>
+                                <GeometricMotif className="geometric-motif" $index={index} />
+                                <GiantNumber>{service.id}</GiantNumber>
+                            </VisualSection>
+                        </CardInner>
+                    </CardWrapper>
+                ))}
+            </StackingContainer>
         </Section>
     );
 };

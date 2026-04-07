@@ -6,63 +6,65 @@ import styled from 'styled-components';
 gsap.registerPlugin(ScrollTrigger);
 
 // ==========================================
-// STYLED COMPONENTS (Apple Bento Box)
+// STYLED COMPONENTS (Awwwards / Minimalist Editorial)
 // ==========================================
 
 const Section = styled.section`
     background: #ffffff;
-    /* Adjusted padding now that the diagonal slant is gone */
-    padding: 150px 20px;
+    /* Massive top/bottom padding for the editorial feel */
+    padding: 200px 24px 160px;
     position: relative;
     overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
-    /* 
-       Premium Creative Transition: 
-       Overlapping Pill Geometry (Matches the Services section to create structural consistency)
-    */
-    border-top-left-radius: 60px;
-    border-top-right-radius: 60px;
-    margin-top: -60px;
+    /* Gentle overlap curve to transition from previous section */
+    border-top-left-radius: 48px;
+    border-top-right-radius: 48px;
+    margin-top: -48px;
     z-index: 10;
-    box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.4);
+    
+    @media (max-width: 768px) {
+        padding: 140px 16px 100px;
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
+    }
 `;
 
 const Container = styled.div`
-    max-width: 1400px;
+    max-width: 1300px; /* Tighter layout for typographic tension */
     margin: 0 auto;
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
 `;
 
 const Header = styled.div`
-    text-align: center;
     margin-bottom: 100px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     
     h2 {
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
         letter-spacing: 0.25em;
         text-transform: uppercase;
-        color: #4a4a4f;
-        margin-bottom: 24px;
-        display: inline-block;
+        color: #ff4400;
+        margin-bottom: 16px;
+        display: block;
     }
 
     .main-title {
-        font-size: clamp(3.5rem, 7vw, 6rem);
-        font-weight: 700;
+        font-size: clamp(3rem, 6vw, 5.5rem);
+        font-weight: 800;
         color: #111111;
-        letter-spacing: -0.05em;
+        letter-spacing: -0.04em;
         line-height: 1.05;
         margin: 0;
         max-width: 800px;
-        margin: 0 auto;
         
         span {
-            display: inline-block;
+            font-style: italic;
             background: linear-gradient(135deg, #ff4400, #ff8800);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -70,134 +72,159 @@ const Header = styled.div`
     }
 `;
 
-const BentoGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 300px);
-    gap: 32px;
-    width: 100%;
-    
-    @media (max-width: 1024px) {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto;
-    }
-    
-    @media (max-width: 600px) {
-        grid-template-columns: 1fr;
-    }
-`;
-
-// Base card mechanics
-const BentoCardContainer = styled.div<{ $colSpan?: number, $rowSpan?: number }>`
-    perspective: 2000px;
-    grid-column: span ${props => props.$colSpan || 1};
-    grid-row: span ${props => props.$rowSpan || 1};
-    
-    @media (max-width: 1024px) {
-        grid-column: span ${props => (props.$colSpan === 3 || props.$colSpan === 4) ? 2 : 1};
-        grid-row: span 1;
-        min-height: 300px;
-    }
-    
-    @media (max-width: 600px) {
-        grid-column: span 1;
-        min-height: 280px;
-    }
-`;
-
-const BentoCard = styled.div<{ $brandColor: string }>`
-    position: relative;
-    background: #ffffff;
-    height: 100%;
-    width: 100%;
-    padding: 40px;
-    border-radius: 36px;
+const ListContainer = styled.div`
     display: flex;
     flex-direction: column;
+    width: 100%;
+`;
+
+const RowItem = styled.div`
+    position: relative;
+    padding: 48px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-end; /* Align bottom */
     justify-content: space-between;
     overflow: hidden;
+    cursor: pointer;
+    transition: padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     
-    /* Apple soft shadow & border */
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    
-    transform-style: preserve-3d;
-    will-change: transform;
-    cursor: default;
-    
-    /* Subtle metallic sheen that activates on hover */
+    /* The brilliant background gradient that reveals on hover strictly within the row bounds */
     &::before {
         content: '';
         position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle at center, ${props => props.$brandColor}15 0%, transparent 60%);
-        opacity: 0;
-        transition: opacity 0.6s ease;
-        pointer-events: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #ff4400, #ff8800);
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 0;
+    }
+
+    @media (max-width: 900px) {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 32px 0;
+        gap: 16px;
     }
 
     @media (hover: hover) {
         &:hover {
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.06);
-            border-color: rgba(255, 68, 0, 0.3);
+            padding: 64px 24px;
 
             &::before {
-                opacity: 1;
+                transform: scaleY(1);
             }
             
-            .bento-icon {
-                transform: scale(1.1) translateZ(30px);
-                color: ${props => props.$brandColor};
+            /* Text elements invert color over the orange background */
+            .row-number, .row-tag, .row-title, .row-desc, .row-icon {
+                color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.3) !important;
+            }
+            
+            .row-tag {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            
+            /* Subtly reveal the description and slide it up slightly */
+            .row-desc {
+                opacity: 0.9;
+                transform: translateY(0);
+            }
+            
+            .row-icon {
+                transform: rotate(45deg) scale(1.1);
             }
         }
     }
 `;
 
-const ContentWrapper = styled.div`
+const ContentLeft = styled.div`
     position: relative;
     z-index: 1;
-    transform: translateZ(20px);
+    display: flex;
+    flex-direction: column;
+    pointer-events: none; /* Let hover hit the row */
 `;
 
-const TopRightIcon = styled.i`
-    position: absolute;
-    top: 40px;
-    right: 40px;
-    font-size: 2.5rem;
-    color: rgba(0,0,0,0.05); /* Light Apple Gray */
-    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-    transform-style: preserve-3d;
+const MetaTop = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 16px;
+`;
+
+const RowNumber = styled.span`
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(0,0,0,0.3);
+    transition: color 0.4s ease;
 `;
 
 const Tag = styled.span`
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #ff4400;
-    margin-bottom: 12px;
-    display: block;
+    letter-spacing: 0.15em;
+    color: #111111;
+    padding: 6px 14px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 100px;
+    transition: all 0.4s ease;
 `;
 
 const Title = styled.h3`
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 800;
     color: #111111;
-    margin: 0 0 12px 0;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    margin: 0;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    text-transform: uppercase;
+    transition: color 0.4s ease;
+`;
+
+const ContentRight = styled.div`
+    position: relative;
+    z-index: 1;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    pointer-events: none;
+    
+    @media (max-width: 900px) {
+        align-items: flex-start;
+        text-align: left;
+        max-width: 100%;
+    }
 `;
 
 const Description = styled.p`
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: #4a4a4f;
     line-height: 1.5;
-    margin: 0;
-    max-width: 90%;
+    margin: 0 0 24px 0;
+    font-weight: 400;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Default desktop state masks the desc until hover */
+    @media (min-width: 901px) {
+        opacity: 0.5;
+        transform: translateY(10px);
+    }
+`;
+
+const BigIcon = styled.i`
+    font-size: 2.5rem;
+    color: #ff4400; /* Initially brand color */
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 `;
 
 
@@ -208,48 +235,33 @@ const Description = styled.p`
 const TECH_DATA = [
     {
         tag: "Frontend",
-        title: "React & Beyond.",
+        title: "React",
         desc: "We engineer lightning-fast interfaces using React and modern server-side rendering for optimal Core Web Vitals.",
         icon: "fab fa-react",
-        color: "#ff4400", // Orange
-        colSpan: 2,
-        rowSpan: 1
     },
     {
         tag: "Motion",
-        title: "Fluid Dynamics.",
+        title: "GSAP fluid",
         desc: "Hardware-accelerated animations powered by GSAP. No jank, pure buttery smoothness at 60fps.",
         icon: "fas fa-fan",
-        color: "#ff8800", // Light orange
-        colSpan: 1,
-        rowSpan: 1
     },
     {
         tag: "Commerce",
-        title: "Headless CMS.",
+        title: "Headless",
         desc: "Decoupled architecture utilizing Shopify Plus and custom Node.js middleware for infinite scale.",
         icon: "fab fa-shopify",
-        color: "#ff4400", // Orange
-        colSpan: 1,
-        rowSpan: 2 // Tall box
     },
     {
         tag: "Backend",
-        title: "Cloud Native.",
+        title: "Cloud",
         desc: "Serverless edge functions and distributed databases ensuring zero downtime globally.",
         icon: "fas fa-cloud",
-        color: "#ff8800", // Light orange
-        colSpan: 1,
-        rowSpan: 1
     },
     {
         tag: "Analytics",
-        title: "Data Dominance.",
+        title: "Data",
         desc: "Custom tracking pixels, server-side tagging, and real-time BI dashboards.",
         icon: "fas fa-chart-pie",
-        color: "#ff4400", // Orange
-        colSpan: 2,
-        rowSpan: 1
     }
 ];
 
@@ -259,27 +271,29 @@ const TECH_DATA = [
 
 const TechStack: React.FC = () => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.fromTo(".bento-header",
-                { y: 40, opacity: 0 },
+            
+            // Header animation
+            gsap.fromTo(".editorial-header",
+                { y: 60, opacity: 0 },
                 {
                     y: 0, opacity: 1,
-                    duration: 1, ease: "power3.out",
+                    duration: 1.2, ease: "power3.out",
                     scrollTrigger: { trigger: sectionRef.current, start: "top 75%" }
                 }
             );
 
-            gsap.fromTo(".bento-card-container",
-                { y: 80, opacity: 0, scale: 0.95 },
+            // Staggered list items
+            gsap.fromTo(".editorial-row",
+                { y: 100, opacity: 0 },
                 {
-                    y: 0, opacity: 1, scale: 1,
-                    duration: 1.2,
-                    stagger: 0.1,
-                    ease: "expo.out",
-                    scrollTrigger: { trigger: sectionRef.current, start: "top 70%" }
+                    y: 0, opacity: 1,
+                    duration: 1.4,
+                    stagger: 0.15,
+                    ease: "power4.out",
+                    scrollTrigger: { trigger: ".editorial-list", start: "top 80%" }
                 }
             );
         }, sectionRef);
@@ -287,79 +301,36 @@ const TechStack: React.FC = () => {
         return () => ctx.revert();
     }, []);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
-        const cardContainer = cardRefs.current[index];
-        if (!cardContainer) return;
-        const card = cardContainer.querySelector('.inner-bento') as HTMLDivElement;
-        if (!card) return;
-
-        const rect = cardContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -5;
-        const rotateY = ((x - centerX) / centerX) * 5;
-
-        gsap.to(card, {
-            rotationX: rotateX,
-            rotationY: rotateY,
-            scale: 1.01,
-            duration: 0.4,
-            ease: 'power2.out',
-            transformPerspective: 1500,
-            transformOrigin: 'center center'
-        });
-    };
-
-    const handleMouseLeave = (index: number) => {
-        const cardContainer = cardRefs.current[index];
-        if (!cardContainer) return;
-        const card = cardContainer.querySelector('.inner-bento') as HTMLDivElement;
-        if (!card) return;
-
-        gsap.to(card, {
-            rotationX: 0,
-            rotationY: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: 'elastic.out(1, 0.5)'
-        });
-    };
-
     return (
         <Section id="tech-stack" ref={sectionRef}>
             <Container>
-                <Header className="bento-header">
-                    <h2>Digital Infrastructure</h2>
+                <Header className="editorial-header">
+                    <h2>// Digital Infrastructure</h2>
                     <h3 className="main-title">
-                        Engineered with <span>precision.</span>
+                        Engineered with <br/> <span>precision.</span>
                     </h3>
                 </Header>
 
-                <BentoGrid>
+                <ListContainer className="editorial-list">
                     {TECH_DATA.map((item, index) => (
-                        <BentoCardContainer
-                            key={index}
-                            className="bento-card-container"
-                            $colSpan={item.colSpan}
-                            $rowSpan={item.rowSpan}
-                            ref={el => { cardRefs.current[index] = el; }}
-                            onMouseMove={(e) => handleMouseMove(e, index)}
-                            onMouseLeave={() => handleMouseLeave(index)}
-                        >
-                            <BentoCard className="inner-bento" $brandColor={item.color}>
-                                <TopRightIcon className={`bento-icon ${item.icon}`} />
-                                <ContentWrapper>
-                                    <Tag>{item.tag}</Tag>
-                                    <Title>{item.title}</Title>
-                                    <Description>{item.desc}</Description>
-                                </ContentWrapper>
-                            </BentoCard>
-                        </BentoCardContainer>
+                        <RowItem key={index} className="editorial-row">
+                            <ContentLeft>
+                                <MetaTop>
+                                    <RowNumber className="row-number">
+                                        0{index + 1}
+                                    </RowNumber>
+                                    <Tag className="row-tag">{item.tag}</Tag>
+                                </MetaTop>
+                                <Title className="row-title">{item.title}</Title>
+                            </ContentLeft>
+                            
+                            <ContentRight>
+                                <Description className="row-desc">{item.desc}</Description>
+                                <BigIcon className={`row-icon ${item.icon}`} />
+                            </ContentRight>
+                        </RowItem>
                     ))}
-                </BentoGrid>
+                </ListContainer>
             </Container>
         </Section>
     );
