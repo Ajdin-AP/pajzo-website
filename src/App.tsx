@@ -1,104 +1,83 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { useState, Suspense, lazy, useEffect } from 'react';
-import styled from 'styled-components';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useState, useEffect, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
-import SplashScreen from './components/SplashScreen';
-import SmoothScroll from './components/SmoothScroll';
+import ContactModal from './components/ContactModal';
 import Home from './Home';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
 
-
-
-// Lazy Load Contact Interface (Modal)
-const Contact = lazy(() => import('./components/Contact'));
-
-const CyberBackground = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #ffffff;
-    z-index: -1;
-    pointer-events: none;
-`;
+export type OpenModal = (service?: string) => void;
 
 function App() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [route, setRoute] = useState(window.location.pathname);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalService, setModalService] = useState<string>('');
 
-  const openForm = () => setIsFormOpen(true);
-  const closeForm = () => setIsFormOpen(false);
+  const openModal = useCallback<OpenModal>((service) => {
+    setModalService(service ?? '');
+    setModalOpen(true);
+  }, []);
 
+  const closeModal = useCallback(() => setModalOpen(false), []);
+
+  // Routing for the two legal pages.
   useEffect(() => {
-    const handleLocationChange = () => {
-      setCurrentPath(window.location.pathname);
-      // Scroll to top on navigation
+    const onPop = () => {
+      setRoute(window.location.pathname);
       window.scrollTo(0, 0);
     };
-
-    window.addEventListener('popstate', handleLocationChange);
-
-    // Check initial path
-    setCurrentPath(window.location.pathname);
-
-    return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
   }, []);
 
+  // Quiet reveal-on-scroll.
   useEffect(() => {
-    // Force ScrollTrigger refresh on load to ensure accurate pinning
-    // Wait for splash screen animation + a buffer
-    const timer = setTimeout(() => {
-      setIsLoading(false);
+    document.documentElement.classList.add('reveal-ready');
+    const els = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [route]);
 
-      // Delay refresh slightly to allow DOM to settle after splash fade
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 1000);
-
-    }, 1200); // 1.2s Fast load for snappy feel
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Simple routing logic
   let content;
-  if (currentPath === '/privacy-policy') {
+  if (route === '/privacy-policy') {
     content = <PrivacyPolicy />;
-  } else if (currentPath === '/terms-of-service') {
+  } else if (route === '/terms-of-service') {
     content = <TermsOfService />;
   } else {
-    content = <Home />;
+    content = <Home openModal={openModal} />;
   }
 
   return (
-    <div className="app-root">
-      <SplashScreen isLoading={isLoading} />
-      <CyberBackground />
-      <Header onOpenForm={openForm} />
-      <SmoothScroll />
-
+    <>
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      <Header route={route} openModal={openModal} />
       {content}
-
-      <Footer onOpenForm={openForm} />
-
-      <Suspense fallback={null}>
-        <Contact isOpen={isFormOpen} onClose={closeForm} />
-      </Suspense>
-
-
+      <Footer openModal={openModal} />
+      <ContactModal open={modalOpen} onClose={closeModal} initialService={modalService} />
       <Analytics />
       <SpeedInsights />
-    </div>
+    </>
   );
 }
 

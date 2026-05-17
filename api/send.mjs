@@ -17,17 +17,17 @@ export default async function handler(req, res) {
         const responseData = await Promise.all([
             // 1. Send internal notification to the site owner
             resend.emails.send({
-                from: 'PAJZO Leads <leads@pajzo.com>',
+                from: 'Pajzo Leads <leads@pajzo.com>',
                 to: 'ajdin.pajazetovic.ap@gmail.com',
                 reply_to: email, // Allows you to click 'reply' directly in your email client
-                subject: `New Project Lead: ${data.company || name || 'Inquiry'}`,
+                subject: `New enquiry — ${data.company || name || 'Pajzo'}`,
                 html: getContactEmailHtml(data)
             }),
             // 2. Send the autoreply to the customer
             resend.emails.send({
-                from: 'PAJZO <info@pajzo.com>',
+                from: 'Ajdin at Pajzo <info@pajzo.com>',
                 to: email,
-                subject: "We've received your project inquiry - PAJZO",
+                subject: 'Thanks for your message — Pajzo',
                 html: getAutoreplyEmailHtml(data)
             })
         ]);

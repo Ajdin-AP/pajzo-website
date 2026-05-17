@@ -1,269 +1,182 @@
-import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useState, useEffect } from 'react';
+import { navigate } from '../nav';
+import { Menu, Close } from './icons';
+import type { OpenModal } from '../App';
 
-gsap.registerPlugin(ScrollTrigger);
+const NAV = [
+  { label: 'How we work', id: 'approach' },
+  { label: 'Pricing', id: 'services' },
+  { label: 'Process', id: 'process' },
+  { label: 'About', id: 'about' },
+];
 
-// ==========================================
-// STYLED COMPONENTS: Dual-Layer Architecture
-// ==========================================
+// Sticky header height + a little breathing room (matches scroll-margin-top).
+const HEADER_OFFSET = 84;
 
-// Base Header Style applied to both layers
-const HeaderRootBase = styled.header`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    /* Start with Large Padding */
-    padding: 60px 80px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    will-change: padding;
-    pointer-events: none; /* Let clicks pass through empty space */
+let scrollRaf = 0;
+let scrollCleanup: (() => void) | null = null;
 
-    @media(max-width: 900px) { padding: 40px 40px; }
-    @media(max-width: 480px) { padding: 20px 20px; }
-`;
+// Custom eased scroll — gentler and more consistent than the browser default.
+function smoothScrollTo(targetY: number) {
+  cancelAnimationFrame(scrollRaf);
+  if (scrollCleanup) {
+    scrollCleanup();
+    scrollCleanup = null;
+  }
 
-// Layer 1: The Difference Layer (Inverts dynamically)
-const HeaderRootDiff = styled(HeaderRootBase)`
-    z-index: 1000;
-    mix-blend-mode: difference; /* The Magic CSS */
-`;
+  const root = document.documentElement;
+  const startY = window.scrollY;
+  const maxY = root.scrollHeight - window.innerHeight;
+  const dest = Math.max(0, Math.min(targetY, maxY));
+  const diff = dest - startY;
+  if (Math.abs(diff) < 2) return;
 
-// Layer 2: The Normal Layer (Holds the Orange Brand objects)
-const HeaderRootNorm = styled(HeaderRootBase)`
-    z-index: 1001;
-    mix-blend-mode: normal;
-`;
+  // Respect reduced-motion: jump straight there.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo(0, dest);
+    root.style.scrollBehavior = prev;
+    return;
+  }
 
-// Base Logo Text
-const LogoText = styled.a`
-    font-family: 'Inter', sans-serif;
-    font-weight: 900;
-    font-size: 26px;
-    letter-spacing: -0.04em;
-    color: #ffffff; 
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-    cursor: pointer;
-    pointer-events: auto;
-    text-decoration: none;
-    will-change: transform;
-    display: flex;
+  // Override CSS scroll-behavior so each frame lands instantly.
+  root.style.scrollBehavior = 'auto';
 
-    /* Scale Effect: Massive -> Normal */
-    transform: scale(1.5);
-    transform-origin: left center;
+  const duration = Math.min(1100, Math.max(600, Math.abs(diff) * 0.5));
+  const ease = (t: number) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-    /* Reveal effect */
-    opacity: 0;
-    animation: fadeIn 0.5s ease 0.2s forwards;
+  let interrupted = false;
+  const onInterrupt = () => {
+    interrupted = true;
+  };
+  window.addEventListener('wheel', onInterrupt, { passive: true });
+  window.addEventListener('touchmove', onInterrupt, { passive: true });
 
-    @keyframes fadeIn {
-        to { opacity: 1; }
+  const finish = () => {
+    window.removeEventListener('wheel', onInterrupt);
+    window.removeEventListener('touchmove', onInterrupt);
+    root.style.scrollBehavior = '';
+    scrollCleanup = null;
+  };
+  scrollCleanup = finish;
+
+  let startTime = 0;
+  const step = (now: number) => {
+    if (interrupted) {
+      finish();
+      return;
     }
-
-    @media(max-width: 480px) {
-        font-size: 20px;
-        transform: scale(1);
+    if (!startTime) startTime = now;
+    const p = Math.min(1, (now - startTime) / duration);
+    window.scrollTo(0, startY + diff * ease(p));
+    if (p < 1) {
+      scrollRaf = requestAnimationFrame(step);
+    } else {
+      finish();
     }
-
-    &:hover {
-        opacity: 0.8;
-    }
-`;
-
-const BrandDot = styled.span`
-    color: #ff4400; /* Immune to the difference blend */
-`;
-
-const Nav = styled.nav`
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    pointer-events: auto;
-`;
-
-// Magnetic Button Wrapper
-const MagneticBtn = styled.button`
-    position: relative;
-    background: #ff4400; /* Primary Brand Orange */
-    color: #ffffff;      
-    border: none;
-    border-radius: 40px;
-    box-shadow: 0 8px 20px rgba(255, 68, 0, 0.25); /* Subtle ambient glow */
-
-    /* Base Size */
-    padding: 16px 36px;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-
-    cursor: pointer;
-    overflow: hidden;
-    will-change: transform;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease;
-
-    /* Scale Effect: Large -> Normal */
-    transform: scale(1.3);
-    transform-origin: right center;
-
-    @media (hover: hover) {
-        &:hover {
-            background: #ff5511; /* Slightly brighter orange on hover */
-            box-shadow: 0 12px 30px rgba(255, 68, 0, 0.45); /* Stronger glow */
-        }
-    }
-    
-    &:active {
-        transform: scale(1.25);
-    }
-
-    @media(max-width: 480px) {
-        padding: 10px 20px;
-        font-size: 13px;
-        transform: scale(1);
-    }
-`;
-
-// ==========================================
-// COMPONENT
-// ==========================================
-
-interface HeaderProps {
-    onOpenForm: () => void;
+  };
+  scrollRaf = requestAnimationFrame(step);
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenForm }) => {
-    // We use arrays for refs so we can beautifully animate both layers simultaneously
-    const headerRefs = useRef<(HTMLElement | null)[]>([]);
-    const logoRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-    const btnRef = useRef<HTMLButtonElement>(null);
-    const dummyBtnRef = useRef<HTMLButtonElement>(null);
+const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isHome = route === '/';
 
-    // Scroll Animation Logic
-    useEffect(() => {
-        if (!headerRefs.current[0] || !headerRefs.current[1] || !logoRefs.current[0] || !btnRef.current) return;
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-        // Sync with Hero pin length (600% viewport)
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                scrollTrigger: {
-                    trigger: document.body,
-                    start: "top top",
-                    end: "600vh", // Match Hero pinning duration
-                    scrub: 1.5,
-                }
-            });
+  const goHome = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (isHome) {
+      requestAnimationFrame(() => smoothScrollTo(0));
+    } else {
+      navigate('/');
+    }
+  };
 
-            // Animate both overlapping headers symmetrically
-            tl.to(headerRefs.current, {
-                paddingTop: window.innerWidth <= 480 ? 15 : window.innerWidth <= 900 ? 20 : 30,
-                paddingBottom: window.innerWidth <= 480 ? 15 : window.innerWidth <= 900 ? 20 : 30,
-                paddingLeft: window.innerWidth <= 480 ? 15 : window.innerWidth <= 900 ? 20 : 50,
-                paddingRight: window.innerWidth <= 480 ? 15 : window.innerWidth <= 900 ? 20 : 50,
-                ease: "power2.inOut"
-            }, 0);
+  const goTo = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    // Defer a frame so the mobile menu has closed before we measure.
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      smoothScrollTo(el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET);
+    });
+  };
 
-            // Animate both split logos identically
-            tl.to(logoRefs.current, {
-                scale: 1,
-                ease: "power2.inOut"
-            }, 0);
+  return (
+    <header className={`header${scrolled ? ' scrolled' : ''}`}>
+      <div className="container">
+        <div className="header__inner">
+          <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo — home">
+            Pajzo<span className="dot">.</span>
+          </a>
 
-            // Animate both buttons
-            tl.to([btnRef.current, dummyBtnRef.current], {
-                scale: 1,
-                ease: "power2.inOut"
-            }, 0);
-        });
+          {isHome && (
+            <nav className="header__nav">
+              {NAV.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className="navlink"
+                  onClick={(e) => goTo(e, item.id)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          )}
 
-        return () => ctx.revert();
-    }, []);
+          <div className="header__actions">
+            <button
+              className={`btn btn--solid${isHome ? '' : ' btn--always'}`}
+              onClick={() => openModal()}
+            >
+              Contact
+            </button>
+            {isHome && (
+              <button
+                className="menu-toggle"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={menuOpen}
+              >
+                {menuOpen ? <Close /> : <Menu />}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
-    // Magnetic Effect Logic (Only applied to the interactive top button)
-    useEffect(() => {
-        const btn = btnRef.current;
-        if (!btn) return;
-
-        const handleMouseMove = (e: MouseEvent) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-
-            // Magnetic pull
-            gsap.to(btn, {
-                x: x * 0.3,
-                y: y * 0.3,
-                duration: 0.3,
-                ease: "power2.out",
-                overwrite: "auto"
-            });
-        };
-
-        const handleMouseLeave = () => {
-            gsap.to(btn, {
-                x: 0,
-                y: 0,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.3)",
-                overwrite: "auto"
-            });
-        };
-
-        btn.addEventListener('mousemove', handleMouseMove);
-        btn.addEventListener('mouseleave', handleMouseLeave);
-
-        return () => {
-            btn.removeEventListener('mousemove', handleMouseMove);
-            btn.removeEventListener('mouseleave', handleMouseLeave);
-        };
-    }, []);
-
-    return (
-        <>
-            {/* 
-              LAYER 1: The Difference Blended Layer 
-              This layer visually wipes its colors into the exact opposite of what's behind it.
-              It contains ONLY the base PAJZO text in solid white.
-            */}
-            <HeaderRootDiff ref={el => { if (el) headerRefs.current[0] = el; }}>
-                <LogoText ref={el => { if (el) logoRefs.current[0] = el; }} href="/">
-                    PAJZO
-                </LogoText>
-                
-                {/* Invisible Ghost elements to ensure flexbox sizes match precisely */}
-                <Nav style={{ opacity: 0, pointerEvents: 'none' }}>
-                    <MagneticBtn ref={dummyBtnRef}>Let's Talk</MagneticBtn>
-                </Nav>
-            </HeaderRootDiff>
-
-            {/* 
-              LAYER 2: The Normal Blended Layer 
-              This layer sits right on top and preserves exact brand colors.
-              We hide the "PAJZO" text so the difference layer shines through,
-              but we render the Orange brand dot and CTA Button completely intact.
-            */}
-            <HeaderRootNorm ref={el => { if (el) headerRefs.current[1] = el; }}>
-                <LogoText ref={el => { if (el) logoRefs.current[1] = el; }} href="/">
-                    {/* Transparent text perfectly pushes the Brand Dot to its spot */}
-                    <span style={{ opacity: 0 }}>PAJZO</span><BrandDot>.</BrandDot>
-                </LogoText>
-
-                <Nav>
-                    <MagneticBtn
-                        ref={btnRef}
-                        onClick={() => onOpenForm()}
-                    >
-                        Let's Talk
-                    </MagneticBtn>
-                </Nav>
-            </HeaderRootNorm>
-        </>
-    );
+      {isHome && (
+        <div className={`mobile-nav${menuOpen ? ' open' : ''}`}>
+          {NAV.map((item) => (
+            <a key={item.id} href={`#${item.id}`} onClick={(e) => goTo(e, item.id)}>
+              {item.label}
+            </a>
+          ))}
+          <button
+            className="btn btn--solid"
+            onClick={() => {
+              setMenuOpen(false);
+              openModal();
+            }}
+          >
+            Contact
+          </button>
+        </div>
+      )}
+    </header>
+  );
 };
 
 export default Header;
