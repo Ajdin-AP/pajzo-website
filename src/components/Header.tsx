@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { navigate } from '../nav';
-import { Menu, Close } from './icons';
+import { Menu, Close, Wordmark } from './icons';
 import type { OpenModal } from '../App';
 
 const NAV = [
@@ -118,7 +118,7 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
       <div className="container">
         <div className="header__inner">
           <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo — home">
-            Pajzo<span className="dot">.</span>
+            <Wordmark />
           </a>
 
           {isHome && (

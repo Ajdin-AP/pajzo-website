@@ -1,8 +1,8 @@
 import React from 'react';
 import { navigate } from '../nav';
-import type { OpenModal } from '../App';
+import { Instagram, XLogo, Mail, Wordmark } from './icons';
 
-const Footer = ({ openModal }: { openModal: OpenModal }) => {
+const Footer = () => {
   const year = new Date().getFullYear();
 
   const goLegal = (e: React.MouseEvent, path: string) => {
@@ -16,48 +16,44 @@ const Footer = ({ openModal }: { openModal: OpenModal }) => {
         <div className="footer__top">
           <div className="footer__brand">
             <span className="wordmark">
-              Pajzo<span className="dot">.</span>
+              <Wordmark />
             </span>
-            <p className="footer__tagline">
-              Built for the long haul. A founder-led marketing studio for owners
-              who&rsquo;ve been let down before.
-            </p>
+            <p className="footer__tagline">Built for the long haul.</p>
             <a className="footer__mail" href="mailto:info@pajzo.com">
               info@pajzo.com
             </a>
           </div>
 
           <div className="footer__col">
-            <h4>Studio</h4>
-            <a href="/#approach">How we work</a>
-            <a href="/#services">Pricing</a>
-            <a href="/#process">Process</a>
-            <a href="/#about">About</a>
-          </div>
-
-          <div className="footer__col">
-            <h4>Start</h4>
-            <button onClick={() => openModal('audit')}>Marketing Audit</button>
-            <button onClick={() => openModal('strategy')}>Strategy Session</button>
-            <button onClick={() => openModal()}>Get in touch</button>
-          </div>
-
-          <div className="footer__col">
             <h4>Elsewhere</h4>
-            <a href="https://www.instagram.com/pajzo_/" target="_blank" rel="noopener noreferrer">
-              Instagram
-            </a>
-            <a href="https://x.com/Pajzo_" target="_blank" rel="noopener noreferrer">
-              X / Twitter
-            </a>
-            <a href="mailto:info@pajzo.com">Email</a>
+            <div className="footer__socials">
+              <a
+                className="footer__social"
+                href="https://www.instagram.com/pajzo_/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
+                <Instagram />
+              </a>
+              <a
+                className="footer__social"
+                href="https://x.com/Pajzo_"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+              >
+                <XLogo />
+              </a>
+              <a className="footer__social" href="mailto:info@pajzo.com" aria-label="Email">
+                <Mail />
+              </a>
+            </div>
           </div>
         </div>
 
         <div className="footer__bottom">
-          <p className="footer__legal">
-            © {year} Pajzo · Samostojni podjetnik · Domžale, Slovenia
-          </p>
+          <p className="footer__legal">© {year} Pajzo · S.p.</p>
           <div className="footer__legal-links">
             <a href="/privacy-policy" onClick={(e) => goLegal(e, '/privacy-policy')}>
               Privacy Policy

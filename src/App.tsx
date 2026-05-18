@@ -9,8 +9,16 @@ import ContactModal from './components/ContactModal';
 import Home from './Home';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
+import ComingSoon from './ComingSoon';
 
 export type OpenModal = (service?: string) => void;
+
+/**
+ * Coming-soon gate. While this is true, every route is replaced by the
+ * coming-soon page and the rest of the site is unreachable.
+ * To launch the full site, set this to false.
+ */
+const COMING_SOON: boolean = true;
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
@@ -57,6 +65,16 @@ function App() {
     return () => io.disconnect();
   }, [route]);
 
+  if (COMING_SOON) {
+    return (
+      <>
+        <ComingSoon />
+        <Analytics />
+        <SpeedInsights />
+      </>
+    );
+  }
+
   let content;
   if (route === '/privacy-policy') {
     content = <PrivacyPolicy />;
@@ -73,7 +91,7 @@ function App() {
       </a>
       <Header route={route} openModal={openModal} />
       {content}
-      <Footer openModal={openModal} />
+      <Footer />
       <ContactModal open={modalOpen} onClose={closeModal} initialService={modalService} />
       <Analytics />
       <SpeedInsights />

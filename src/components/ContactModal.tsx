@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Close, ArrowRight } from './icons';
 
 type Data = {
@@ -8,8 +8,13 @@ type Data = {
   website: string;
   service: string;
   budget: number;
+  budgetOn: boolean;
   message: string;
 };
+
+const BUDGET_MIN = 500;
+const BUDGET_MAX = 5000;
+const BUDGET_STEP = 100;
 
 const EMPTY: Data = {
   name: '',
@@ -17,7 +22,8 @@ const EMPTY: Data = {
   company: '',
   website: '',
   service: '',
-  budget: 0,
+  budget: BUDGET_MIN,
+  budgetOn: false,
   message: '',
 };
 
@@ -30,15 +36,23 @@ const SERVICES = [
   { id: 'unsure', label: 'Not sure yet', note: 'Help me find the right fit' },
 ];
 
-const BUDGET_MAX = 5000;
-const BUDGET_STEP = 100;
+const FIXED_PRICE: Record<string, string> = { audit: '€500', strategy: '€200' };
+
+type BudgetMode = 'monthly' | 'onetime' | 'fixed' | 'hidden';
+
+// Which budget UI a service calls for.
+function budgetModeFor(service: string): BudgetMode {
+  if (service === 'partnership') return 'monthly';
+  if (service === 'foundation' || service === 'unsure') return 'onetime';
+  if (service === 'audit' || service === 'strategy') return 'fixed';
+  return 'hidden'; // "I have a question", or nothing chosen yet
+}
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
-function budgetLabel(n: number) {
-  if (n <= 0) return 'Not specified';
-  if (n >= BUDGET_MAX) return '€5,000+ / month';
-  return '€' + n.toLocaleString('en-US') + ' / month';
+function sliderValueLabel(mode: 'monthly' | 'onetime', n: number) {
+  const amt = n >= BUDGET_MAX ? '€5,000+' : '€' + n.toLocaleString('en-US');
+  return mode === 'monthly' ? amt + ' / month' : amt;
 }
 
 type Props = {
@@ -98,6 +112,17 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
     isEmail(data.email) &&
     data.company.trim().length >= 2;
 
+  // Budget value written into the enquiry email.
+  const budgetForSubmit = () => {
+    const mode = budgetModeFor(data.service);
+    if (mode === 'hidden') return 'Not applicable';
+    if (mode === 'fixed') return (FIXED_PRICE[data.service] || '') + ' · fixed price';
+    if (!data.budgetOn) return 'Not specified';
+    const amt =
+      data.budget >= BUDGET_MAX ? '€5,000+' : '€' + data.budget.toLocaleString('en-US');
+    return mode === 'monthly' ? amt + ' / month' : amt + ' one-time';
+  };
+
   const submit = async () => {
     setSubmitting(true);
     setFailed(false);
@@ -109,7 +134,7 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
         company: data.company.trim(),
         website: data.website.trim() || 'Not provided',
         service: svc ? svc.label : 'Not specified',
-        budget: budgetLabel(data.budget),
+        budget: budgetForSubmit(),
         message: data.message.trim() || 'Not provided',
       };
       const res = await fetch('/api/send', {
@@ -130,8 +155,20 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
     }
   };
 
-  const budgetPct = Math.round((data.budget / BUDGET_MAX) * 100);
+  const budgetPct = Math.round(
+    ((data.budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100
+  );
   const firstName = data.name.trim().split(' ')[0] || 'there';
+
+  // The budget block opens/closes and changes shape with the chosen service.
+  const lastBudgetService = useRef('');
+  if (data.service && data.service !== 'question') {
+    lastBudgetService.current = data.service;
+  }
+  const budgetVisible = !!data.service && data.service !== 'question';
+  const shownService = budgetVisible ? data.service : lastBudgetService.current;
+  const budgetMode = budgetModeFor(shownService);
+  const renderMode = budgetMode === 'hidden' ? 'monthly' : budgetMode;
 
   return (
     <div
@@ -247,27 +284,91 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
                 ))}
               </div>
 
-              <div className="cform__field-block">
-                <div className="cform__slider-top">
-                  <label className="field__label" htmlFor="cf-budget">
-                    Monthly budget <span className="opt">(optional)</span>
-                  </label>
-                  <span className="cform__budget">{budgetLabel(data.budget)}</span>
+              {/* Budget — opens, closes and reshapes with the chosen service */}
+              <div className={`cform__budget-wrap${budgetVisible ? ' is-shown' : ''}`}>
+                <div className="cform__budget-grid">
+                  <div className="cform__budget-inner" key={renderMode}>
+                    {renderMode === 'fixed' ? (
+                      <>
+                        <span className="field__label">Price</span>
+                        <div className="cform__fixed">
+                          <span className="cform__fixed-amt">
+                            {FIXED_PRICE[shownService]}
+                          </span>
+                          <span className="cform__fixed-note">
+                            {shownService === 'strategy'
+                              ? 'A 90-minute Strategy Session — a flat fee, no budget to set.'
+                              : 'A two-week Marketing Audit — a flat fee, no budget to set.'}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={`cform__budget-toggle${
+                            data.budgetOn ? ' is-on' : ''
+                          }`}
+                          onClick={() => set({ budgetOn: !data.budgetOn })}
+                          aria-pressed={data.budgetOn}
+                        >
+                          <span className="cform__budget-box">
+                            <svg
+                              className="cform__budget-tick"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path d="M5 12.5l5 5 9-11" />
+                            </svg>
+                          </span>
+                          <span>
+                            Add a {renderMode === 'monthly' ? 'monthly' : 'one-time'}{' '}
+                            budget
+                          </span>
+                        </button>
+
+                        <div
+                          className={`cform__slider-collapse${
+                            data.budgetOn ? ' is-open' : ''
+                          }`}
+                        >
+                          <div className="cform__slider-clip">
+                            <div className="cform__slider-pad">
+                              <div className="cform__slider-top">
+                                <label className="field__label" htmlFor="cf-budget">
+                                  {renderMode === 'monthly'
+                                    ? 'Monthly budget'
+                                    : 'One-time budget'}
+                                </label>
+                                <span className="cform__budget">
+                                  {sliderValueLabel(renderMode, data.budget)}
+                                </span>
+                              </div>
+                              <input
+                                id="cf-budget"
+                                type="range"
+                                className="range"
+                                min={BUDGET_MIN}
+                                max={BUDGET_MAX}
+                                step={BUDGET_STEP}
+                                value={data.budget}
+                                onChange={(e) => set({ budget: Number(e.target.value) })}
+                                style={{
+                                  background: `linear-gradient(to right, var(--orange) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
+                                }}
+                                aria-label={
+                                  renderMode === 'monthly'
+                                    ? 'Monthly budget'
+                                    : 'One-time budget'
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <input
-                  id="cf-budget"
-                  type="range"
-                  className="range"
-                  min={0}
-                  max={BUDGET_MAX}
-                  step={BUDGET_STEP}
-                  value={data.budget}
-                  onChange={(e) => set({ budget: Number(e.target.value) })}
-                  style={{
-                    background: `linear-gradient(to right, var(--orange) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
-                  }}
-                  aria-label="Monthly budget"
-                />
               </div>
 
               <div className="cform__field-block">
