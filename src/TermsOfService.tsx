@@ -6,16 +6,16 @@ const TermsOfService = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const back = (e: React.MouseEvent) => {
+  const go = (e: React.MouseEvent, path: string) => {
     e.preventDefault();
-    navigate('/');
+    navigate(path);
   };
 
   return (
     <main id="main" tabIndex={-1} className="section legal section--paper">
       <div className="container">
         <div className="legal__wrap">
-          <a href="/" className="legal__back" onClick={back}>
+          <a href="/" className="legal__back" onClick={(e) => go(e, '/')}>
             ← Back to Pajzo
           </a>
 
@@ -23,50 +23,101 @@ const TermsOfService = () => {
           <p className="legal__date">Effective May 2026</p>
 
           <p>
-            These terms cover your use of the Pajzo website. The specific terms
-            of any paid work — an audit, a project, or a partnership — are set out
-            separately in the agreement you&rsquo;d sign before that work begins.
+            These terms cover your use of the Pajzo website. By browsing the
+            site or getting in touch through it, you&rsquo;re agreeing to them.
+          </p>
+          <p>
+            Pajzo is a marketing studio run by Ajdin Pajazetović as a sole
+            proprietorship (samostojni podjetnik, or &ldquo;s.p.&rdquo;) in
+            Domžale, Slovenia. These terms are about the website itself — the
+            specific terms of any paid work, such as an audit, a project, or a
+            partnership, are set out separately in the written agreement
+            you&rsquo;d sign before that work begins.
           </p>
 
           <h2>1. Using this site</h2>
           <p>
             You&rsquo;re welcome to read the site and get in touch through it.
-            Please don&rsquo;t misuse it, attempt to disrupt it, or use it for
-            anything unlawful.
+            In return, please use it fairly: don&rsquo;t misuse it, don&rsquo;t
+            try to disrupt, overload, or break into it, and don&rsquo;t use it
+            for anything unlawful or to harm others.
           </p>
 
-          <h2>2. The contact form</h2>
+          <h2>2. Enquiries and the contact form</h2>
           <p>
-            Sending a message through the contact form starts a conversation — it
-            doesn&rsquo;t create a contract or commit either of us to anything.
-            Work only begins once a separate written agreement is signed.
+            Sending a message through the contact form — or emailing us —
+            starts a conversation. It doesn&rsquo;t create a contract or commit
+            either of us to anything; paid work begins only once a separate
+            written agreement is signed. Please send accurate information, and
+            only details you&rsquo;re entitled to share. What happens to the
+            information you send is explained in our{' '}
+            <a
+              className="inline"
+              href="/privacy-policy"
+              onClick={(e) => go(e, '/privacy-policy')}
+            >
+              Privacy Policy
+            </a>
+            .
           </p>
 
-          <h2>3. What&rsquo;s on the site</h2>
+          <h2>3. Prices and what&rsquo;s on the site</h2>
           <p>
-            Prices and service descriptions are published openly and kept as
-            accurate as we can, but they may change over time. The price that
-            applies to your work is the one written into your agreement.
+            We publish our prices and service descriptions openly, and keep
+            them as accurate and current as we reasonably can. Even so, they
+            may change over time, and the site may occasionally contain an
+            error or be out of date. The price and scope that apply to your
+            work are whatever is written into your signed agreement — not
+            whatever the site happened to show on a given day.
           </p>
 
           <h2>4. Intellectual property</h2>
           <p>
-            The Pajzo name, brand, and the content of this site belong to Pajzo.
-            Please don&rsquo;t reproduce them as your own.
+            The Pajzo name, logo, brand, written content, and design of this
+            site belong to Pajzo. You&rsquo;re welcome to view and share the
+            site, but please don&rsquo;t copy, reproduce, or reuse its content
+            or branding as your own without our permission.
           </p>
 
-          <h2>5. Liability</h2>
+          <h2>5. Links to other sites</h2>
           <p>
-            This website is provided as-is. To the extent the law allows, Pajzo
-            isn&rsquo;t liable for indirect or consequential loss arising from use
-            of the site itself. Responsibilities for paid work are governed by
-            your service agreement.
+            The site may link to other places — for example, our social
+            profiles. Those sites aren&rsquo;t run by us, and we&rsquo;re not
+            responsible for their content or how they handle your data.
+            Visiting them is at your own discretion.
           </p>
 
-          <h2>6. Changes &amp; contact</h2>
+          <h2>6. The site is provided &ldquo;as is&rdquo;</h2>
           <p>
-            We may update these terms; the effective date above will change when
-            we do. Questions? Email{' '}
+            We do our best to keep the site available, accurate, and working
+            well, but we provide it &ldquo;as is.&rdquo; We don&rsquo;t
+            guarantee it will always be available, uninterrupted, or free of
+            errors, and we may change, pause, or take down parts of it at any
+            time.
+          </p>
+
+          <h2>7. Liability</h2>
+          <p>
+            To the extent the law allows, Pajzo isn&rsquo;t liable for indirect
+            or consequential loss arising from your use of — or inability to
+            use — this website. Nothing in these terms limits any liability
+            that can&rsquo;t legally be limited. Responsibilities for paid work
+            are governed by your service agreement, not by this page.
+          </p>
+
+          <h2>8. Governing law</h2>
+          <p>
+            These terms are governed by the law of Slovenia. Any dispute
+            relating to the website or to these terms falls under the
+            jurisdiction of the Slovenian courts.
+          </p>
+
+          <h2>9. Changes &amp; contact</h2>
+          <p>
+            We may update these terms as the site or our business changes; the
+            effective date above will change when we do. Continuing to use the
+            site after an update means you accept the revised terms. Questions?
+            Email{' '}
             <a className="inline" href="mailto:info@pajzo.com">
               info@pajzo.com
             </a>

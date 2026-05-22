@@ -2037,8 +2037,94 @@ html.reveal-ready .reveal[data-delay="4"] { transition-delay: 0.32s; }
   color: var(--ink-mute);
 }
 
+/* Hidden preview-access prompt — opened by double-tapping the logo. */
+.coming__lock {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(26, 26, 26, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: lock-fade 0.2s var(--ease) both;
+}
+
+@keyframes lock-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.coming__lock-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 300px;
+  animation: coming-in 0.32s var(--ease) both;
+}
+
+.coming__lock-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--on-ink-soft);
+}
+
+.coming__lock-input {
+  width: 100%;
+  padding: 13px 16px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  text-align: center;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-s);
+  outline: none;
+  transition: border-color 0.18s var(--ease);
+}
+.coming__lock-input::placeholder {
+  color: var(--ink-mute);
+}
+.coming__lock-input:focus {
+  border-color: var(--orange);
+}
+.coming__lock-input.is-error {
+  border-color: #c0392b;
+  animation: lock-shake 0.3s var(--ease);
+}
+
+@keyframes lock-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .coming__inner {
+  .coming__inner,
+  .coming__lock,
+  .coming__lock-box,
+  .coming__lock-input.is-error {
     animation: none;
   }
 }

@@ -20,10 +20,22 @@ export type OpenModal = (service?: string) => void;
  */
 const COMING_SOON: boolean = true;
 
+/**
+ * Preview access. Double-tap the logo on the coming-soon page and enter this
+ * password to reveal the full site. Change it to anything you like.
+ * Note: this is a convenience gate, not strong security — the password is
+ * part of the page's code.
+ */
+const PREVIEW_PASSWORD = 'pajzo2026';
+const UNLOCK_KEY = 'pajzo-access';
+
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalService, setModalService] = useState<string>('');
+  const [unlocked, setUnlocked] = useState(
+    () => localStorage.getItem(UNLOCK_KEY) === 'granted'
+  );
 
   const openModal = useCallback<OpenModal>((service) => {
     setModalService(service ?? '');
@@ -31,6 +43,15 @@ function App() {
   }, []);
 
   const closeModal = useCallback(() => setModalOpen(false), []);
+
+  // Checks the preview password; on success, unlocks the full site for this
+  // browser. Returns true when the password is correct.
+  const checkPassword = useCallback((input: string) => {
+    if (input !== PREVIEW_PASSWORD) return false;
+    localStorage.setItem(UNLOCK_KEY, 'granted');
+    setUnlocked(true);
+    return true;
+  }, []);
 
   // Routing for the two legal pages.
   useEffect(() => {
@@ -65,10 +86,10 @@ function App() {
     return () => io.disconnect();
   }, [route]);
 
-  if (COMING_SOON) {
+  if (COMING_SOON && !unlocked) {
     return (
       <>
-        <ComingSoon />
+        <ComingSoon checkPassword={checkPassword} />
         <Analytics />
         <SpeedInsights />
       </>
