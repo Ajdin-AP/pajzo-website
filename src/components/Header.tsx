@@ -1,96 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { navigate } from '../nav';
-import { Menu, Close, Wordmark } from './icons';
+import { smoothScrollTo, scrollToId } from '../scroll';
+import { Menu, Close, Wordmark, ArrowRight } from './icons';
 import type { OpenModal } from '../App';
 
 const NAV = [
-  { label: 'How we work', id: 'approach' },
-  { label: 'Pricing', id: 'services' },
+  { label: 'Services', id: 'services' },
+  { label: 'Studio', id: 'studio' },
   { label: 'Process', id: 'process' },
-  { label: 'About', id: 'about' },
+  { label: 'FAQ', id: 'faq' },
 ];
-
-// Sticky header height + a little breathing room (matches scroll-margin-top).
-const HEADER_OFFSET = 84;
-
-let scrollRaf = 0;
-let scrollCleanup: (() => void) | null = null;
-
-// Custom eased scroll — gentler and more consistent than the browser default.
-function smoothScrollTo(targetY: number) {
-  cancelAnimationFrame(scrollRaf);
-  if (scrollCleanup) {
-    scrollCleanup();
-    scrollCleanup = null;
-  }
-
-  const root = document.documentElement;
-  const startY = window.scrollY;
-  const maxY = root.scrollHeight - window.innerHeight;
-  const dest = Math.max(0, Math.min(targetY, maxY));
-  const diff = dest - startY;
-  if (Math.abs(diff) < 2) return;
-
-  // Respect reduced-motion: jump straight there.
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const prev = root.style.scrollBehavior;
-    root.style.scrollBehavior = 'auto';
-    window.scrollTo(0, dest);
-    root.style.scrollBehavior = prev;
-    return;
-  }
-
-  // Override CSS scroll-behavior so each frame lands instantly.
-  root.style.scrollBehavior = 'auto';
-
-  const duration = Math.min(1100, Math.max(600, Math.abs(diff) * 0.5));
-  const ease = (t: number) =>
-    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-  let interrupted = false;
-  const onInterrupt = () => {
-    interrupted = true;
-  };
-  window.addEventListener('wheel', onInterrupt, { passive: true });
-  window.addEventListener('touchmove', onInterrupt, { passive: true });
-
-  const finish = () => {
-    window.removeEventListener('wheel', onInterrupt);
-    window.removeEventListener('touchmove', onInterrupt);
-    root.style.scrollBehavior = '';
-    scrollCleanup = null;
-  };
-  scrollCleanup = finish;
-
-  let startTime = 0;
-  const step = (now: number) => {
-    if (interrupted) {
-      finish();
-      return;
-    }
-    if (!startTime) startTime = now;
-    const p = Math.min(1, (now - startTime) / duration);
-    window.scrollTo(0, startY + diff * ease(p));
-    if (p < 1) {
-      scrollRaf = requestAnimationFrame(step);
-    } else {
-      finish();
-    }
-  };
-  scrollRaf = requestAnimationFrame(step);
-}
 
 const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState('');
   const isHome = route === '/';
 
+  // Scrolled state + hide on scroll-down, return on scroll-up.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      // 6px threshold avoids trackpad flutter; never hide near the top.
+      if (Math.abs(y - lastY) > 6) {
+        setHidden(y > lastY && y > 420);
+        lastY = y;
+      }
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Highlight the nav item for the section currently in view.
+  useEffect(() => {
+    if (!isHome) return;
+    const els = NAV.map((n) => document.getElementById(n.id)).filter(
+      (el): el is HTMLElement => !!el
+    );
+    if (!els.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [isHome]);
 
   const goHome = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -106,43 +68,42 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
     e.preventDefault();
     setMenuOpen(false);
     // Defer a frame so the mobile menu has closed before we measure.
-    requestAnimationFrame(() => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      smoothScrollTo(el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET);
-    });
+    requestAnimationFrame(() => scrollToId(id));
   };
 
   return (
-    <header className={`header${scrolled ? ' scrolled' : ''}`}>
+    <header
+      className={`header${isHome ? ' header--home' : ''}${scrolled ? ' scrolled' : ''}${
+        hidden && !menuOpen ? ' is-hidden' : ''
+      }`}
+    >
       <div className="container">
         <div className="header__inner">
-          <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo — home">
+          <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo, home">
             <Wordmark />
           </a>
 
-          {isHome && (
-            <nav className="header__nav">
-              {NAV.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className="navlink"
-                  onClick={(e) => goTo(e, item.id)}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          )}
+          <div className="header__right">
+            {isHome && (
+              <nav className="header__nav">
+                {NAV.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className={`navlink${active === item.id ? ' navlink--active' : ''}`}
+                    onClick={(e) => goTo(e, item.id)}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            )}
 
-          <div className="header__actions">
-            <button
-              className={`btn btn--solid${isHome ? '' : ' btn--always'}`}
-              onClick={() => openModal()}
-            >
-              Contact
+            <button className="header__cta" onClick={() => openModal()}>
+              Start a project
+              <ArrowRight />
             </button>
+
             {isHome && (
               <button
                 className="menu-toggle"
@@ -171,7 +132,7 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
               openModal();
             }}
           >
-            Contact
+            Start a project
           </button>
         </div>
       )}

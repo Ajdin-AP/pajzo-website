@@ -27,11 +27,11 @@ const TermsOfService = () => {
             site or getting in touch through it, you&rsquo;re agreeing to them.
           </p>
           <p>
-            Pajzo is a marketing studio run by Ajdin Pajazetović as a sole
-            proprietorship (samostojni podjetnik, or &ldquo;s.p.&rdquo;) in
-            Domžale, Slovenia. These terms are about the website itself — the
-            specific terms of any paid work, such as an audit, a project, or a
-            partnership, are set out separately in the written agreement
+            Pajzo is an independent digital studio run by Ajdin Pajazetović as
+            a sole proprietorship (samostojni podjetnik, or &ldquo;s.p.&rdquo;)
+            in Domžale, Slovenia. These terms are about the website itself. The
+            specific terms of any paid work, such as a website, an app or a
+            branding project, are set out separately in the written agreement
             you&rsquo;d sign before that work begins.
           </p>
 
@@ -45,7 +45,7 @@ const TermsOfService = () => {
 
           <h2>2. Enquiries and the contact form</h2>
           <p>
-            Sending a message through the contact form — or emailing us —
+            Sending a message through the contact form, or emailing us directly,
             starts a conversation. It doesn&rsquo;t create a contract or commit
             either of us to anything; paid work begins only once a separate
             written agreement is signed. Please send accurate information, and
@@ -63,12 +63,12 @@ const TermsOfService = () => {
 
           <h2>3. Prices and what&rsquo;s on the site</h2>
           <p>
-            We publish our prices and service descriptions openly, and keep
-            them as accurate and current as we reasonably can. Even so, they
-            may change over time, and the site may occasionally contain an
-            error or be out of date. The price and scope that apply to your
-            work are whatever is written into your signed agreement — not
-            whatever the site happened to show on a given day.
+            We describe our services openly and keep those descriptions as
+            accurate and current as we reasonably can. Even so, they may
+            change over time, and the site may occasionally contain an error
+            or be out of date. The price and scope that apply to your work are
+            whatever is written into your signed, fixed quote, not whatever the
+            site happened to show on a given day.
           </p>
 
           <h2>4. Intellectual property</h2>
@@ -81,7 +81,7 @@ const TermsOfService = () => {
 
           <h2>5. Links to other sites</h2>
           <p>
-            The site may link to other places — for example, our social
+            The site may link to other places, for example our social
             profiles. Those sites aren&rsquo;t run by us, and we&rsquo;re not
             responsible for their content or how they handle your data.
             Visiting them is at your own discretion.
@@ -99,8 +99,8 @@ const TermsOfService = () => {
           <h2>7. Liability</h2>
           <p>
             To the extent the law allows, Pajzo isn&rsquo;t liable for indirect
-            or consequential loss arising from your use of — or inability to
-            use — this website. Nothing in these terms limits any liability
+            or consequential loss arising from your use of, or inability to
+            use, this website. Nothing in these terms limits any liability
             that can&rsquo;t legally be limited. Responsibilities for paid work
             are governed by your service agreement, not by this page.
           </p>

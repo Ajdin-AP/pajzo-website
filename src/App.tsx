@@ -1,56 +1,41 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
-import ContactModal from './components/ContactModal';
 import Home from './Home';
-import PrivacyPolicy from './PrivacyPolicy';
-import TermsOfService from './TermsOfService';
-import ComingSoon from './ComingSoon';
+
+// Off the critical path: the legal pages are rarely visited, and the contact
+// modal is prefetched on idle so it's mounted long before the first click.
+const ContactModal = lazy(() => import('./components/ContactModal'));
+const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./TermsOfService'));
 
 export type OpenModal = (service?: string) => void;
-
-/**
- * Coming-soon gate. While this is true, every route is replaced by the
- * coming-soon page and the rest of the site is unreachable.
- * To launch the full site, set this to false.
- */
-const COMING_SOON: boolean = true;
-
-/**
- * Preview access. Double-tap the logo on the coming-soon page and enter this
- * password to reveal the full site. Change it to anything you like.
- * Note: this is a convenience gate, not strong security — the password is
- * part of the page's code.
- */
-const PREVIEW_PASSWORD = 'pajzo2026';
-const UNLOCK_KEY = 'pajzo-access';
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalService, setModalService] = useState<string>('');
-  const [unlocked, setUnlocked] = useState(
-    () => localStorage.getItem(UNLOCK_KEY) === 'granted'
-  );
+  // Bumped on every open so the modal knows to reset itself to a fresh form.
+  const [modalNonce, setModalNonce] = useState(0);
 
   const openModal = useCallback<OpenModal>((service) => {
     setModalService(service ?? '');
+    setModalNonce((n) => n + 1);
     setModalOpen(true);
   }, []);
 
   const closeModal = useCallback(() => setModalOpen(false), []);
 
-  // Checks the preview password; on success, unlocks the full site for this
-  // browser. Returns true when the password is correct.
-  const checkPassword = useCallback((input: string) => {
-    if (input !== PREVIEW_PASSWORD) return false;
-    localStorage.setItem(UNLOCK_KEY, 'granted');
-    setUnlocked(true);
-    return true;
+  // Warm the modal chunk shortly after load, so opening it is instant.
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      void import('./components/ContactModal');
+    }, 1500);
+    return () => window.clearTimeout(t);
   }, []);
 
   // Routing for the two legal pages.
@@ -62,6 +47,22 @@ function App() {
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
+
+  // Per-route title + canonical, so the legal pages don't canonicalise to the
+  // homepage (they're listed in the sitemap as their own URLs).
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      '/privacy-policy': 'Privacy Policy · Pajzo',
+      '/terms-of-service': 'Terms of Service · Pajzo',
+    };
+    document.title =
+      titles[route] ??
+      'Pajzo · Independent digital studio · Web, apps, branding, design';
+    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (canonical) {
+      canonical.href = `https://pajzo.com${route === '/' ? '/' : route}`;
+    }
+  }, [route]);
 
   // Quiet reveal-on-scroll.
   useEffect(() => {
@@ -86,21 +87,41 @@ function App() {
     return () => io.disconnect();
   }, [route]);
 
-  if (COMING_SOON && !unlocked) {
-    return (
-      <>
-        <ComingSoon checkPassword={checkPassword} />
-        <Analytics />
-        <SpeedInsights />
-      </>
-    );
-  }
+  // Ghost buttons: the orange bloom starts from the pointer's entry point and
+  // recedes toward its exit point. Coordinates only — the rest is CSS.
+  useEffect(() => {
+    const setOrigin = (e: PointerEvent) => {
+      const t = e.target as HTMLElement | null;
+      const btn = t?.closest?.('.btn--ghost') as HTMLElement | null;
+      if (!btn) return;
+      const related = e.relatedTarget as Node | null;
+      // Skip moves between the button's own children — keep the true origin.
+      if (related && btn.contains(related)) return;
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty('--bx', `${e.clientX - r.left}px`);
+      btn.style.setProperty('--by', `${e.clientY - r.top}px`);
+    };
+    document.addEventListener('pointerover', setOrigin);
+    document.addEventListener('pointerout', setOrigin);
+    return () => {
+      document.removeEventListener('pointerover', setOrigin);
+      document.removeEventListener('pointerout', setOrigin);
+    };
+  }, []);
 
   let content;
   if (route === '/privacy-policy') {
-    content = <PrivacyPolicy />;
+    content = (
+      <Suspense fallback={null}>
+        <PrivacyPolicy />
+      </Suspense>
+    );
   } else if (route === '/terms-of-service') {
-    content = <TermsOfService />;
+    content = (
+      <Suspense fallback={null}>
+        <TermsOfService />
+      </Suspense>
+    );
   } else {
     content = <Home openModal={openModal} />;
   }
@@ -110,10 +131,18 @@ function App() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
+      <div className="grain" aria-hidden="true" />
       <Header route={route} openModal={openModal} />
       {content}
       <Footer />
-      <ContactModal open={modalOpen} onClose={closeModal} initialService={modalService} />
+      <Suspense fallback={null}>
+        <ContactModal
+          open={modalOpen}
+          openNonce={modalNonce}
+          onClose={closeModal}
+          initialService={modalService}
+        />
+      </Suspense>
       <Analytics />
       <SpeedInsights />
     </>

@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Close, ArrowRight } from './icons';
+import { Close, ArrowRight, Check } from './icons';
+
+// The Pajzo shield — used only as a small keyline mark on the success screen.
+const SHIELD =
+  'M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z';
 
 type Data = {
   name: string;
@@ -13,8 +17,8 @@ type Data = {
 };
 
 const BUDGET_MIN = 500;
-const BUDGET_MAX = 5000;
-const BUDGET_STEP = 100;
+const BUDGET_MAX = 10000;
+const BUDGET_STEP = 250;
 
 const EMPTY: Data = {
   name: '',
@@ -28,55 +32,44 @@ const EMPTY: Data = {
 };
 
 const SERVICES = [
-  { id: 'audit', label: 'Marketing Audit', note: '€500 · a two-week review' },
-  { id: 'strategy', label: 'Strategy Session', note: '€200 · a 90-minute session' },
-  { id: 'foundation', label: 'Brand Foundation', note: 'Positioning, identity & voice' },
-  { id: 'partnership', label: 'Marketing Partnership', note: 'Your whole marketing operation' },
-  { id: 'question', label: 'I have a question', note: 'Ask us anything about Pajzo' },
-  { id: 'unsure', label: 'Not sure yet', note: 'Help me find the right fit' },
+  { id: 'web', label: 'Web development', note: 'A site or web app, designed and built from scratch' },
+  { id: 'app', label: 'App development', note: 'Native iPhone, iPad or Mac software, in SwiftUI' },
+  { id: 'branding', label: 'Branding', note: 'A name, a mark, and the rules for using them' },
+  { id: 'design', label: 'Design', note: 'Interfaces, layouts and graphics, drawn to be built' },
+  { id: 'question', label: 'I have a question', note: 'No brief needed. Just ask.' },
+  { id: 'unsure', label: 'Not sure yet', note: 'Describe the problem; we’ll name it together' },
 ];
-
-const FIXED_PRICE: Record<string, string> = { audit: '€500', strategy: '€200' };
-
-type BudgetMode = 'monthly' | 'onetime' | 'fixed' | 'hidden';
-
-// Which budget UI a service calls for.
-function budgetModeFor(service: string): BudgetMode {
-  if (service === 'partnership') return 'monthly';
-  if (service === 'foundation' || service === 'unsure') return 'onetime';
-  if (service === 'audit' || service === 'strategy') return 'fixed';
-  return 'hidden'; // "I have a question", or nothing chosen yet
-}
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
-function sliderValueLabel(mode: 'monthly' | 'onetime', n: number) {
-  const amt = n >= BUDGET_MAX ? '€5,000+' : '€' + n.toLocaleString('en-US');
-  return mode === 'monthly' ? amt + ' / month' : amt;
-}
+const amount = (n: number) =>
+  n >= BUDGET_MAX ? '€10,000+' : '€' + n.toLocaleString('en-US');
 
 type Props = {
   open: boolean;
+  openNonce: number;
   onClose: () => void;
   initialService: string;
 };
 
-const ContactModal = ({ open, onClose, initialService }: Props) => {
+const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
   const [step, setStep] = useState(0);
   const [out, setOut] = useState(false);
   const [data, setData] = useState<Data>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      setStep(0);
-      setOut(false);
-      setData({ ...EMPTY, service: initialService });
-      setSubmitting(false);
-      setFailed(false);
-    }
-  }, [open, initialService]);
+  // Fresh form on every open — state is adjusted during render (not in an
+  // effect) so the open transition still runs on the mounted element.
+  const [seenNonce, setSeenNonce] = useState(openNonce);
+  if (openNonce !== seenNonce) {
+    setSeenNonce(openNonce);
+    setStep(0);
+    setOut(false);
+    setData({ ...EMPTY, service: initialService });
+    setSubmitting(false);
+    setFailed(false);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -87,10 +80,43 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
     };
   }, [open]);
 
+  // Focus management: move focus in on open, keep Tab inside, put it back on close.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!open || !root) return;
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
+    root.querySelector<HTMLElement>('.cform__close')?.focus();
+    return () => returnFocusRef.current?.focus();
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const root = rootRef.current;
+      if (!root) return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button, input, textarea, a[href], [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !root.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !root.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -104,9 +130,12 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
     window.setTimeout(() => {
       setStep(next);
       setOut(false);
-    }, 300);
+      const main = document.querySelector('.cform__main');
+      if (main) main.scrollTop = 0;
+    }, 280);
   };
 
+  // Step 0 = "about you". Step 1 = "the project".
   const step0Valid =
     data.name.trim().length >= 2 &&
     isEmail(data.email) &&
@@ -114,13 +143,9 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
 
   // Budget value written into the enquiry email.
   const budgetForSubmit = () => {
-    const mode = budgetModeFor(data.service);
-    if (mode === 'hidden') return 'Not applicable';
-    if (mode === 'fixed') return (FIXED_PRICE[data.service] || '') + ' · fixed price';
+    if (data.service === 'question') return 'Not applicable';
     if (!data.budgetOn) return 'Not specified';
-    const amt =
-      data.budget >= BUDGET_MAX ? '€5,000+' : '€' + data.budget.toLocaleString('en-US');
-    return mode === 'monthly' ? amt + ' / month' : amt + ' one-time';
+    return amount(data.budget) + ' one-time';
   };
 
   const submit = async () => {
@@ -143,10 +168,11 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
         body: JSON.stringify(payload),
       });
       const result = await res.json();
-      setSubmitting(false);
       if (result && result.success) {
+        // submitting stays true through the fade so the button can't re-fire.
         fadeTo(2);
       } else {
+        setSubmitting(false);
         setFailed(true);
       }
     } catch {
@@ -160,48 +186,46 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
   );
   const firstName = data.name.trim().split(' ')[0] || 'there';
 
-  // The budget block opens/closes and changes shape with the chosen service.
-  const lastBudgetService = useRef('');
-  if (data.service && data.service !== 'question') {
-    lastBudgetService.current = data.service;
-  }
+  // The budget block opens with any real project service chosen.
   const budgetVisible = !!data.service && data.service !== 'question';
-  const shownService = budgetVisible ? data.service : lastBudgetService.current;
-  const budgetMode = budgetModeFor(shownService);
-  const renderMode = budgetMode === 'hidden' ? 'monthly' : budgetMode;
+
+  const progress = step >= 2 ? 100 : ((step + 1) / 2) * 100;
 
   return (
     <div
+      ref={rootRef}
       className={`cform${open ? ' open' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label="Contact Pajzo"
     >
-      <div className="cform__top">
-        <span className="cform__brand">
-          Pajzo<span className="dot">.</span>
-        </span>
+      <div className="cform__top-progress" aria-hidden="true">
+        <span style={{ width: `${progress}%` }} />
+      </div>
+
+      <header className="cform__bar">
+        <span className="cform__brand-word">Pajzo</span>
         <button className="cform__close" onClick={onClose} aria-label="Close">
           <Close />
         </button>
-      </div>
+      </header>
 
-      {step < 2 && (
-        <div className="cform__progress" aria-hidden="true">
-          <span style={{ width: `${((step + 1) / 2) * 100}%` }} />
-        </div>
-      )}
+      <div className="cform__main">
+        <div className="cform__container">
+          <div className={`cstep${out ? ' is-out' : ''}`}>
+            {step === 0 && (
+              <>
+                <p className="cform__eyebrow">
+                  <span className="cform__eyebrow-num">01</span> About you
+                </p>
+                <h2 className="cform__head">Let&rsquo;s start with you.</h2>
+                <p className="cform__lead">
+                  Just the essentials. This goes straight to Ajdin&rsquo;s
+                  inbox, with no CRM and no one in between.
+                </p>
 
-      <div className="cform__body">
-        <div className={`cstep${out ? ' is-out' : ''}`}>
-          {step === 0 && (
-            <>
-              <p className="cform__eyebrow">Step 1 of 2</p>
-              <h2 className="cform__head">Let&rsquo;s start with you.</h2>
-
-              <div className="cform__fields">
-                <div className="field-row">
-                  <div>
+                <div className="cform__fields">
+                  <div className="field">
                     <label className="field__label" htmlFor="cf-name">Name</label>
                     <input
                       id="cf-name"
@@ -210,9 +234,10 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
                       onChange={(e) => set({ name: e.target.value })}
                       maxLength={80}
                       autoComplete="name"
+                      placeholder="Jane Novak"
                     />
                   </div>
-                  <div>
+                  <div className="field">
                     <label className="field__label" htmlFor="cf-email">Email</label>
                     <input
                       id="cf-email"
@@ -222,11 +247,10 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
                       onChange={(e) => set({ email: e.target.value })}
                       maxLength={120}
                       autoComplete="email"
+                      placeholder="jane@business.com"
                     />
                   </div>
-                </div>
-                <div className="field-row">
-                  <div>
+                  <div className="field">
                     <label className="field__label" htmlFor="cf-company">Business</label>
                     <input
                       id="cf-company"
@@ -234,9 +258,10 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
                       value={data.company}
                       onChange={(e) => set({ company: e.target.value })}
                       maxLength={120}
+                      placeholder="Your company"
                     />
                   </div>
-                  <div>
+                  <div className="field">
                     <label className="field__label" htmlFor="cf-website">
                       Website <span className="opt">(optional)</span>
                     </label>
@@ -247,187 +272,176 @@ const ContactModal = ({ open, onClose, initialService }: Props) => {
                       onChange={(e) => set({ website: e.target.value })}
                       maxLength={160}
                       autoComplete="url"
+                      placeholder="yoursite.com"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="cform__actions">
-                <button
-                  className="btn btn--solid btn--lg"
-                  disabled={!step0Valid}
-                  onClick={() => fadeTo(1)}
-                >
-                  Continue
-                  <ArrowRight />
-                </button>
-              </div>
-            </>
-          )}
-
-          {step === 1 && (
-            <>
-              <p className="cform__eyebrow">Step 2 of 2</p>
-              <h2 className="cform__head">What do you need?</h2>
-
-              <div className="cform__options">
-                {SERVICES.map((s) => (
+                <div className="cform__actions">
                   <button
-                    type="button"
-                    key={s.id}
-                    className={`copt${data.service === s.id ? ' copt--on' : ''}`}
-                    onClick={() => set({ service: s.id })}
+                    className="btn btn--solid btn--lg"
+                    disabled={!step0Valid}
+                    onClick={() => fadeTo(1)}
                   >
-                    <b>{s.label}</b>
-                    <small>{s.note}</small>
+                    Continue
+                    <ArrowRight />
                   </button>
-                ))}
-              </div>
+                </div>
+              </>
+            )}
 
-              {/* Budget — opens, closes and reshapes with the chosen service */}
-              <div className={`cform__budget-wrap${budgetVisible ? ' is-shown' : ''}`}>
-                <div className="cform__budget-grid">
-                  <div className="cform__budget-inner" key={renderMode}>
-                    {renderMode === 'fixed' ? (
-                      <>
-                        <span className="field__label">Price</span>
-                        <div className="cform__fixed">
-                          <span className="cform__fixed-amt">
-                            {FIXED_PRICE[shownService]}
-                          </span>
-                          <span className="cform__fixed-note">
-                            {shownService === 'strategy'
-                              ? 'A 90-minute Strategy Session — a flat fee, no budget to set.'
-                              : 'A two-week Marketing Audit — a flat fee, no budget to set.'}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          className={`cform__budget-toggle${
-                            data.budgetOn ? ' is-on' : ''
-                          }`}
-                          onClick={() => set({ budgetOn: !data.budgetOn })}
-                          aria-pressed={data.budgetOn}
-                        >
-                          <span className="cform__budget-box">
-                            <svg
-                              className="cform__budget-tick"
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                            >
-                              <path d="M5 12.5l5 5 9-11" />
-                            </svg>
-                          </span>
-                          <span>
-                            Add a {renderMode === 'monthly' ? 'monthly' : 'one-time'}{' '}
-                            budget
-                          </span>
-                        </button>
+            {step === 1 && (
+              <>
+                <p className="cform__eyebrow">
+                  <span className="cform__eyebrow-num">02</span> The project
+                </p>
+                <h2 className="cform__head">What needs building?</h2>
+                <p className="cform__lead">
+                  Pick the closest fit. If it&rsquo;s somewhere in between,
+                  that&rsquo;s what the message box is for.
+                </p>
 
-                        <div
-                          className={`cform__slider-collapse${
-                            data.budgetOn ? ' is-open' : ''
-                          }`}
-                        >
-                          <div className="cform__slider-clip">
-                            <div className="cform__slider-pad">
-                              <div className="cform__slider-top">
-                                <label className="field__label" htmlFor="cf-budget">
-                                  {renderMode === 'monthly'
-                                    ? 'Monthly budget'
-                                    : 'One-time budget'}
-                                </label>
-                                <span className="cform__budget">
-                                  {sliderValueLabel(renderMode, data.budget)}
-                                </span>
-                              </div>
-                              <input
-                                id="cf-budget"
-                                type="range"
-                                className="range"
-                                min={BUDGET_MIN}
-                                max={BUDGET_MAX}
-                                step={BUDGET_STEP}
-                                value={data.budget}
-                                onChange={(e) => set({ budget: Number(e.target.value) })}
-                                style={{
-                                  background: `linear-gradient(to right, var(--orange) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
-                                }}
-                                aria-label={
-                                  renderMode === 'monthly'
-                                    ? 'Monthly budget'
-                                    : 'One-time budget'
-                                }
-                              />
+                <div className="cform__options">
+                  {SERVICES.map((s) => (
+                    <button
+                      type="button"
+                      key={s.id}
+                      className={`copt${data.service === s.id ? ' copt--on' : ''}`}
+                      onClick={() => set({ service: s.id })}
+                      aria-pressed={data.service === s.id}
+                    >
+                      <span className="copt__tick" aria-hidden="true">
+                        <Check />
+                      </span>
+                      <b>{s.label}</b>
+                      <small>{s.note}</small>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Budget — optional, opens once a project service is chosen */}
+                <div className={`cform__budget-wrap${budgetVisible ? ' is-shown' : ''}`}>
+                  <div className="cform__budget-grid">
+                    <div className="cform__budget-inner">
+                      <button
+                        type="button"
+                        className={`cform__budget-toggle${data.budgetOn ? ' is-on' : ''}`}
+                        onClick={() => set({ budgetOn: !data.budgetOn })}
+                        aria-pressed={data.budgetOn}
+                      >
+                        <span className="cform__budget-box">
+                          <svg className="cform__budget-tick" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12.5l5 5 9-11" />
+                          </svg>
+                        </span>
+                        <span>Add a rough budget. It helps us quote realistically.</span>
+                      </button>
+
+                      <div className={`cform__slider-collapse${data.budgetOn ? ' is-open' : ''}`}>
+                        <div className="cform__slider-clip">
+                          <div className="cform__slider-pad">
+                            <div className="cform__slider-top">
+                              <label className="field__label" htmlFor="cf-budget">
+                                Rough budget
+                              </label>
+                              <span className="cform__budget">{amount(data.budget)}</span>
                             </div>
+                            <input
+                              id="cf-budget"
+                              type="range"
+                              className="range"
+                              min={BUDGET_MIN}
+                              max={BUDGET_MAX}
+                              step={BUDGET_STEP}
+                              value={data.budget}
+                              onChange={(e) => set({ budget: Number(e.target.value) })}
+                              style={{
+                                background: `linear-gradient(to right, var(--orange) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
+                              }}
+                              aria-label="Rough budget"
+                            />
                           </div>
                         </div>
-                      </>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="cform__field-block">
-                <label className="field__label" htmlFor="cf-msg">
-                  {data.service === 'question' ? 'Your question' : 'Anything else?'}{' '}
-                  <span className="opt">(optional)</span>
-                </label>
-                <textarea
-                  id="cf-msg"
-                  className="field__textarea"
-                  value={data.message}
-                  onChange={(e) => set({ message: e.target.value })}
-                  maxLength={1500}
-                />
-              </div>
+                <div className="field cform__msg">
+                  <label className="field__label" htmlFor="cf-msg">
+                    {data.service === 'question' ? 'Your question' : 'The brief, roughly'}{' '}
+                    <span className="opt">(optional)</span>
+                  </label>
+                  <textarea
+                    id="cf-msg"
+                    className="field__textarea"
+                    value={data.message}
+                    onChange={(e) => set({ message: e.target.value })}
+                    maxLength={1500}
+                    rows={2}
+                    placeholder={
+                      data.service === 'question'
+                        ? 'Ask away…'
+                        : 'Two or three sentences is plenty: what it is, who it is for, when you would like it.'
+                    }
+                  />
+                </div>
 
-              {failed && (
-                <p className="cform__err">
-                  That didn&rsquo;t send. Email me directly at{' '}
-                  <a href="mailto:info@pajzo.com">info@pajzo.com</a>.
+                {failed && (
+                  <p className="cform__err">
+                    That didn&rsquo;t send. Email me directly at{' '}
+                    <a href="mailto:info@pajzo.com">info@pajzo.com</a>.
+                  </p>
+                )}
+
+                <div className="cform__actions cform__actions--split">
+                  <button
+                    className="btn btn--ghost btn--lg"
+                    onClick={() => fadeTo(0)}
+                    disabled={submitting}
+                  >
+                    Back
+                  </button>
+                  <button
+                    className="btn btn--solid btn--lg"
+                    onClick={submit}
+                    disabled={!data.service || submitting}
+                  >
+                    {submitting ? 'Sending…' : 'Send to Ajdin'}
+                    {!submitting && <ArrowRight />}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <div className="cform__success">
+                <svg className="cform__success-mark" viewBox="-10 -10 460 540" aria-hidden="true">
+                  <path
+                    d={SHIELD}
+                    pathLength={1}
+                    fill="none"
+                    stroke="var(--orange)"
+                    strokeWidth="14"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <h2 className="cform__head">Delivered, {firstName}.</h2>
+                <p className="cform__lead">
+                  Your message is with Ajdin now, in a person&rsquo;s inbox
+                  rather than a queue. A confirmation just landed in{' '}
+                  <b>{data.email}</b>, and you&rsquo;ll hear back within a
+                  working day. Until then, there is nothing you need to do.
                 </p>
-              )}
-
-              <div className="cform__actions cform__actions--split">
-                <button
-                  className="btn btn--ghost btn--lg"
-                  onClick={() => fadeTo(0)}
-                  disabled={submitting}
-                >
-                  Back
-                </button>
-                <button
-                  className="btn btn--solid btn--lg"
-                  onClick={submit}
-                  disabled={!data.service || submitting}
-                >
-                  {submitting ? 'Sending…' : 'Send message'}
-                  {!submitting && <ArrowRight />}
-                </button>
+                <div className="cform__actions">
+                  <button className="btn btn--solid btn--lg" onClick={onClose}>
+                    Done
+                  </button>
+                </div>
               </div>
-            </>
-          )}
-
-          {step === 2 && (
-            <div className="cform__success">
-              <svg className="cform__check" viewBox="0 0 56 56" aria-hidden="true">
-                <circle className="cform__check-bg" cx="28" cy="28" r="26" />
-                <path className="cform__check-tick" d="M16.5 28.5 L24.5 36.5 L40 20.5" />
-              </svg>
-              <h2 className="cform__head">Message delivered</h2>
-              <p className="cform__success-text">
-                Thanks, {firstName}. Your message reached me — I&rsquo;ll
-                personally get back to you within 24 hours.
-              </p>
-              <button className="btn btn--solid btn--lg" onClick={onClose}>
-                Done
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

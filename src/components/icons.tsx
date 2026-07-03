@@ -60,14 +60,38 @@ export const Mail = ({ className }: P) => (
   </svg>
 );
 
+export const User = ({ className }: P) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="12" cy="8" r="3.6" />
+    <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+  </svg>
+);
+
+export const Briefcase = ({ className }: P) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
+    <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5" />
+    <path d="M3 12.5h18" />
+  </svg>
+);
+
+export const Globe = ({ className }: P) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18" />
+    <path d="M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18" />
+  </svg>
+);
+
 // The Pajzo wordmark: "P" mark + "AJZO" set in Bungee (declared in index.css).
 // fill = currentColor (set per context), orange keyline stroke.
-export const Wordmark = ({ className }: P) => (
+// keyline={false} drops the orange stroke — used for the ghosted footer giant.
+export const Wordmark = ({ className, keyline = true }: P & { keyline?: boolean }) => (
   <svg
     viewBox="-6 -6 1738 676"
     className={className}
     fill="currentColor"
-    stroke="#d9641e"
+    stroke={keyline ? '#d9641e' : 'none'}
     strokeWidth="20"
     strokeMiterlimit="10"
     aria-hidden="true"

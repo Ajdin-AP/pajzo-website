@@ -1,6 +1,14 @@
 import React from 'react';
 import { navigate } from '../nav';
+import { scrollToId } from '../scroll';
 import { Instagram, XLogo, Mail, Wordmark } from './icons';
+
+const SITE_LINKS = [
+  { label: 'Services', id: 'services' },
+  { label: 'Studio', id: 'studio' },
+  { label: 'Process', id: 'process' },
+  { label: 'FAQ', id: 'faq' },
+];
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -8,6 +16,17 @@ const Footer = () => {
   const goLegal = (e: React.MouseEvent, path: string) => {
     e.preventDefault();
     navigate(path);
+  };
+
+  // Section links work from the legal pages too: go home first, then scroll.
+  const goSection = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      requestAnimationFrame(() => requestAnimationFrame(() => scrollToId(id)));
+    } else {
+      scrollToId(id);
+    }
   };
 
   return (
@@ -18,10 +37,24 @@ const Footer = () => {
             <span className="wordmark">
               <Wordmark />
             </span>
-            <p className="footer__tagline">Built for the long haul.</p>
+            <p className="footer__tagline">
+              An independent digital studio. Websites, apps, branding and
+              design.
+            </p>
             <a className="footer__mail" href="mailto:info@pajzo.com">
               info@pajzo.com
             </a>
+          </div>
+
+          <div className="footer__col">
+            <h4>Site</h4>
+            <div className="footer__links">
+              {SITE_LINKS.map((l) => (
+                <a key={l.id} href={`#${l.id}`} onClick={(e) => goSection(e, l.id)}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className="footer__col">
@@ -53,7 +86,7 @@ const Footer = () => {
         </div>
 
         <div className="footer__bottom">
-          <p className="footer__legal">© {year} Pajzo · S.p.</p>
+          <p className="footer__legal">© {year} Pajzo · s.p. · Domžale, Slovenia</p>
           <div className="footer__legal-links">
             <a href="/privacy-policy" onClick={(e) => goLegal(e, '/privacy-policy')}>
               Privacy Policy
@@ -63,6 +96,10 @@ const Footer = () => {
             </a>
           </div>
         </div>
+      </div>
+
+      <div className="footer__giant" aria-hidden="true">
+        <Wordmark keyline={false} />
       </div>
     </footer>
   );

@@ -28,10 +28,10 @@ const PrivacyPolicy = () => {
             it, and what we do with it.
           </p>
           <p>
-            Pajzo is a marketing studio run by Ajdin Pajazetović as a sole
+            Pajzo is an independent digital studio run by Ajdin Pajazetović as a sole
             proprietorship (samostojni podjetnik, or &ldquo;s.p.&rdquo;) in
             Domžale, Slovenia. We&rsquo;re the ones responsible for the
-            information described here — and you can reach us any time at{' '}
+            information described here, and you can reach us any time at{' '}
             <a className="inline" href="mailto:info@pajzo.com">
               info@pajzo.com
             </a>
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
           <ul>
             <li>
               <strong>What you send us.</strong> When you use the contact form,
-              we collect the details you provide — your name and email, your
+              we collect the details you provide: your name and email, your
               business and website, what you&rsquo;re looking for, a rough
               budget if you choose to share one, and your message. If you email
               us directly, we have whatever is in that email.
@@ -51,14 +51,14 @@ const PrivacyPolicy = () => {
             <li>
               <strong>Anonymous analytics.</strong> We use a privacy-friendly
               analytics tool to see things like which pages are visited and how
-              the site performs. It&rsquo;s aggregated and anonymous — it
+              the site performs. It&rsquo;s aggregated and anonymous; it
               doesn&rsquo;t identify you and doesn&rsquo;t track you across
               other websites.
             </li>
             <li>
               <strong>Standard technical data.</strong> Like any website, our
-              host records basic technical information — such as your IP
-              address and browser type — in its server logs, which helps keep
+              host records basic technical information, such as your IP
+              address and browser type, in its server logs, which helps keep
               the site running and secure.
             </li>
           </ul>
@@ -66,12 +66,12 @@ const PrivacyPolicy = () => {
           <h2>2. Why we use it</h2>
           <p>
             We use the details you send only to reply to you, understand
-            whether and how we can help, and — if you go on to become a client
-            — to carry out the work. In data-protection terms, that&rsquo;s us
+            whether and how we can help, and, if you go on to become a client,
+            to carry out the work. In data-protection terms, that&rsquo;s us
             acting on your request and then performing our agreement with you.
           </p>
           <p>
-            Analytics and technical data are used for one narrow reason — our
+            Analytics and technical data are used for one narrow reason: our
             legitimate interest in keeping the site working well and secure. We
             do not sell your data, we do not share it for anyone else&rsquo;s
             marketing, and we won&rsquo;t use it for unrelated purposes.
@@ -84,11 +84,11 @@ const PrivacyPolicy = () => {
           </p>
           <ul>
             <li>
-              <strong>Vercel</strong> — hosts the website and provides the
+              <strong>Vercel</strong>: hosts the website and provides the
               privacy-friendly analytics.
             </li>
             <li>
-              <strong>Resend</strong> — delivers the email sent through the
+              <strong>Resend</strong>: delivers the email sent through the
               contact form.
             </li>
           </ul>
@@ -97,7 +97,7 @@ const PrivacyPolicy = () => {
             States. Where your information is handled outside the EU, that
             transfer is covered by standard legal safeguards, such as the
             European Commission&rsquo;s Standard Contractual Clauses. We also
-            disclose information if the law genuinely requires it — but only
+            disclose information if the law genuinely requires it, but only
             then.
           </p>
 
@@ -114,7 +114,7 @@ const PrivacyPolicy = () => {
             We keep your information only as long as we genuinely need it. If a
             conversation doesn&rsquo;t lead to work, we delete the enquiry once
             it&rsquo;s clearly gone cold. If you become a client, we keep what
-            the working relationship needs — and where the law requires us to
+            the working relationship needs, and where the law requires us to
             hold certain records, such as invoices for tax, we keep those for
             as long as we must and no longer.
           </p>
@@ -132,7 +132,7 @@ const PrivacyPolicy = () => {
             Under the GDPR, you can ask us to show you the data we hold about
             you, correct it if it&rsquo;s wrong, delete it, or send you a copy.
             You can also object to certain processing or ask us to restrict it.
-            Email us and we&rsquo;ll sort it out — normally within 30 days, and
+            Email us and we&rsquo;ll sort it out, normally within 30 days, and
             at no cost.
           </p>
           <p>
