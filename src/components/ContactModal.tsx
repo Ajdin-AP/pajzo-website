@@ -58,6 +58,11 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
   const [data, setData] = useState<Data>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Pending step-fade timer, plus the latest "open generation". A fade that
+  // resolves after a close/reopen bails instead of snapping the fresh form to
+  // the wrong step.
+  const fadeTimer = useRef<number | null>(null);
+  const nonceRef = useRef(openNonce);
 
   // Fresh form on every open — state is adjusted during render (not in an
   // effect) so the open transition still runs on the mounted element.
@@ -70,6 +75,14 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
     setSubmitting(false);
     setFailed(false);
   }
+
+  // Track the latest open generation; cancel any pending fade on unmount.
+  useEffect(() => {
+    nonceRef.current = openNonce;
+  }, [openNonce]);
+  useEffect(() => () => {
+    if (fadeTimer.current !== null) clearTimeout(fadeTimer.current);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -127,7 +140,12 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
   // Fade the current step out, swap, fade the next one in.
   const fadeTo = (next: number) => {
     setOut(true);
-    window.setTimeout(() => {
+    if (fadeTimer.current !== null) clearTimeout(fadeTimer.current);
+    const gen = openNonce;
+    fadeTimer.current = window.setTimeout(() => {
+      fadeTimer.current = null;
+      // A close+reopen happened while this fade was pending — drop it.
+      if (gen !== nonceRef.current) return;
       setStep(next);
       setOut(false);
       const main = document.querySelector('.cform__main');

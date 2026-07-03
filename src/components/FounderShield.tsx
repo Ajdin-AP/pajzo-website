@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type * as THREE from 'three';
-import { webglAvailable } from '../webgl';
+import { webglAvailable, watchDpr } from '../webgl';
 
 const SHIELD =
   'M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z';
@@ -34,6 +34,25 @@ const FounderShield = () => {
     let renderer: THREE.WebGLRenderer | null = null;
     let scene: THREE.Scene | null = null;
     let teardownFn: ((r: THREE.WebGLRenderer | null, s: THREE.Scene | null) => void) | null = null;
+    let dprCleanup: (() => void) | null = null;
+
+    // Release everything and drop to the flat SVG mark. Safe to call once; used
+    // by the context-lost and boot-failure paths, since the effect's empty dep
+    // array means its cleanup won't otherwise run until unmount.
+    const toFallback = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      render = null;
+      dprCleanup?.();
+      dprCleanup = null;
+      if (teardownFn) {
+        teardownFn(renderer, scene);
+        teardownFn = null;
+        renderer = null;
+        scene = null;
+      }
+      if (!disposed) setFallback(true);
+    };
 
     const loop = () => {
       raf = 0;
@@ -75,17 +94,21 @@ const FounderShield = () => {
         if (!reduce && onscreen) {
           raf = requestAnimationFrame(loop);
         }
+        // Keep the backing store crisp across DPR changes (monitor switch/zoom).
+        dprCleanup = watchDpr(() => {
+          if (!renderer) return;
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          renderer.setSize(SIZE, SIZE * 1.15, false);
+          render?.();
+        });
       } catch {
-        if (!disposed) setFallback(true);
+        toFallback();
       }
     };
 
     const onContextLost = (e: Event) => {
       e.preventDefault();
-      cancelAnimationFrame(raf);
-      raf = 0;
-      render = null;
-      if (!disposed) setFallback(true);
+      toFallback();
     };
     canvas.addEventListener('webglcontextlost', onContextLost);
 
@@ -109,6 +132,7 @@ const FounderShield = () => {
       cancelAnimationFrame(raf);
       canvas.removeEventListener('webglcontextlost', onContextLost);
       io.disconnect();
+      dprCleanup?.();
       // Release GPU resources and the context itself on unmount.
       if (teardownFn) teardownFn(renderer, scene);
     };

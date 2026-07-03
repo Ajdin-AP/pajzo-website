@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
   };
 
   return (
-    <main id="main" tabIndex={-1} className="section legal section--paper">
+    <main id="main" tabIndex={-1} className="section legal">
       <div className="container">
         <div className="legal__wrap">
           <a href="/" className="legal__back" onClick={back}>

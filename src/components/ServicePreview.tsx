@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type * as THREE from 'three';
-import { webglAvailable } from '../webgl';
+import { webglAvailable, watchDpr } from '../webgl';
 
 // A small WebGL panel that floats beside the cursor while it travels the
 // service rows, showing a line-art 3D object per discipline. Desktop-only
@@ -30,6 +30,7 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
     let scene: THREE.Scene | null = null;
     let camera: THREE.PerspectiveCamera | null = null;
     let teardownFn: ((r: THREE.WebGLRenderer | null, s: THREE.Scene | null) => void) | null = null;
+    let dprCleanup: (() => void) | null = null;
     const objects: Record<string, THREE.Group> = {};
     let active: THREE.Group | null = null;
     let activeId: string | null = null;
@@ -73,6 +74,12 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
         });
         if (activeId) setActive(activeId);
         loop();
+        // Keep the backing store crisp across DPR changes (monitor switch/zoom).
+        dprCleanup = watchDpr(() => {
+          if (!renderer) return;
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          renderer.setSize(W, H, false);
+        });
       } catch {
         // WebGL unavailable or the chunk failed to load — the preview is an
         // enhancement; the rows work fine without it.
@@ -81,13 +88,23 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
       }
     };
 
-    // If the GPU context is lost mid-session, retire the panel gracefully.
+    // If the GPU context is lost mid-session, retire the panel gracefully and
+    // release the JS-side resources (matching the unmount cleanup).
     const onContextLost = (e: Event) => {
       e.preventDefault();
       dead = true;
       canvas.style.display = 'none';
       cancelAnimationFrame(raf);
       raf = 0;
+      dprCleanup?.();
+      dprCleanup = null;
+      if (teardownFn) {
+        teardownFn(renderer, scene);
+        teardownFn = null;
+      }
+      renderer = null;
+      scene = null;
+      camera = null;
     };
     canvas.addEventListener('webglcontextlost', onContextLost);
 
@@ -156,10 +173,16 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
     };
 
     const onOver = (e: PointerEvent) => {
+      if (dead) return;
       const row = (e.target as HTMLElement).closest<HTMLElement>('.svc__row');
       if (!row) return;
+      // Seed the cursor position and boot, so a hover that never fires a
+      // pointermove (cursor already stationary over a row) still shows.
+      px = e.clientX;
+      py = e.clientY;
       visible = true;
       setActive(row.dataset.svc ?? null);
+      void boot();
       wake();
     };
 
@@ -180,6 +203,7 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
       list.removeEventListener('pointermove', onMove);
       list.removeEventListener('pointerover', onOver);
       list.removeEventListener('pointerleave', onLeave);
+      dprCleanup?.();
       // Release geometries, materials and the GL context itself — otherwise
       // route round-trips stack up contexts until the browser evicts one.
       if (teardownFn) teardownFn(renderer, scene);

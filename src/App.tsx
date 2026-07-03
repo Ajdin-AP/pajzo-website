@@ -42,6 +42,9 @@ function App() {
   useEffect(() => {
     const onPop = () => {
       setRoute(window.location.pathname);
+      // Don't let the full-screen modal survive a back/forward navigation
+      // (it would keep covering the page and body scroll locked).
+      setModalOpen(false);
       window.scrollTo(0, 0);
     };
     window.addEventListener('popstate', onPop);
@@ -52,15 +55,33 @@ function App() {
   // homepage (they're listed in the sitemap as their own URLs).
   useEffect(() => {
     const titles: Record<string, string> = {
+      '/': 'Pajzo · Independent digital studio · Web, apps, branding, design',
       '/privacy-policy': 'Privacy Policy · Pajzo',
       '/terms-of-service': 'Terms of Service · Pajzo',
     };
-    document.title =
-      titles[route] ??
-      'Pajzo · Independent digital studio · Web, apps, branding, design';
+    const known = route in titles;
+    document.title = titles[route] ?? 'Page not found · Pajzo';
+
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical) {
-      canonical.href = `https://pajzo.com${route === '/' ? '/' : route}`;
+      // The SPA rewrite serves unknown paths as soft-404s; point their
+      // canonical at the homepage so they can't self-canonicalise as junk URLs.
+      canonical.href = known
+        ? `https://pajzo.com${route === '/' ? '/' : route}`
+        : 'https://pajzo.com/';
+    }
+
+    // Keep unknown/soft-404 routes out of search indexes.
+    let robots = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (!known) {
+      if (!robots) {
+        robots = document.createElement('meta');
+        robots.name = 'robots';
+        document.head.appendChild(robots);
+      }
+      robots.content = 'noindex';
+    } else if (robots) {
+      robots.remove();
     }
   }, [route]);
 

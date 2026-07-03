@@ -42,11 +42,16 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
       (el): el is HTMLElement => !!el
     );
     if (!els.length) return;
+    // Track which sections are in the middle band and highlight the topmost
+    // one (document order). Clears to '' when scrolled back above them all.
+    const visible = new Set<string>();
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
         });
+        setActive(NAV.find((n) => visible.has(n.id))?.id ?? '');
       },
       { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
     );

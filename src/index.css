@@ -85,7 +85,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
+  /* Smoothness is applied explicitly per scroll (see scroll.ts) so route
+     changes stay instant; a global rule would animate scroll-to-top jumps. */
   background: var(--bg);
 }
 
@@ -97,7 +98,11 @@ body {
   font-size: 17px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* clip (not hidden) so the body doesn't become its own scroll container —
+     that is what makes native smooth-scroll silently fall back to a jump.
+     `hidden` stays as a fallback for browsers without `clip`. */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 img {
@@ -384,7 +389,7 @@ select {
   color: var(--bone);
 }
 .wordmark svg {
-  height: 25px;
+  height: 42px;
   width: auto;
   display: block;
 }
