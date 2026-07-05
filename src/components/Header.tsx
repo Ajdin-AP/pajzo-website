@@ -18,19 +18,28 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
   const [active, setActive] = useState('');
   const isHome = route === '/';
 
-  // Scrolled state + hide on scroll-down, return on scroll-up.
+  // Scrolled state + hide on scroll-down, return on scroll-up. rAF-throttled
+  // with an 8px hysteresis band so momentum scrolling doesn't flicker the bar.
   useEffect(() => {
     let lastY = window.scrollY;
-    const onScroll = () => {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
       const y = window.scrollY;
       setScrolled(y > 8);
-      // 6px threshold avoids trackpad flutter; never hide near the top.
-      if (Math.abs(y - lastY) > 6) {
-        setHidden(y > lastY && y > 420);
-        lastY = y;
+      const delta = y - lastY;
+      if (Math.abs(delta) < 8) return; // ignore jitter for a steadier slide
+      if (delta > 0 && y > 300) setHidden(true); // deliberate scroll down
+      else if (delta < 0) setHidden(false); // any upward move reveals it
+      lastY = y;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
       }
     };
-    onScroll();
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

@@ -237,10 +237,6 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                   <span className="cform__eyebrow-num">01</span> About you
                 </p>
                 <h2 className="cform__head">Let&rsquo;s start with you.</h2>
-                <p className="cform__lead">
-                  Just the essentials. This goes straight to Ajdin&rsquo;s
-                  inbox, with no CRM and no one in between.
-                </p>
 
                 <div className="cform__fields">
                   <div className="field">

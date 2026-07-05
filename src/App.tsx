@@ -38,6 +38,16 @@ function App() {
     return () => window.clearTimeout(t);
   }, []);
 
+  // Once the entrance animations have finished, drop them so iOS Safari doesn't
+  // keep the hero text on a stale compositor layer (it renders dark on scroll-up).
+  useEffect(() => {
+    const t = window.setTimeout(
+      () => document.documentElement.classList.add('anim-settled'),
+      2600
+    );
+    return () => window.clearTimeout(t);
+  }, []);
+
   // Routing for the two legal pages.
   useEffect(() => {
     const onPop = () => {
