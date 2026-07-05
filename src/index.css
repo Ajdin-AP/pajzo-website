@@ -2181,6 +2181,42 @@ section[id] {
   stroke-dashoffset: 0 !important;
 }
 
+/* iOS Safari dark-on-scroll-up fix.
+   On touch devices, perpetual GPU animations (the fixed, full-viewport
+   grain overlay and the infinite marquee) plus the hero's mask-image hold
+   .hero and .marquee on compositor layers that iOS fails to re-rasterise
+   when they scroll back into view — the region paints from a stale/empty
+   tile and reads dark. Neutralising those layers lets the content paint
+   into the normal document layer and repaint correctly. Gated to coarse /
+   no-hover pointers, so desktop is completely untouched. */
+@media (hover: none), (pointer: coarse) {
+  /* freeze the fixed full-screen grain (5% noise — a still frame is
+     visually identical) so it stops churning the compositor */
+  .grain {
+    animation: none;
+  }
+  /* drop the hero mask so the blueprint grid paints as a plain,
+     non-composited layer instead of a mask-promoted one */
+  .hero::before {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.3;
+  }
+  /* stop the infinite marquee — static row, same as the reduced-motion path */
+  .marquee__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+  }
+  .marquee__group:last-child {
+    display: none;
+  }
+  /* freeze the pulsing eyebrow dot (belt-and-suspenders) */
+  .hero__eyebrow::before {
+    animation: none;
+  }
+}
+
 /* section tag rule draws in with the reveal */
 .reveal-ready .reveal .tag::before {
   transform: scaleX(0);
