@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOVRA — Haute Couture for the Hardwood</title>
+  <meta name="description" content="SOVRA. Hand-finished basketballs from Atelier No. 07. Crafted in darkness, played in light.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23C4611F'/%3E%3Cpath d='M2 16h28M16 2v28M6 6c6 5 14 5 20 0M6 26c6-5 14-5 20 0' stroke='%231A1210' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+  </script>
+  <noscript>
+    <style>
+      #preloader, #ball-canvas, #cursor-dot, #cursor-ring, #ball-drag { display: none !important; }
+      #hero h1 .line > span, .reveal-line span, .reveal, .reveal-mask span, .hero-ctas {
+        transform: none !important; opacity: 1 !important; clip-path: none !important;
+      }
+    </style>
+  </noscript>
+  <script>
+    /* watchdog: if the module graph (Three.js CDN) never boots, unveil the page statically */
+    setTimeout(function () {
+      if (!window.__SOVRA_BOOT) document.body.classList.add('no3d');
+    }, 6000);
+  </script>
+</head>
+<body>
+
+  <!-- ============ preloader ============ -->
+  <div id="preloader" aria-hidden="true">
+    <div class="pre-mark">SOVRA</div>
+    <div class="pre-ball"></div>
+    <div class="pre-meta">
+      <span>ATELIER NO. 07</span>
+      <span id="preloader-count">000</span>
+    </div>
+  </div>
+
+  <!-- ============ custom cursor ============ -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"><span id="cursor-label"></span></div>
+
+  <!-- ============ fixed 3D stage + brass sideline ============ -->
+  <canvas id="ball-canvas" aria-hidden="true"></canvas>
+  <div class="sideline" aria-hidden="true"></div>
+
+  <!-- ============ nav ============ -->
+  <header id="nav">
+    <a class="brand" href="#hero" data-cursor="hover">SOVRA<sup>®</sup></a>
+    <nav class="nav-links">
+      <a href="#products">Collection</a>
+      <a href="#atelier">Atelier</a>
+      <a href="#maisons">Maisons</a>
+      <a href="#provenance">Provenance</a>
+    </nav>
+    <button id="cart-btn" aria-label="Open cart" data-cursor="hover">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5v17M6 6.5c3.5 3 8.5 3 12 0M6 17.5c3.5-3 8.5-3 12 0"/>
+      </svg>
+      <span>Cart</span>
+      <span id="cart-count">0</span>
+    </button>
+  </header>
+
+  <main>
+    <!-- ============ hero — the vitrine ============ -->
+    <section id="hero">
+      <div class="hero-inner">
+        <p class="hero-eyebrow reveal-line"><span>Hand-finished basketballs — Atelier No. 07</span></p>
+        <h1>
+          <span class="line"><span>Crafted in Darkness.</span></span>
+          <span class="line italic"><span>Played in <em>Light.</em></span></span>
+        </h1>
+        <p class="hero-tagline reveal-line"><span>Haute couture for the hardwood.</span></p>
+        <div class="hero-ctas">
+          <a class="btn btn-solid magnetic" href="#products" data-cursor="hover">Explore the Collection</a>
+          <a class="btn btn-ghost magnetic" href="#atelier" data-cursor="hover">Enter the Atelier</a>
+        </div>
+      </div>
+      <div id="ball-drag" data-cursor="rotate" aria-hidden="true"></div>
+      <div class="hero-foot">
+        <span class="rule"></span>
+        <span class="hero-est">EST. MMXXVI — ATELIER NO. 07</span>
+        <span class="scroll-cue" aria-hidden="true">SCROLL<i></i></span>
+      </div>
+    </section>
+
+    <!-- ============ marquee — the engraving ============ -->
+    <div id="marquee" aria-hidden="true">
+      <div id="marquee-track"></div>
+    </div>
+
+    <!-- ============ the collection ============ -->
+    <section id="products">
+      <div class="section-head">
+        <p class="kicker reveal-line"><span>I — The Collection</span></p>
+        <h2 class="reveal-mask"><span>Eight instruments.<br><em>One obsession.</em></span></h2>
+        <div id="filters">
+          <button class="active" data-filter="All" data-cursor="hover">All</button>
+          <button data-filter="Indoor" data-cursor="hover">Indoor</button>
+          <button data-filter="Outdoor" data-cursor="hover">Outdoor</button>
+          <button data-filter="Street" data-cursor="hover">Street</button>
+          <button data-filter="Limited" data-cursor="hover">Limited</button>
+        </div>
+      </div>
+      <div id="product-grid"></div>
+      <p class="collection-note reveal">Every thumbnail on this page is a live render of the same three-dimensional ball you met above — no photography, no retouching. Hover a piece and the vitrine tries it on.</p>
+    </section>
+
+    <!-- ============ the atelier — exploded view ============ -->
+    <section id="atelier">
+      <div class="atelier-sticky">
+        <div class="atelier-chapters">
+          <p class="kicker">II — The Atelier</p>
+          <ol>
+            <li data-beat="0"><span class="ch-num">I.</span> HIDE<small>Eight panels. One temperament.</small></li>
+            <li data-beat="1"><span class="ch-num">II.</span> SEAM<small>3,411 pebbles per panel — laid by algorithm, judged by hand.</small></li>
+            <li data-beat="2"><span class="ch-num">III.</span> SOUL<small>Seams set molten, cooled to black.</small></li>
+          </ol>
+        </div>
+        <svg id="leader-svg" aria-hidden="true"></svg>
+        <div class="callout" id="callout-0"><b>241.6 MM</b><span>CIRCUMFERENCE, CERTIFIED</span></div>
+        <div class="callout" id="callout-1"><b>PANEL VII</b><span>FULL-GRAIN, HAND-CUT</span></div>
+        <div class="callout" id="callout-2"><b>CORE</b><span>POLISHED BRASS — ONE PER BALL</span></div>
+        <p class="atelier-caption" id="atelier-caption">Eight panels. One temperament.</p>
+      </div>
+    </section>
+
+    <!-- ============ maisons — categories ============ -->
+    <section id="maisons">
+      <p class="kicker reveal-line"><span>III — Maisons</span></p>
+      <a class="maison-band reveal" href="#products" data-count="VIII PIECES" data-cursor="hover">
+        <span class="maison-name">Game Balls</span>
+        <svg class="maison-arrow" viewBox="0 0 60 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h52M42 3l12 9-12 9"/></svg>
+      </a>
+      <a class="maison-band reveal" href="#products" data-count="XII PIECES" data-cursor="hover">
+        <span class="maison-name">Court Apparel</span>
+        <svg class="maison-arrow" viewBox="0 0 60 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h52M42 3l12 9-12 9"/></svg>
+      </a>
+      <a class="maison-band reveal" href="#products" data-count="VII PIECES" data-cursor="hover">
+        <span class="maison-name">Objets</span>
+        <svg class="maison-arrow" viewBox="0 0 60 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12h52M42 3l12 9-12 9"/></svg>
+      </a>
+    </section>
+
+    <!-- ============ provenance — stats + certification drop ============ -->
+    <section id="provenance">
+      <p class="kicker reveal-line"><span>IV — Provenance</span></p>
+      <div id="stats-row"></div>
+      <div class="tolerance">
+        <span class="tolerance-line"></span>
+        <span class="tolerance-label">WITHIN TOLERANCE</span>
+      </div>
+    </section>
+
+    <!-- ============ voices — the guest book ============ -->
+    <section id="voices">
+      <p class="kicker reveal-line"><span>V — The Guest Book</span></p>
+      <div class="gb-mark" aria-hidden="true">“</div>
+      <div id="gb-stage"></div>
+      <div class="gb-foot">
+        <div id="gb-dots"></div>
+        <svg class="laurels" viewBox="0 0 140 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-label="Five marks of approval">
+          <path class="laurel" d="M10 20 L14 4 L18 20"/>
+          <path class="laurel" d="M38 20 L42 4 L46 20"/>
+          <path class="laurel" d="M66 20 L70 4 L74 20"/>
+          <path class="laurel" d="M94 20 L98 4 L102 20"/>
+          <path class="laurel" d="M122 20 L126 4 L130 20"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============ the list — newsletter + colophon ============ -->
+    <footer id="list">
+      <div class="list-inner">
+        <h2 class="reveal-mask"><span>Join the <em>waiting list.</em></span></h2>
+        <p class="list-sub reveal">New colorways are released to the list first. Never more than one hundred at a time.</p>
+        <form id="newsletter-form" novalidate>
+          <div class="field">
+            <input id="newsletter-email" type="email" placeholder="your@address.com" autocomplete="email" aria-label="Email address">
+            <span class="field-line" aria-hidden="true"></span>
+          </div>
+          <button class="btn btn-solid magnetic" type="submit" data-cursor="hover"><span id="newsletter-cta">Request Entry</span></button>
+        </form>
+        <p id="newsletter-error" role="alert"></p>
+      </div>
+      <div class="colophon">
+        <div class="colophon-grid">
+          <div>
+            <h4>Maison</h4>
+            <a href="#products">The Collection</a>
+            <a href="#atelier">The Atelier</a>
+            <a href="#maisons">Maisons</a>
+          </div>
+          <div>
+            <h4>House</h4>
+            <a href="#provenance">Provenance</a>
+            <a href="#voices">Guest Book</a>
+            <a href="#list">The List</a>
+          </div>
+          <div>
+            <h4>Flagship</h4>
+            <p>45°27′51″N 9°11′25″E<br>Via dell’Atelier 07, Milano<br>By appointment only.</p>
+          </div>
+          <div>
+            <h4>Colophon</h4>
+            <p>Rendered live in WebGL.<br>No two balls identical.<br>That is the point.</p>
+          </div>
+        </div>
+        <div class="watermark" aria-hidden="true">SOVRA</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ============ cart drawer — the ledger ============ -->
+  <div id="cart-overlay" aria-hidden="true"></div>
+  <aside id="cart-drawer" aria-label="Shopping cart">
+    <header>
+      <h3>The Ledger</h3>
+      <button id="cart-close" aria-label="Close cart" data-cursor="hover">✕</button>
+    </header>
+    <div id="cart-items"></div>
+    <footer>
+      <div class="cart-total-row">
+        <span>Total</span>
+        <strong id="cart-total">$0</strong>
+      </div>
+      <button id="checkout-btn" class="btn btn-solid" data-cursor="hover">Proceed to Acquisition</button>
+      <p class="cart-note">Complimentary courier. Numbered certificate enclosed.</p>
+    </footer>
+  </aside>
+
+  <div id="toast" role="status"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

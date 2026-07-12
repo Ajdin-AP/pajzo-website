@@ -2423,3 +2423,302 @@ section[id] {
 .tenet:hover::after {
   opacity: 1;
 }
+
+/* ------------------------------------------------------------ portfolio page */
+
+.pf {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--bone);
+}
+
+/* minimal top bar — the small wordmark is the way back to the main site */
+.pf__bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px var(--gutter);
+  background: rgba(13, 12, 10, 0.94);
+  border-bottom: 1px solid var(--line);
+}
+.pf__logo {
+  display: inline-flex;
+  color: var(--bone);
+  transition: opacity 0.25s var(--ease);
+}
+.pf__logo:hover {
+  opacity: 0.72;
+}
+.pf__logo svg {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+.pf__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+  transition: color 0.25s var(--ease);
+}
+.pf__back:hover {
+  color: var(--bone);
+}
+.pf__back svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s var(--ease);
+}
+.pf__back:hover svg {
+  transform: translateX(3px);
+}
+
+.pf__wrap {
+  padding-top: clamp(56px, 9vh, 104px);
+  padding-bottom: clamp(60px, 10vh, 120px);
+}
+
+/* intro */
+.pf__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+}
+.pf__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.pf__title {
+  margin-top: 22px;
+  font-size: clamp(40px, 8vw, 92px);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--bone);
+}
+.pf__lead {
+  max-width: 540px;
+  margin-top: 26px;
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.62;
+  color: var(--bone-soft);
+}
+
+/* project list */
+.pf__list {
+  list-style: none;
+  margin: clamp(56px, 9vh, 104px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(72px, 11vh, 132px);
+}
+.pf__item {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* the live-site preview */
+.pf__shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-lift);
+  transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
+    box-shadow 0.5s var(--ease);
+}
+.pf__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s var(--ease);
+}
+.pf__shot:hover {
+  transform: translateY(-4px);
+  border-color: var(--line-strong);
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.5);
+}
+.pf__shot:hover img {
+  transform: scale(1.03);
+}
+.pf__open {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #0d0c0a;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  pointer-events: none;
+}
+.pf__open svg {
+  width: 14px;
+  height: 14px;
+}
+.pf__shot:hover .pf__open,
+.pf__shot:focus-visible .pf__open {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (hover: none), (pointer: coarse) {
+  .pf__open {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* meta below the preview */
+.pf__meta {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) 1fr;
+  gap: 24px 60px;
+  align-items: start;
+}
+.pf__index {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--bone-mute);
+}
+.pf__name {
+  margin-top: 12px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--bone);
+}
+.pf__cat {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-mute);
+}
+.pf__blurb {
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.62;
+  color: var(--bone-soft);
+  max-width: 560px;
+}
+.pf__tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+}
+.pf__tags li {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 13px;
+}
+.pf__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 26px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone);
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 4px;
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.pf__view svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.3s var(--ease);
+}
+.pf__view:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+.pf__view:hover svg {
+  transform: translateX(4px);
+}
+
+/* footer */
+.pf__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(50px, 8vh, 88px) var(--gutter) 60px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.pf__foot-logo {
+  display: inline-flex;
+  color: var(--bone-mute);
+  transition: color 0.25s var(--ease);
+}
+.pf__foot-logo:hover {
+  color: var(--bone);
+}
+.pf__foot-logo svg {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+.pf__foot-note {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--bone-mute);
+}
+
+@media (max-width: 760px) {
+  .pf__meta {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .pf__item {
+    gap: 24px;
+  }
+}
+@media (max-width: 460px) {
+  .pf__back span,
+  .pf__back {
+    font-size: 11px;
+  }
+}

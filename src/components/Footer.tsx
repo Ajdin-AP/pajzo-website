@@ -3,7 +3,8 @@ import { navigate } from '../nav';
 import { scrollToId } from '../scroll';
 import { Instagram, XLogo, Mail, Wordmark } from './icons';
 
-const SITE_LINKS = [
+const SITE_LINKS: { label: string; id: string; route?: string }[] = [
+  { label: 'Work', id: 'portfolio', route: '/portfolio' },
   { label: 'Services', id: 'services' },
   { label: 'Studio', id: 'studio' },
   { label: 'Process', id: 'process' },
@@ -29,6 +30,16 @@ const Footer = () => {
     }
   };
 
+  // A site link is either a section anchor (scroll) or its own route.
+  const goLink = (e: React.MouseEvent, l: { id: string; route?: string }) => {
+    if (l.route) {
+      e.preventDefault();
+      navigate(l.route);
+    } else {
+      goSection(e, l.id);
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="container">
@@ -50,7 +61,11 @@ const Footer = () => {
             <h4>Site</h4>
             <div className="footer__links">
               {SITE_LINKS.map((l) => (
-                <a key={l.id} href={`#${l.id}`} onClick={(e) => goSection(e, l.id)}>
+                <a
+                  key={l.id}
+                  href={l.route ?? `#${l.id}`}
+                  onClick={(e) => goLink(e, l)}
+                >
                   {l.label}
                 </a>
               ))}

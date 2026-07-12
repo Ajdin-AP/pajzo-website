@@ -4,7 +4,8 @@ import { smoothScrollTo, scrollToId } from '../scroll';
 import { Menu, Close, Wordmark, ArrowRight } from './icons';
 import type { OpenModal } from '../App';
 
-const NAV = [
+const NAV: { label: string; id: string; route?: string }[] = [
+  { label: 'Work', id: 'work', route: '/portfolio' },
   { label: 'Services', id: 'services' },
   { label: 'Studio', id: 'studio' },
   { label: 'Process', id: 'process' },
@@ -78,11 +79,16 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
     }
   };
 
-  const goTo = (e: React.MouseEvent, id: string) => {
+  const goTo = (e: React.MouseEvent, item: { id: string; route?: string }) => {
     e.preventDefault();
     setMenuOpen(false);
+    // A nav item is either its own route (e.g. Work) or a section on the home page.
+    if (item.route) {
+      navigate(item.route);
+      return;
+    }
     // Defer a frame so the mobile menu has closed before we measure.
-    requestAnimationFrame(() => scrollToId(id));
+    requestAnimationFrame(() => scrollToId(item.id));
   };
 
   return (
@@ -103,9 +109,9 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
                 {NAV.map((item) => (
                   <a
                     key={item.id}
-                    href={`#${item.id}`}
+                    href={item.route ?? `#${item.id}`}
                     className={`navlink${active === item.id ? ' navlink--active' : ''}`}
-                    onClick={(e) => goTo(e, item.id)}
+                    onClick={(e) => goTo(e, item)}
                   >
                     {item.label}
                   </a>
@@ -135,7 +141,7 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
       {isHome && (
         <div className={`mobile-nav${menuOpen ? ' open' : ''}`}>
           {NAV.map((item) => (
-            <a key={item.id} href={`#${item.id}`} onClick={(e) => goTo(e, item.id)}>
+            <a key={item.id} href={item.route ?? `#${item.id}`} onClick={(e) => goTo(e, item)}>
               {item.label}
             </a>
           ))}

@@ -12,6 +12,7 @@ import Home from './Home';
 const ContactModal = lazy(() => import('./components/ContactModal'));
 const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./TermsOfService'));
+const Portfolio = lazy(() => import('./Portfolio'));
 
 export type OpenModal = (service?: string) => void;
 
@@ -21,6 +22,8 @@ function App() {
   const [modalService, setModalService] = useState<string>('');
   // Bumped on every open so the modal knows to reset itself to a fresh form.
   const [modalNonce, setModalNonce] = useState(0);
+  // Treat /portfolio and /portfolio/ as the same route (strip trailing slashes).
+  const path = route.length > 1 ? route.replace(/\/+$/, '') : route;
 
   const openModal = useCallback<OpenModal>((service) => {
     setModalService(service ?? '');
@@ -66,18 +69,19 @@ function App() {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/': 'Pajzo · Independent digital studio · Web, apps, branding, design',
+      '/portfolio': 'Selected work · Pajzo',
       '/privacy-policy': 'Privacy Policy · Pajzo',
       '/terms-of-service': 'Terms of Service · Pajzo',
     };
-    const known = route in titles;
-    document.title = titles[route] ?? 'Page not found · Pajzo';
+    const known = path in titles;
+    document.title = titles[path] ?? 'Page not found · Pajzo';
 
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical) {
       // The SPA rewrite serves unknown paths as soft-404s; point their
       // canonical at the homepage so they can't self-canonicalise as junk URLs.
       canonical.href = known
-        ? `https://pajzo.com${route === '/' ? '/' : route}`
+        ? `https://pajzo.com${path === '/' ? '/' : path}`
         : 'https://pajzo.com/';
     }
 
@@ -93,7 +97,7 @@ function App() {
     } else if (robots) {
       robots.remove();
     }
-  }, [route]);
+  }, [path]);
 
   // Quiet reveal-on-scroll.
   useEffect(() => {
@@ -141,21 +145,31 @@ function App() {
   }, []);
 
   let content;
-  if (route === '/privacy-policy') {
+  if (path === '/privacy-policy') {
     content = (
       <Suspense fallback={null}>
         <PrivacyPolicy />
       </Suspense>
     );
-  } else if (route === '/terms-of-service') {
+  } else if (path === '/terms-of-service') {
     content = (
       <Suspense fallback={null}>
         <TermsOfService />
       </Suspense>
     );
+  } else if (path === '/portfolio') {
+    content = (
+      <Suspense fallback={null}>
+        <Portfolio />
+      </Suspense>
+    );
   } else {
     content = <Home openModal={openModal} />;
   }
+
+  // The portfolio page carries its own minimal chrome (a small wordmark that
+  // links home), so the full site header/footer are left off there.
+  const isPortfolio = path === '/portfolio';
 
   return (
     <>
@@ -163,9 +177,9 @@ function App() {
         Skip to content
       </a>
       <div className="grain" aria-hidden="true" />
-      <Header route={route} openModal={openModal} />
+      {!isPortfolio && <Header route={route} openModal={openModal} />}
       {content}
-      <Footer />
+      {!isPortfolio && <Footer />}
       <Suspense fallback={null}>
         <ContactModal
           open={modalOpen}

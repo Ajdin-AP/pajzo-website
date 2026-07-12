@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greensward &amp; Co. — Private Grounds Care, Wexford</title>
+<meta name="description" content="Greensward & Co. keeps private lawns in order — a precise weekly cut, knife-clean edges, and quiet seasonal care within fifteen miles of Wexford. A limited roster, by design.">
+<meta property="og:title" content="Greensward & Co. — The lawn, properly kept.">
+<meta property="og:description" content="Private grounds care for homes across Wexford County. Same crew. Same day. Every week.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2312211A'/%3E%3Cpath d='M11 26 Q10 18 8 13 M16 26 Q16 15 16 8 M21 26 Q22 17 24 12' stroke='%23A98C4B' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* ---------- Tokens ---------- */
+:root{
+  --parchment:#F6F2E7;
+  --bone:#EDE6D3;
+  --ink:#12211A;
+  --ink-2:#16281F;
+  --estate:#1E4030;
+  --moss:#3F5F49;
+  --sage:#C9D2C0;
+  --brass:#A98C4B;
+  --brass-deep:#7A5E28;
+  --brass-lite:#CBA968;
+  --brass-soft:rgba(169,140,75,.35);
+  --error:#D9895E;
+  --flint:#5C5A4E;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Hanken Grotesk','Helvetica Neue',Arial,sans-serif;
+  --ease:cubic-bezier(.2,.6,.2,1);
+  --pad:clamp(5.5rem,11vw,9.5rem);
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  font-weight:400;
+  font-size:17px;
+  line-height:1.7;
+  color:var(--ink);
+  background:var(--parchment);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--estate);color:var(--parchment)}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+.container{max-width:1180px;margin-inline:auto;padding-inline:clamp(1.4rem,5vw,3rem)}
+.skip{position:absolute;left:-999px;top:0;background:var(--ink);color:var(--parchment);padding:.7rem 1.2rem;z-index:99}
+.skip:focus{left:0}
+
+/* ---------- Type system ---------- */
+.eyebrow{
+  font:600 11px/1 var(--sans);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--brass-deep);
+}
+.on-dark .eyebrow,.assessment .eyebrow{color:var(--brass-lite)}
+h1,h2,h3,.display{font-family:var(--serif);font-weight:300;line-height:1.08;letter-spacing:-0.01em}
+h2{font-size:clamp(2.2rem,4.6vw,3.6rem)}
+.lede{color:var(--flint);max-width:34em}
+.on-dark .lede{color:var(--sage)}
+.num{font-variant-numeric:tabular-nums}
+
+/* Section opening ritual: brass rule scales in, eyebrow fades up */
+.rule{height:1px;background:var(--brass);border:none;transform-origin:left center;margin-bottom:1.4rem}
+.js .rule{transform:scaleX(0);transition:transform .9s var(--ease)}
+.js .in-view .rule{transform:scaleX(1)}
+.sec-head .eyebrow{display:block}
+.js .sec-head .eyebrow{opacity:0;transform:translateY(8px);transition:opacity .7s var(--ease) .15s,transform .7s var(--ease) .15s}
+.js .in-view .sec-head .eyebrow{opacity:1;transform:none}
+.sec-head h2{margin-top:1.1rem;max-width:16em}
+
+/* Generic reveal */
+.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.js .in-view .reveal,.js .reveal.in-view{opacity:1;transform:none}
+.js .reveal.d1{transition-delay:.1s}.js .reveal.d2{transition-delay:.2s}
+.js .reveal.d3{transition-delay:.3s}.js .reveal.d4{transition-delay:.4s}
+
+/* Self-drawing strokes */
+.draw path,.draw line,.draw circle,.draw polyline,.draw rect{stroke-dasharray:1;stroke-dashoffset:0}
+.js .draw path,.js .draw line,.js .draw circle,.js .draw polyline,.js .draw rect{stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease)}
+.js .in-view .draw path,.js .in-view .draw line,.js .in-view .draw circle,.js .in-view .draw polyline,.js .in-view .draw rect,
+.js .draw.in-view path,.js .draw.in-view line,.js .draw.in-view circle,.js .draw.in-view polyline,.js .draw.in-view rect{stroke-dashoffset:0}
+
+/* Fresh Pass sweep */
+[data-sweep]{position:relative}
+[data-sweep]::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(100deg,rgba(201,210,192,.10) 0 80px,transparent 80px 160px);
+  transform:translateX(-100%);opacity:0;
+}
+.js [data-sweep].swept::after{animation:pass 1.4s var(--ease) forwards}
+@keyframes pass{0%{transform:translateX(-100%);opacity:1}100%{transform:translateX(100%);opacity:0}}
+[data-sweep]>*{position:relative;z-index:2}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-block;font:600 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  padding:1.05rem 1.9rem;border:1px solid var(--estate);color:var(--estate);
+  transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease);
+}
+.btn:hover{background:var(--estate);color:var(--parchment)}
+.btn-solid{background:var(--brass);border-color:var(--brass);color:var(--ink)}
+.btn-solid:hover{background:var(--parchment);border-color:var(--parchment);color:var(--ink)}
+.on-dark .btn{border-color:var(--sage);color:var(--sage)}
+.on-dark .btn:hover{background:var(--sage);color:var(--ink)}
+.text-link{position:relative;font:600 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--estate);padding-bottom:.45rem}
+.text-link::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--brass);transform-origin:right;transition:transform .35s var(--ease)}
+.text-link:hover::after{transform:scaleX(0);transform-origin:left}
+
+/* ---------- Nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  transition:background .3s var(--ease),box-shadow .3s var(--ease);
+}
+.nav .container{display:flex;align-items:center;justify-content:space-between;height:76px}
+.nav.scrolled{background:rgba(246,242,231,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(18,33,26,.14)}
+.wordmark{display:flex;align-items:center;gap:.6rem;font:400 1.25rem/1 var(--serif);letter-spacing:.14em;text-transform:uppercase}
+.wordmark svg{width:18px;height:20px}
+.wordmark .amp{font-style:italic;color:var(--brass);text-transform:none;letter-spacing:0}
+.nav-links{display:flex;align-items:center;gap:2.2rem;list-style:none}
+.nav-links a:not(.btn){font:600 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink);position:relative;padding-bottom:.4rem}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav-links a:not(.btn):hover::after{transform:scaleX(1)}
+.nav .btn{padding:.85rem 1.4rem}
+.menu-btn{display:none;flex-direction:column;gap:6px;padding:.6rem;z-index:70}
+.menu-btn span{display:block;width:26px;height:1px;background:var(--ink);transition:transform .3s var(--ease),opacity .3s var(--ease)}
+.menu-open .menu-btn span:first-child{transform:translateY(3.5px) rotate(45deg)}
+.menu-open .menu-btn span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+.menu-open .menu-btn span{background:var(--parchment)}
+.menu-open .nav{z-index:80;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.menu-open .nav .wordmark{color:var(--parchment)}
+.menu-open .nav .wordmark svg path{stroke:var(--brass)}
+.mobile-menu{
+  position:fixed;inset:0;z-index:60;background:var(--ink);color:var(--parchment);
+  display:flex;flex-direction:column;padding:5.5rem clamp(1.6rem,8vw,4rem) 2.5rem;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility .4s;
+}
+.mobile-menu nav{margin:auto 0}
+.menu-open .mobile-menu{opacity:1;visibility:visible}
+.mobile-menu a{font:300 clamp(2rem,8vw,3rem)/1.35 var(--serif);border-bottom:1px solid rgba(201,210,192,.15);padding:.7rem 0;display:block}
+.mobile-menu a:hover{color:var(--brass)}
+.mobile-menu .mm-foot{margin-top:2.2rem;font-size:.85rem;color:var(--sage)}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--parchment)}
+.hero-copy{flex:1;display:flex;flex-direction:column;justify-content:center;padding-top:clamp(7rem,16vh,10rem);padding-bottom:2rem}
+.hero h1{font-size:clamp(2.9rem,7vw,5.9rem);max-width:11.5em;margin-top:1.4rem}
+.hero .lede{margin-top:1.8rem;font-size:clamp(1rem,1.4vw,1.15rem)}
+.hero-ctas{display:flex;align-items:center;gap:2.2rem;margin-top:2.6rem;flex-wrap:wrap}
+.roster-line{margin-top:2.4rem;font-size:.85rem;color:var(--flint);display:flex;align-items:center;gap:.7rem}
+.roster-line::before{content:"";width:34px;height:1px;background:var(--brass)}
+.hero-lawn{position:relative;height:clamp(190px,30vh,320px);border-top:1px solid var(--brass-soft)}
+.hero-lawn svg{position:absolute;inset:0;width:100%;height:100%}
+.blade{transform-box:fill-box;transform-origin:50% 100%}
+.js .blade{animation:sway var(--dur,5s) ease-in-out var(--del,0s) infinite alternate}
+@keyframes sway{from{transform:rotate(calc(var(--amp,2deg) * -1))}to{transform:rotate(var(--amp,2deg))}}
+
+/* ---------- Manifesto ---------- */
+.manifesto{background:var(--ink);color:var(--parchment);text-align:center;padding:clamp(6rem,14vw,11rem) 0}
+.manifesto .rule{margin:0 auto 3rem;max-width:220px;transform-origin:center}
+.manifesto blockquote p{font:italic 300 clamp(1.8rem,4vw,2.9rem)/1.3 var(--serif)}
+.manifesto-notes{margin-top:2.6rem;font-size:.92rem;color:var(--sage);display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem 1rem}
+.manifesto-notes .dot{color:var(--brass)}
+.manifesto .rule.bottom{margin:3rem auto 0}
+
+/* ---------- Sections shared ---------- */
+.section{padding:var(--pad) 0}
+.section.alt{background:var(--bone)}
+.on-dark{background:var(--ink);color:var(--parchment)}
+
+/* ---------- Care plans ---------- */
+.rate-card{margin-top:3.6rem;border-top:1px solid var(--ink)}
+.rate-row{
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,2fr) auto;gap:1.5rem;align-items:baseline;
+  padding:2.2rem 0;border-bottom:1px solid var(--ink);position:relative;
+  transition:background .3s var(--ease),padding-left .3s var(--ease);
+}
+.rate-row:hover{background:linear-gradient(100deg,rgba(201,210,192,.16) 0 40px,transparent 40px 80px) var(--bone);padding-left:1.1rem}
+.plan-name{font:400 clamp(1.4rem,2.4vw,1.9rem)/1.2 var(--serif);display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap}
+.plan-name .arrow{color:var(--brass);opacity:0;transform:translateX(-6px);transition:opacity .3s var(--ease),transform .3s var(--ease);font-family:var(--sans);font-size:1rem}
+.rate-row:hover .arrow{opacity:1;transform:none}
+.tag{font:600 9px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--brass-deep);border:1px solid var(--brass-soft);padding:.35rem .55rem;white-space:nowrap}
+.plan-desc{color:var(--flint);font-size:.98rem;max-width:36em}
+.plan-price{font:400 clamp(1.5rem,2.6vw,2rem)/1 var(--serif);text-align:right;white-space:nowrap;transition:color .3s var(--ease)}
+.rate-row:hover .plan-price{color:var(--brass)}
+.plan-price small{display:block;font:400 .72rem/1.6 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--flint)}
+.alacarte{margin-top:4.2rem}
+.alacarte h3{font-size:1rem;font-family:var(--sans);font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--brass-deep);font-variant:normal}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 4rem;margin-top:1.4rem}
+.menu-item{display:flex;justify-content:space-between;align-items:baseline;gap:1.5rem;padding:.95rem 0;border-bottom:1px dotted rgba(18,33,26,.28)}
+.menu-item span:last-child{font-family:var(--serif);font-size:1.15rem;white-space:nowrap}
+.fineprint{margin-top:2.4rem;font-size:.85rem;color:var(--flint);max-width:46em}
+
+/* ---------- Method ---------- */
+.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(1.6rem,3vw,2.8rem);margin-top:3.8rem}
+.step .numeral{font:400 clamp(3rem,4.6vw,4rem)/1 var(--serif);color:var(--brass)}
+.step figure{margin:1.6rem 0 1.4rem;height:96px;display:flex;align-items:center}
+.step h3{font:600 12px/1.5 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.step p{margin-top:.8rem;font-size:.95rem;color:var(--flint)}
+.sketch{stroke:var(--estate);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sketch .accent{stroke:var(--brass)}
+.sketch .fill-accent{fill:var(--brass);stroke:none}
+
+/* ---------- Kept details ---------- */
+.details-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.8rem,3.4vw,3rem);margin-top:3.8rem}
+.study figure{height:230px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(18,33,26,.16);background:var(--parchment);padding:1.4rem}
+.study h3{margin-top:1.6rem;font:600 12px/1.5 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.study p{margin-top:.8rem;font-size:.95rem;color:var(--flint)}
+.pattern-chips{display:flex;gap:1.4rem;margin-top:1.1rem}
+.chip{font:600 10px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--flint);padding-bottom:.4rem;border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+.chip[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--brass)}
+.pattern-layer{opacity:0;transition:opacity .5s var(--ease)}
+.pattern-layer.active{opacity:1}
+
+/* ---------- Cut line divider ---------- */
+.cutline{height:52px;overflow:hidden;position:relative}
+.cutline svg{position:absolute;inset:0;width:100%;height:100%}
+.cutline .particle{opacity:0}
+.js .cutline.in-view .particle{animation:clip 1.3s var(--ease) forwards}
+.js .cutline.in-view .particle:nth-child(2){animation-delay:.2s}
+.js .cutline.in-view .particle:nth-child(3){animation-delay:.45s}
+@keyframes clip{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(22px)}}
+
+/* ---------- House standard ---------- */
+.standard-list{margin-top:3.4rem;border-top:1px solid rgba(18,33,26,.35);columns:2;column-gap:4rem}
+.standard-item{break-inside:avoid;display:grid;grid-template-columns:3.2rem 1fr;gap:1.1rem;align-items:baseline;padding:1.35rem 0;border-bottom:1px solid rgba(18,33,26,.35)}
+.standard-item .rn{font:400 1.35rem/1 var(--serif);color:var(--brass)}
+.standard-item p{font-size:.97rem}
+.standard-item.vow p{font-family:var(--serif);font-size:1.2rem;font-style:italic}
+
+/* ---------- Testimonials ---------- */
+.words{position:relative}
+.quote-stage{position:relative;margin-top:3.4rem;min-height:290px}
+.quote-stage .qmark{position:absolute;top:-3.2rem;left:-1.4rem;font:400 11rem/1 var(--serif);color:var(--brass);opacity:.14;pointer-events:none;user-select:none}
+.quote{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s var(--ease),visibility .9s}
+.quote.active{opacity:1;visibility:visible}
+.quote p{font:italic 300 clamp(1.5rem,3vw,2.1rem)/1.45 var(--serif);max-width:26em}
+.quote figcaption{margin-top:1.6rem;font:600 11px/1.6 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+.quote figcaption::before{content:"— ";color:var(--brass)}
+.quote figcaption .loc{color:var(--flint);display:block;font-weight:400;letter-spacing:.14em}
+.quote-nav{display:flex;align-items:center;gap:1.6rem;margin-top:2.4rem}
+.qdot{font:400 1rem/1 var(--serif);color:var(--flint);padding:.4rem .2rem;border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+.qdot[aria-pressed="true"]{color:var(--brass);border-bottom-color:var(--brass)}
+.qprogress{flex:1;max-width:200px;height:1px;background:rgba(18,33,26,.15);position:relative;overflow:hidden}
+.qprogress i{position:absolute;inset:0;background:var(--brass);transform:scaleX(0);transform-origin:left}
+.js .qprogress i.run{transition:transform 8s linear;transform:scaleX(1)}
+
+/* ---------- Service area ---------- */
+.where-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(2.5rem,6vw,5rem);align-items:center;margin-top:3.4rem}
+.where-copy p{color:var(--flint);max-width:30em}
+.where-copy .outside{margin-top:1.8rem;font-size:.9rem;padding-top:1.4rem;border-top:1px dotted rgba(18,33,26,.3)}
+.map-panel{background:var(--bone);border:1px solid rgba(18,33,26,.14);padding:clamp(1.2rem,3vw,2.4rem)}
+.map-label{font:600 9.5px/1 var(--sans);letter-spacing:.14em;fill:var(--ink);text-transform:uppercase}
+.map-dot{transform-box:fill-box;transform-origin:center}
+.js .map-dot{animation:pulse 3.2s ease-in-out var(--del,0s) infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+
+/* ---------- FAQ ---------- */
+.faq{max-width:760px}
+.faq-list{margin-top:3rem;border-top:1px solid rgba(18,33,26,.35)}
+.faq-item{border-bottom:1px solid rgba(18,33,26,.35)}
+.faq-item summary{
+  list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:2rem;
+  padding:1.5rem 0;cursor:pointer;font:400 1.25rem/1.4 var(--serif);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary .mark{font-family:var(--sans);color:var(--brass);font-size:1.1rem;transition:transform .3s var(--ease)}
+.faq-item[open] summary .mark{transform:rotate(45deg)}
+.faq-item .faq-body{padding:0 0 1.6rem;color:var(--flint);max-width:38em;font-size:.97rem}
+
+/* ---------- Assessment ---------- */
+.assessment{background:var(--ink);color:var(--parchment);border-top:1px solid var(--brass)}
+.assess-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(3rem,7vw,6rem);align-items:start}
+.assessment h2{color:var(--parchment)}
+.assessment .lede{color:var(--sage);margin-top:1.6rem}
+.assess-aside .openings{margin-top:2.6rem;font-size:.88rem;color:var(--sage);display:flex;gap:.7rem;align-items:center}
+.assess-aside .openings::before{content:"";width:34px;height:1px;background:var(--brass)}
+.gw-form label,.field-label{display:block;font:600 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.7rem}
+.gw-form .field{margin-bottom:2.1rem}
+.gw-form input,.gw-form select,.gw-form textarea{
+  width:100%;background:transparent;border:0;border-bottom:1px solid rgba(201,210,192,.4);
+  color:var(--parchment);font:400 1.05rem/1.5 var(--sans);padding:.55rem 0;border-radius:0;
+  transition:border-color .3s var(--ease);
+}
+.gw-form select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23C9D2C0' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .2rem center;padding-right:1.4rem}
+.gw-form .invalid{border-bottom-color:var(--error)!important}
+.gw-form [aria-invalid="true"]{border-bottom-color:var(--error)!important}
+.form-error{color:#E7B39A;font-size:.85rem;letter-spacing:.02em;margin:0 0 1.3rem;padding-left:.9rem;border-left:2px solid var(--error)}
+.form-error[hidden]{display:none}
+.gw-form select option{color:var(--ink);background:var(--parchment)}
+.gw-form input:focus,.gw-form select:focus,.gw-form textarea:focus{outline:none;border-bottom-color:var(--brass)}
+.gw-form textarea{resize:vertical;min-height:84px}
+.lot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.lot-opt input{position:absolute;opacity:0;pointer-events:none}
+.lot-opt{position:relative}
+.lot-opt label{
+  display:flex;flex-direction:column;gap:.6rem;align-items:center;text-align:center;
+  border:1px solid rgba(201,210,192,.3);padding:1rem .5rem .9rem;cursor:pointer;margin:0;
+  font-size:9.5px;letter-spacing:.1em;color:var(--sage);
+  transition:border-color .25s var(--ease),background .25s var(--ease);
+}
+.lot-opt label:hover{border-color:rgba(201,210,192,.6)}
+.lot-opt input:checked + label{border-color:var(--brass);background:rgba(169,140,75,.08)}
+.lot-opt input:focus-visible + label{outline:2px solid var(--brass);outline-offset:3px}
+.lot-opt svg{stroke:var(--sage);stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.lot-opt input:checked + label svg{stroke:var(--brass)}
+.gw-form .btn-solid{width:100%;padding:1.2rem;margin-top:.4rem}
+.form-foot{margin-top:1.6rem;font-size:.85rem;color:var(--sage)}
+.form-foot a{border-bottom:1px solid var(--brass-soft)}
+.form-success{display:none}
+.form-success.visible{display:block}
+.form-success .rule{max-width:120px}
+.form-success h3{font:300 clamp(2.4rem,4vw,3.4rem)/1.1 var(--serif);color:var(--parchment)}
+.form-success p{margin-top:1.2rem;color:var(--sage);max-width:26em}
+
+/* ---------- Footer ---------- */
+.footer{background:var(--ink);color:var(--sage);position:relative;overflow:hidden;border-top:1px solid rgba(201,210,192,.18)}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1.2fr;gap:clamp(2rem,5vw,4rem);padding:4.5rem 0 3rem;position:relative;z-index:2}
+.footer .wordmark{color:var(--parchment)}
+.footer .tagline{margin-top:1rem;font:italic 300 1.25rem/1.4 var(--serif);color:var(--sage)}
+.footer-col h3{font:600 10.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--brass-lite);margin-bottom:1.2rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:.6rem;font-size:.92rem}
+.footer-col a:hover{color:var(--parchment)}
+.footer-meta{font-size:.9rem;line-height:2}
+.footer-bottom{position:relative;z-index:2;border-top:1px solid rgba(201,210,192,.14);padding:1.6rem 0 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-size:.8rem;flex-wrap:wrap}
+.footer-bottom .glyph svg{width:14px;height:16px;opacity:.7}
+.watermark{
+  position:relative;z-index:1;pointer-events:none;user-select:none;
+  font:400 clamp(3rem,15vw,14.5rem)/0.72 var(--serif);letter-spacing:.02em;text-transform:uppercase;
+  color:var(--ink-2);text-align:center;white-space:nowrap;overflow:hidden;
+  margin-bottom:-0.36em;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1020px){
+  .method-grid{grid-template-columns:repeat(2,1fr);gap:2.6rem 2rem}
+  .details-grid{grid-template-columns:1fr;max-width:520px}
+  .where-grid{grid-template-columns:1fr}
+  .assess-grid{grid-template-columns:1fr}
+  .standard-list{columns:1}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:900px){
+  .nav-links{display:none}
+  .menu-btn{display:flex}
+}
+@media (max-width:720px){
+  .rate-row{grid-template-columns:1fr;gap:.7rem}
+  .plan-price{text-align:left}
+  .menu-grid{grid-template-columns:1fr}
+  .method-grid{grid-template-columns:1fr}
+  .lot-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr;gap:2.4rem}
+  .quote-stage{min-height:360px}
+}
+
+/* ---------- Print ---------- */
+@media print{
+  .nav,.mobile-menu,.hero-lawn,.cutline,.watermark{display:none!important}
+  body,.on-dark,.manifesto,.assessment,.footer,.section.alt{background:#fff!important;color:#12211A!important}
+  .on-dark,.manifesto,.assessment,.footer{color:#12211A!important}
+  .lede,.plan-desc,.step p,.study p,.faq-item .faq-body,.footer-meta,.on-dark .lede{color:#333!important}
+  .js .reveal,.js .sec-head .eyebrow,.js .rule{opacity:1!important;transform:none!important}
+  .js .draw path,.js .draw line,.js .draw circle,.js .draw polyline,.js .draw rect{stroke-dashoffset:0!important}
+  [data-sweep]::after{display:none!important}
+  a{text-decoration:none!important}
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .rule,.js .reveal,.js .sec-head .eyebrow{transition:none;transform:none;opacity:1}
+  .js .draw path,.js .draw line,.js .draw circle,.js .draw polyline,.js .draw rect{transition:none;stroke-dashoffset:0}
+  .js .blade,.js .map-dot{animation:none}
+  .js [data-sweep].swept::after{animation:none;opacity:0}
+  .js .qprogress i.run{transition:none}
+  .js .cutline.in-view .particle{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <div class="container">
+    <a class="wordmark" href="#top" aria-label="Greensward and Co. — home">
+      <svg viewBox="0 0 18 20" aria-hidden="true"><path d="M5 19 Q4.5 12 3 7 M9 19 Q9 10 9 3 M13 19 Q13.8 11 15 6" stroke="var(--estate)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      Greensward <span class="amp">&amp;</span> Co.
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#plans">Care Plans</a></li>
+        <li><a href="#method">The Method</a></li>
+        <li><a href="#words">In Their Words</a></li>
+        <li><a href="#where">Where We Keep</a></li>
+        <li><a class="btn" href="#assessment">Request Assessment</a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <nav aria-label="Mobile">
+    <a href="#plans">Care Plans</a>
+    <a href="#method">The Method</a>
+    <a href="#standard">The Standard</a>
+    <a href="#words">In Their Words</a>
+    <a href="#where">Where We Keep</a>
+    <a href="#assessment">Request Assessment</a>
+  </nav>
+  <p class="mm-foot">Tel. (555) 014-2210 · care@greenswardandco.com</p>
+</div>
+
+<main id="main">
+<!-- ================= HERO ================= -->
+<section class="hero" id="top" data-sweep>
+  <div class="container hero-copy">
+    <p class="eyebrow reveal">Private Grounds Care — Est. 2019</p>
+    <h1 class="reveal d1">The lawn is the first room of&nbsp;the&nbsp;house.</h1>
+    <p class="lede reveal d2">Greensward &amp; Co. keeps it in order — a precise weekly cut, knife-clean edges, and quiet seasonal care for private homes across Wexford County. Same crew. Same day. Every week.</p>
+    <div class="hero-ctas reveal d3">
+      <a class="btn" href="#assessment">Request a Grounds Assessment</a>
+      <a class="text-link" href="#plans">View care plans ↓</a>
+    </div>
+    <p class="roster-line num reveal d4">Currently keeping 54 of 60 properties on the roster.</p>
+  </div>
+  <div class="hero-lawn" aria-hidden="true">
+    <svg id="lawnSvg" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice"></svg>
+  </div>
+</section>
+
+<!-- ================= MANIFESTO ================= -->
+<section class="manifesto on-dark" id="manifesto">
+  <div class="container">
+    <hr class="rule" aria-hidden="true">
+    <blockquote>
+      <p class="reveal">A lawn is not maintained.<br>It is kept.</p>
+    </blockquote>
+    <div class="manifesto-notes reveal d2">
+      <span>Groundskeeping, in the old sense of the word</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>A limited roster, by design</span>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>Licensed, insured, unhurried</span>
+    </div>
+    <hr class="rule bottom" aria-hidden="true">
+  </div>
+</section>
+
+<!-- ================= CARE PLANS ================= -->
+<section class="section" id="plans" data-sweep>
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">Care Plans</span>
+      <h2 class="reveal">Three ways to be kept.</h2>
+    </header>
+
+    <div class="rate-card num">
+      <a class="rate-row reveal" href="#assessment" data-plan="The Weekly Cut">
+        <span class="plan-name">The Weekly Cut <span class="arrow" aria-hidden="true">→</span></span>
+        <span class="plan-desc">Mowing at the correct height for the season, precision string-line edging, and a full blowdown of walks and drive. In and out in under an hour.</span>
+        <span class="plan-price">$65 <small>per visit</small></span>
+      </a>
+      <a class="rate-row reveal d1" href="#assessment" data-plan="The Full Keeping">
+        <span class="plan-name">The Full Keeping <span class="tag">Most Kept</span> <span class="arrow" aria-hidden="true">→</span></span>
+        <span class="plan-desc">The weekly cut, plus bed edging, four seasonal fertilisations, weed management, and a monthly detail walk-through with written notes.</span>
+        <span class="plan-price">$240 <small>per month</small></span>
+      </a>
+      <a class="rate-row reveal d2" href="#assessment" data-plan="The Estate Standard">
+        <span class="plan-name">The Estate Standard <span class="arrow" aria-hidden="true">→</span></span>
+        <span class="plan-desc">Everything above, with hedge and shrub shaping, fall aeration and overseeding, priority scheduling, and a dedicated lead groundskeeper who knows your property by name.</span>
+        <span class="plan-price">from $480 <small>per month</small></span>
+      </a>
+    </div>
+
+    <div class="alacarte reveal">
+      <h3>À la carte</h3>
+      <div class="menu-grid num">
+        <div class="menu-item"><span>Spring Awakening — full cleanup</span><span>$325</span></div>
+        <div class="menu-item"><span>Aeration &amp; Overseed</span><span>$290</span></div>
+        <div class="menu-item"><span>Close of Season — leaf removal, final cut</span><span>$295</span></div>
+        <div class="menu-item"><span>Hedge &amp; Shrub Shaping</span><span>from $150</span></div>
+        <div class="menu-item"><span>Mulch, installed</span><span>$85 / yd</span></div>
+        <div class="menu-item"><span>Bed Re-edging, per season</span><span>$120</span></div>
+      </div>
+    </div>
+
+    <p class="fineprint reveal">Prices are for typical quarter-acre grounds. Exact pricing is fixed in writing after the walk — and does not change mid-season. If anything is not right, say so within the day; we return and re-cut it. No forms, no discussion.</p>
+  </div>
+</section>
+
+<div class="cutline" aria-hidden="true"><svg viewBox="0 0 1440 52" preserveAspectRatio="none" data-cut></svg></div>
+
+<!-- ================= METHOD ================= -->
+<section class="section" id="method">
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">The Method</span>
+      <h2 class="reveal">How a property joins the roster.</h2>
+    </header>
+
+    <div class="method-grid">
+      <div class="step reveal">
+        <span class="numeral" aria-hidden="true">I</span>
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 120 90" width="120" height="90" aria-hidden="true">
+            <path pathLength="1" d="M8 82 C30 70 22 52 44 44 C68 35 60 20 92 12" />
+            <path pathLength="1" class="accent" d="M20 74 l3 -2 M34 62 l3 -2 M40 52 l3 -2 M56 42 l3 -2 M66 32 l3 -2 M80 20 l3 -2" stroke-dasharray="0"/>
+            <circle pathLength="1" class="accent" cx="98" cy="10" r="3"/>
+          </svg>
+        </figure>
+        <h3>The Walk</h3>
+        <p>We visit and walk the grounds with you, noting every edge, bed, slope, and problem corner.</p>
+      </div>
+      <div class="step reveal d1">
+        <span class="numeral" aria-hidden="true">II</span>
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 120 90" width="120" height="90" aria-hidden="true">
+            <path pathLength="1" d="M34 12 h44 v66 h-44 z"/>
+            <path pathLength="1" d="M42 28 h28 M42 38 h28 M42 48 h18"/>
+            <circle pathLength="1" class="accent" cx="66" cy="62" r="6"/>
+          </svg>
+        </figure>
+        <h3>The Plan</h3>
+        <p>Within 48 hours you receive a written care plan with fixed pricing. No estimates, no ranges.</p>
+      </div>
+      <div class="step reveal d2">
+        <span class="numeral" aria-hidden="true">III</span>
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 120 90" width="120" height="90" aria-hidden="true">
+            <path pathLength="1" d="M14 74 L48 16 H106 L88 74 Z"/>
+            <path pathLength="1" d="M40 30 h56 M33 42 h58 M26 54 h60 M19 66 h62" opacity=".55"/>
+            <circle pathLength="1" class="accent" cx="14" cy="74" r="2.6"/>
+          </svg>
+        </figure>
+        <h3>The Keeping</h3>
+        <p>The same two-person crew arrives the same day each week, with a message the evening before. You will rarely hear us; you will always see us.</p>
+      </div>
+      <div class="step reveal d3">
+        <span class="numeral" aria-hidden="true">IV</span>
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 120 90" width="120" height="90" aria-hidden="true">
+            <path pathLength="1" d="M14 20 C30 14 44 14 58 22 C72 14 86 14 104 20 V70 C86 64 72 64 58 72 C44 64 30 64 14 70 Z"/>
+            <path pathLength="1" d="M58 22 V72"/>
+            <path pathLength="1" class="accent" d="M74 42 l7 8 l14 -18"/>
+          </svg>
+        </figure>
+        <h3>The Review</h3>
+        <p>Each season we walk the grounds again and adjust the plan as the property matures.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KEPT DETAILS ================= -->
+<section class="section alt" id="details">
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">Signs of a Kept Lawn</span>
+      <h2 class="reveal">You can tell from the sidewalk.</h2>
+    </header>
+
+    <div class="details-grid">
+      <div class="study reveal">
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 240 180" aria-hidden="true">
+            <defs><clipPath id="lawnClip"><rect x="30" y="24" width="180" height="132" rx="2"/></clipPath></defs>
+            <rect pathLength="1" x="30" y="24" width="180" height="132" rx="2"/>
+            <g clip-path="url(#lawnClip)" stroke-width="14" opacity=".35">
+              <g class="pattern-layer active" data-pattern="straight">
+                <path pathLength="1" d="M51 10 v160 M87 10 v160 M123 10 v160 M159 10 v160 M195 10 v160" stroke="var(--moss)"/>
+              </g>
+              <g class="pattern-layer" data-pattern="diagonal">
+                <path pathLength="1" d="M-10 60 L80 -30 M10 110 L130 -10 M40 150 L180 10 M80 180 L220 40 M120 210 L250 80" stroke="var(--moss)"/>
+              </g>
+              <g class="pattern-layer" data-pattern="check">
+                <path pathLength="1" d="M66 10 v160 M138 10 v160 M210 10 v160" stroke="var(--moss)"/>
+                <path pathLength="1" d="M10 55 h220 M10 105 h220" stroke="var(--moss)"/>
+              </g>
+            </g>
+            <circle pathLength="1" class="accent" cx="30" cy="24" r="2.4"/>
+          </svg>
+        </figure>
+        <div class="pattern-chips" role="group" aria-label="Stripe pattern">
+          <button class="chip" data-chip="straight" aria-pressed="true">Straight</button>
+          <button class="chip" data-chip="diagonal" aria-pressed="false">Diagonal</button>
+          <button class="chip" data-chip="check" aria-pressed="false">Check</button>
+        </div>
+        <h3>The Checked Stripe</h3>
+        <p>Passes alternate direction each week, so the turf stands upright and the pattern reads from the street.</p>
+      </div>
+
+      <div class="study reveal d1">
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 240 180" aria-hidden="true">
+            <path pathLength="1" d="M18 78 H128 V118 H150"/>
+            <path pathLength="1" d="M18 78 v70 h204 v-30"/>
+            <path pathLength="1" d="M24 78 l-4 -12 M40 78 l-3 -14 M56 78 l-4 -12 M72 78 l-3 -15 M88 78 l-4 -12 M104 78 l-3 -13 M120 78 l-4 -12" />
+            <circle pathLength="1" cx="176" cy="112" r="3.4" opacity=".7"/>
+            <circle pathLength="1" cx="194" cy="116" r="3.4" opacity=".7"/>
+            <circle pathLength="1" cx="211" cy="111" r="3.4" opacity=".7"/>
+            <path pathLength="1" class="accent" d="M128 78 V118" stroke-width="2"/>
+          </svg>
+        </figure>
+        <h3>The Knife Edge</h3>
+        <p>Beds are cut to a clean ninety-degree trench, re-struck every visit, never sprayed brown.</p>
+      </div>
+
+      <div class="study reveal d2">
+        <figure>
+          <svg class="sketch draw" viewBox="0 0 240 180" aria-hidden="true">
+            <path pathLength="1" d="M88 24 h64 v82 h-64 z"/>
+            <path pathLength="1" d="M120 24 v82"/>
+            <path pathLength="1" d="M64 106 h112 v22 h-112 z M48 128 h144 v22 h-144 z"/>
+            <path pathLength="1" class="accent" d="M198 118 q14 -8 24 -2 M202 132 q14 -8 24 -2" opacity=".9"/>
+            <circle pathLength="1" class="accent" cx="113" cy="68" r="2.2"/>
+            <circle pathLength="1" class="accent" cx="127" cy="68" r="2.2"/>
+          </svg>
+        </figure>
+        <h3>The Clean Threshold</h3>
+        <p>Not one clipping left on walk, drive, or doormat. We photograph the threshold before we leave.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOUSE STANDARD ================= -->
+<section class="section" id="standard">
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">The House Standard</span>
+      <h2 class="reveal">Ten points, kept on every visit.</h2>
+    </header>
+
+    <ol class="standard-list num" role="list" style="list-style:none">
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">I</span><p>Blades sharpened after every eight hours of cutting.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">II</span><p>Never more than a third of the blade's height removed in a single cut.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">III</span><p>Cut height held at three to three-and-a-half inches — tall turf shades its roots and beats the weeds.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">IV</span><p>Stripe direction alternated weekly, so the turf stands upright.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">V</span><p>Edges re-struck every visit. Never sprayed brown.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">VI</span><p>Sprinkler heads flagged and mowed around.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">VII</span><p>A message the evening before; word by 7 a.m. if rain shifts the day.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">VIII</span><p>Walks, drive, and threshold blown clean. The threshold photographed before we leave.</p></li>
+      <li class="standard-item reveal"><span class="rn" aria-hidden="true">IX</span><p>Gates closed, latched, and photographed likewise.</p></li>
+      <li class="standard-item vow reveal"><span class="rn" aria-hidden="true">X</span><p>If anything is not right, say so within the day. We return and re-cut it. No forms, no discussion.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="cutline" aria-hidden="true"><svg viewBox="0 0 1440 52" preserveAspectRatio="none" data-cut></svg></div>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="section words" id="words">
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">In Their Words</span>
+      <h2 class="reveal">The quiet verdict.</h2>
+    </header>
+
+    <div class="quote-stage" id="quoteStage">
+      <span class="qmark" aria-hidden="true">&ldquo;</span>
+      <figure class="quote active">
+        <blockquote><p>They are the first crew in twenty years I haven't had to think about. The lawn simply looks right every Friday, without a word from me.</p></blockquote>
+        <figcaption>Margaret Ellison <span class="loc">Wexford Hills · kept since 2020</span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote><p>Our last service cut grass. Greensward keeps the grounds. The neighbors have started asking who does our lawn — which, I confess, we enjoy.</p></blockquote>
+        <figcaption>Daniel &amp; Priya Raman <span class="loc">Old Orchard Road · kept since 2022</span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote><p>Quiet, punctual, exact. The edging alone is worth the fee.</p></blockquote>
+        <figcaption>Thomas Beaumont <span class="loc">Ashcombe Lane · kept since 2021</span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote><p>The house sold in a weekend. The agent's first question was who kept the grounds.</p></blockquote>
+        <figcaption>Eleanor Voss <span class="loc">Briar Court · kept 2019–2026</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="quote-nav">
+      <button class="qdot" data-q="0" aria-pressed="true" aria-label="Quote one">I</button>
+      <button class="qdot" data-q="1" aria-pressed="false" aria-label="Quote two">II</button>
+      <button class="qdot" data-q="2" aria-pressed="false" aria-label="Quote three">III</button>
+      <button class="qdot" data-q="3" aria-pressed="false" aria-label="Quote four">IV</button>
+      <div class="qprogress" aria-hidden="true"><i id="qBar"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICE AREA ================= -->
+<section class="section alt" id="where">
+  <div class="container">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">Where We Keep</span>
+      <h2 class="reveal">Fifteen miles. Sixty properties. No&nbsp;more.</h2>
+    </header>
+
+    <div class="where-grid">
+      <div class="where-copy reveal">
+        <p>We keep a deliberately limited roster within a fifteen-mile radius of Wexford, so the same crew can know every property closely. A short waitlist is common in spring.</p>
+        <p class="outside">Outside the circle? Leave your address anyway — routes are redrawn each January.</p>
+      </div>
+      <div class="map-panel reveal d1">
+        <svg viewBox="0 0 520 420" role="img" aria-label="Drawn map of the Greensward service area: a fifteen-mile circle around Wexford with six kept neighborhoods.">
+          <g class="sketch draw">
+            <path pathLength="1" d="M20 300 C90 280 120 320 190 296 C260 272 300 320 380 300 C440 285 470 310 505 296" opacity=".5"/>
+            <path pathLength="1" d="M100 20 C130 90 90 150 140 220 C180 276 150 340 170 400" opacity=".5"/>
+            <path pathLength="1" d="M330 30 C300 110 360 170 330 240 C305 298 340 350 320 405" opacity=".5"/>
+            <path pathLength="1" d="M30 120 C120 140 240 100 330 130 C400 152 460 130 505 145" opacity=".5"/>
+          </g>
+          <circle cx="260" cy="212" r="168" fill="none" stroke="var(--brass)" stroke-width="1.2" stroke-dasharray="5 7"/>
+          <g fill="var(--estate)">
+            <circle class="map-dot" cx="260" cy="212" r="5" fill="var(--brass)"/>
+            <circle class="map-dot" cx="180" cy="132" r="4" style="--del:.4s"/>
+            <circle class="map-dot" cx="348" cy="150" r="4" style="--del:.9s"/>
+            <circle class="map-dot" cx="128" cy="252" r="4" style="--del:1.3s"/>
+            <circle class="map-dot" cx="330" cy="298" r="4" style="--del:1.8s"/>
+            <circle class="map-dot" cx="238" cy="330" r="4" style="--del:2.2s"/>
+            <circle class="map-dot" cx="398" cy="228" r="4" style="--del:2.6s"/>
+          </g>
+          <g class="map-label">
+            <text x="272" y="206">Wexford</text>
+            <text x="150" y="118">Wexford Hills</text>
+            <text x="360" y="140">Old Orchard</text>
+            <text x="86" y="278">Ashcombe</text>
+            <text x="342" y="318">Briar Court</text>
+            <text x="200" y="352">The Meadows</text>
+            <text x="382" y="252">Lake Terrace</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="section" id="faq">
+  <div class="container faq">
+    <header class="sec-head">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">Asked, Answered</span>
+      <h2 class="reveal">The practical part.</h2>
+    </header>
+
+    <div class="faq-list reveal">
+      <details class="faq-item">
+        <summary>What happens on a rain day?<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>You have word by 7 a.m. and the visit moves, usually by a day. Skipped visits are never charged.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>Am I signing a contract?<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>No. The plan is in writing so the price cannot move; you may pause or end the keeping with a note, any time.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>How does payment work?<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>A card on file, charged after each visit, and a plain statement at the close of each month. No invoices to chase.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>We have a dog.<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>Most of our properties do. The crew texts thirty minutes ahead, so dogs are in and toys are up before we open the gate.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>What do you do with the clippings?<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>Mulched finely back into the turf as a rule — it feeds the lawn. Bagged and removed on request.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary>Do I need to be home?<span class="mark" aria-hidden="true">+</span></summary>
+        <div class="faq-body"><p>No. Several of our clients have never seen us. They tell us the lawn is how they know we came.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ASSESSMENT ================= -->
+<section class="section assessment on-dark" id="assessment" data-sweep>
+  <div class="container assess-grid">
+    <div class="assess-aside">
+      <hr class="rule" aria-hidden="true">
+      <span class="eyebrow">The First Step</span>
+      <h2 class="reveal">Request a grounds assessment.</h2>
+      <p class="lede reveal d1">An unhurried walk of your property, a written plan within 48 hours, and no obligation either way.</p>
+      <p class="openings num reveal d2">Six openings remain for the coming season.</p>
+    </div>
+
+    <div class="assess-form-wrap">
+      <form class="gw-form reveal d1" id="gwForm" novalidate>
+        <div class="field">
+          <label for="fName">Name</label>
+          <input id="fName" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="fEmail">Email</label>
+          <input id="fEmail" name="email" type="email" autocomplete="email" inputmode="email" required>
+        </div>
+        <div class="field">
+          <label for="fAddress">Address</label>
+          <input id="fAddress" name="address" type="text" autocomplete="street-address" required>
+        </div>
+        <div class="field">
+          <span class="field-label" id="lotLabel">Grounds size</span>
+          <div class="lot-grid" role="radiogroup" aria-labelledby="lotLabel">
+            <div class="lot-opt">
+              <input type="radio" id="lot1" name="lot" value="Under ¼ acre" checked>
+              <label for="lot1">
+                <svg viewBox="0 0 72 48" width="72" height="48" aria-hidden="true"><rect x="22" y="10" width="28" height="28"/><rect x="31" y="19" width="10" height="10" fill="var(--brass)" stroke="none"/></svg>
+                Under ¼ acre
+              </label>
+            </div>
+            <div class="lot-opt">
+              <input type="radio" id="lot2" name="lot" value="¼–½ acre">
+              <label for="lot2">
+                <svg viewBox="0 0 72 48" width="72" height="48" aria-hidden="true"><rect x="14" y="10" width="44" height="28"/><rect x="24" y="18" width="10" height="10" fill="var(--brass)" stroke="none"/><circle cx="48" cy="30" r="5"/></svg>
+                ¼–½ acre
+              </label>
+            </div>
+            <div class="lot-opt">
+              <input type="radio" id="lot3" name="lot" value="½–1 acre">
+              <label for="lot3">
+                <svg viewBox="0 0 72 48" width="72" height="48" aria-hidden="true"><rect x="8" y="6" width="56" height="36"/><rect x="18" y="14" width="11" height="11" fill="var(--brass)" stroke="none"/><circle cx="50" cy="16" r="5"/><circle cx="52" cy="32" r="6"/></svg>
+                ½–1 acre
+              </label>
+            </div>
+            <div class="lot-opt">
+              <input type="radio" id="lot4" name="lot" value="Over an acre">
+              <label for="lot4">
+                <svg viewBox="0 0 72 48" width="72" height="48" aria-hidden="true"><path d="M6 12 L38 4 L66 14 L62 42 L20 44 L8 34 Z"/><rect x="26" y="16" width="11" height="11" fill="var(--brass)" stroke="none"/><path d="M46 30 q6 -6 12 0 q-6 6 -12 0 Z"/></svg>
+                Over an acre
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fPlan">Plan of interest</label>
+          <select id="fPlan" name="plan">
+            <option>Not sure yet</option>
+            <option>The Weekly Cut</option>
+            <option>The Full Keeping</option>
+            <option>The Estate Standard</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fNotes">Notes — slopes, pets, gates, particulars</label>
+          <textarea id="fNotes" name="notes" rows="3"></textarea>
+        </div>
+        <p class="form-error" id="formError" role="alert" hidden>Please add your name, a valid email, and your address.</p>
+        <button class="btn btn-solid" type="submit">Request Assessment</button>
+        <p class="form-foot">No visit needed for the first word — we reply within one business day.<br>
+        Tel. <a href="tel:+15550142210" class="num">(555) 014-2210</a> · <a href="mailto:care@greenswardandco.com">care@greenswardandco.com</a></p>
+      </form>
+
+      <div class="form-success" id="formSuccess" tabindex="-1" aria-live="polite">
+        <hr class="rule in-view" aria-hidden="true">
+        <h3>Received.</h3>
+        <p>You will have the plan in writing within 48 hours. If the walk suits you sooner, telephone — someone answers between 7:00 and 4:00.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="wordmark" href="#top">
+          <svg viewBox="0 0 18 20" aria-hidden="true"><path d="M5 19 Q4.5 12 3 7 M9 19 Q9 10 9 3 M13 19 Q13.8 11 15 6" stroke="var(--brass)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          Greensward <span class="amp">&amp;</span> Co.
+        </a>
+        <p class="tagline">The lawn, properly kept.</p>
+      </div>
+      <div class="footer-col">
+        <h3>The House</h3>
+        <ul>
+          <li><a href="#plans">Care Plans</a></li>
+          <li><a href="#method">The Method</a></li>
+          <li><a href="#standard">The Standard</a></li>
+          <li><a href="#words">In Their Words</a></li>
+          <li><a href="#where">Where We Keep</a></li>
+          <li><a href="#assessment">Request Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Particulars</h3>
+        <p class="footer-meta num">
+          Mon–Fri, 7:00–4:00<br>
+          Wexford, and the fifteen miles around it<br>
+          Licensed &amp; insured — $2M liability · Lic. №&nbsp;LC-40917<br>
+          Tel. (555) 014-2210 · care@greenswardandco.com
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom num">
+      <span>© 2026 Greensward &amp; Co. Grounds Care Ltd.</span>
+      <span class="glyph" aria-hidden="true"><svg viewBox="0 0 18 20"><path d="M5 19 Q4.5 12 3 7 M9 19 Q9 10 9 3 M13 19 Q13.8 11 15 6" stroke="var(--brass)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></span>
+      <span>Est. 2019 · A limited roster, by design</span>
+    </div>
+  </div>
+  <div class="watermark" aria-hidden="true">Greensward</div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var NS='http://www.w3.org/2000/svg';
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Procedural hero lawn ---------- */
+  function buildLawn(){
+    var svg=document.getElementById('lawnSvg');
+    if(!svg) return;
+    var W=1440,H=300,VPX=720,VPY=-620;
+    // stripes converge toward a vanishing point far above the frame,
+    // so they read as a mowed lawn receding, not a sunburst
+    function xAt(xBottom,y){return VPX+(xBottom-VPX)*(y-VPY)/(H-VPY);}
+    var stripes=document.createElementNS(NS,'g');
+    var n=14,span=3000,x0=-780;
+    for(var i=0;i<n;i++){
+      var a=x0+i*(span/n),b=a+span/n;
+      var poly=document.createElementNS(NS,'polygon');
+      poly.setAttribute('points',
+        xAt(a,0)+',0 '+xAt(b,0)+',0 '+b+','+H+' '+a+','+H);
+      poly.setAttribute('fill',i%2?'#3F5F49':'#C9D2C0');
+      poly.setAttribute('opacity',i%2?'0.34':'0.28');
+      stripes.appendChild(poly);
+    }
+    svg.appendChild(stripes);
+    // atmospheric haze toward the horizon
+    var defs=document.createElementNS(NS,'defs');
+    defs.innerHTML='<linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#F6F2E7" stop-opacity="1"/>'+
+      '<stop offset="0.6" stop-color="#F6F2E7" stop-opacity="0"/>'+
+      '</linearGradient>';
+    svg.appendChild(defs);
+    var haze=document.createElementNS(NS,'rect');
+    haze.setAttribute('x',0);haze.setAttribute('y',0);
+    haze.setAttribute('width',W);haze.setAttribute('height',H);
+    haze.setAttribute('fill','url(#haze)');
+    svg.appendChild(haze);
+    // grass fringe: three depth layers along the bottom edge
+    var layers=[
+      {color:'#C9D2C0',count:70,hMin:22,hMax:42,w:2,op:.85},
+      {color:'#3F5F49',count:62,hMin:32,hMax:58,w:2.4,op:.95},
+      {color:'#12211A',count:54,hMin:42,hMax:76,w:2.7,op:1}
+    ];
+    layers.forEach(function(L){
+      var g=document.createElementNS(NS,'g');
+      for(var i=0;i<L.count;i++){
+        var x=Math.random()*W;
+        var h=L.hMin+Math.random()*(L.hMax-L.hMin);
+        var lean=(Math.random()-0.5)*22;
+        var p=document.createElementNS(NS,'path');
+        p.setAttribute('d','M'+x.toFixed(1)+' '+H+' Q'+(x+lean*0.35).toFixed(1)+' '+(H-h*0.55).toFixed(1)+' '+(x+lean).toFixed(1)+' '+(H-h).toFixed(1));
+        p.setAttribute('stroke',L.color);
+        p.setAttribute('stroke-width',(L.w*(0.8+Math.random()*0.5)).toFixed(2));
+        p.setAttribute('stroke-linecap','round');
+        p.setAttribute('fill','none');
+        p.setAttribute('opacity',L.op);
+        p.setAttribute('class','blade');
+        p.style.setProperty('--amp',(1.2+Math.random()*1.6).toFixed(2)+'deg');
+        p.style.setProperty('--dur',(4+Math.random()*3).toFixed(2)+'s');
+        p.style.setProperty('--del',(-Math.random()*6).toFixed(2)+'s');
+        g.appendChild(p);
+      }
+      svg.appendChild(g);
+    });
+  }
+
+  /* ---------- Cut line dividers ---------- */
+  function buildCutlines(){
+    document.querySelectorAll('[data-cut]').forEach(function(svg){
+      var W=1440,BASE=52,TOP=12;
+      var g=document.createElementNS(NS,'g');
+      var x=2;
+      while(x<W){
+        var lean=(Math.random()-0.5)*8;
+        var p=document.createElementNS(NS,'path');
+        p.setAttribute('d','M'+x+' '+BASE+' L'+(x+lean).toFixed(1)+' '+TOP);
+        p.setAttribute('stroke','#12211A');
+        p.setAttribute('stroke-width',(1.1+Math.random()*1.3).toFixed(2));
+        p.setAttribute('stroke-linecap','round');
+        p.setAttribute('opacity',(0.35+Math.random()*0.6).toFixed(2));
+        g.appendChild(p);
+        x+=5+Math.random()*7;
+      }
+      svg.appendChild(g);
+      for(var i=0;i<3;i++){
+        var r=document.createElementNS(NS,'rect');
+        r.setAttribute('x',(200+Math.random()*1000).toFixed(0));
+        r.setAttribute('y',TOP-6);
+        r.setAttribute('width',4);r.setAttribute('height',3);
+        r.setAttribute('fill','#3F5F49');
+        r.setAttribute('class','particle');
+        svg.appendChild(r);
+      }
+    });
+  }
+
+  /* ---------- Scroll choreography ---------- */
+  var io;
+  function observe(){
+    var targets=document.querySelectorAll('.sec-head, .manifesto .container, .reveal, .draw, .cutline, [data-sweep]');
+    if(!('IntersectionObserver' in window)){
+      targets.forEach(function(t){t.classList.add('in-view','swept');});
+      return;
+    }
+    io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in-view');
+          if(e.target.hasAttribute('data-sweep')&&!reduced) e.target.classList.add('swept');
+          io.unobserve(e.target);
+        }
+      });
+    },{threshold:0.18,rootMargin:'0px 0px -40px 0px'});
+    targets.forEach(function(t){io.observe(t);});
+  }
+
+  /* ---------- Nav ---------- */
+  var nav=document.getElementById('nav');
+  function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+
+  var menuBtn=document.getElementById('menuBtn');
+  function setMenu(open){
+    document.body.classList.toggle('menu-open',open);
+    menuBtn.setAttribute('aria-expanded',open?'true':'false');
+    menuBtn.setAttribute('aria-label',open?'Close menu':'Open menu');
+    document.body.style.overflow=open?'hidden':'';
+  }
+  menuBtn.addEventListener('click',function(){
+    setMenu(!document.body.classList.contains('menu-open'));
+  });
+  document.querySelectorAll('.mobile-menu a').forEach(function(a){
+    a.addEventListener('click',function(){setMenu(false);});
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&document.body.classList.contains('menu-open')){setMenu(false);menuBtn.focus();}
+  });
+  window.addEventListener('resize',function(){
+    if(window.innerWidth>900&&document.body.classList.contains('menu-open')) setMenu(false);
+  });
+
+  /* ---------- Stripe pattern switcher ---------- */
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click',function(){
+      var key=chip.getAttribute('data-chip');
+      document.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed',c===chip);});
+      document.querySelectorAll('.pattern-layer').forEach(function(l){
+        l.classList.toggle('active',l.getAttribute('data-pattern')===key);
+      });
+    });
+  });
+
+  /* ---------- Testimonial rotation ---------- */
+  var quotes=[].slice.call(document.querySelectorAll('.quote'));
+  var qdots=[].slice.call(document.querySelectorAll('.qdot'));
+  var qBar=document.getElementById('qBar');
+  var qIndex=0,qTimer=null,qPaused=false,qDelay=8000;
+  function restartBar(){
+    if(!qBar) return;
+    qBar.classList.remove('run');
+    void qBar.offsetWidth;
+    if(!reduced&&!qPaused) qBar.classList.add('run');
+  }
+  /* one self-scheduling clock drives both the advance and the progress bar,
+     so a hover/focus pause can never desync them */
+  function scheduleQ(){
+    if(qTimer){clearTimeout(qTimer);qTimer=null;}
+    restartBar();
+    if(reduced||qPaused||quotes.length<2) return;
+    qTimer=setTimeout(nextQuote,qDelay);
+  }
+  function showQuote(i){
+    qIndex=i;
+    quotes.forEach(function(q,k){q.classList.toggle('active',k===i);});
+    qdots.forEach(function(d,k){d.setAttribute('aria-pressed',k===i?'true':'false');});
+    scheduleQ();
+  }
+  function nextQuote(){showQuote((qIndex+1)%quotes.length);}
+  function pauseQ(){qPaused=true;if(qTimer){clearTimeout(qTimer);qTimer=null;}if(qBar)qBar.classList.remove('run');}
+  function resumeQ(){if(!qPaused)return;qPaused=false;scheduleQ();}
+  qdots.forEach(function(d,i){d.addEventListener('click',function(){showQuote(i);});});
+  /* pause on hover OR keyboard focus anywhere in the section (WCAG 2.2.2) */
+  var wordsSec=document.getElementById('words');
+  if(wordsSec){
+    wordsSec.addEventListener('mouseenter',pauseQ);
+    wordsSec.addEventListener('mouseleave',resumeQ);
+    wordsSec.addEventListener('focusin',pauseQ);
+    wordsSec.addEventListener('focusout',function(e){if(!wordsSec.contains(e.relatedTarget)) resumeQ();});
+  }
+
+  /* ---------- Plan preselect from rate card ---------- */
+  var planSelect=document.getElementById('fPlan');
+  document.querySelectorAll('[data-plan]').forEach(function(row){
+    row.addEventListener('click',function(){
+      if(planSelect) planSelect.value=row.getAttribute('data-plan');
+    });
+  });
+
+  /* ---------- Form ---------- */
+  var form=document.getElementById('gwForm');
+  var success=document.getElementById('formSuccess');
+  var formError=document.getElementById('formError');
+  function markInvalid(f,bad){
+    f.classList.toggle('invalid',bad);
+    f.setAttribute('aria-invalid',bad?'true':'false');
+  }
+  if(form){
+    var fName=document.getElementById('fName');
+    var fEmail=document.getElementById('fEmail');
+    var fAddr=document.getElementById('fAddress');
+    var required=[fName,fEmail,fAddr];
+    var emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    /* clear a field's error as soon as it becomes valid, and hide the
+       summary once nothing is left invalid */
+    required.forEach(function(f){
+      f.addEventListener('input',function(){
+        var ok=f===fEmail?emailRe.test(f.value.trim()):!!f.value.trim();
+        if(ok){
+          markInvalid(f,false);
+          if(formError&&!form.querySelector('.invalid')) formError.hidden=true;
+        }
+      });
+    });
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      var checks=[
+        [fName,!fName.value.trim()],
+        [fEmail,!emailRe.test(fEmail.value.trim())],
+        [fAddr,!fAddr.value.trim()]
+      ];
+      var firstBad=null;
+      checks.forEach(function(c){markInvalid(c[0],c[1]);if(c[1]&&!firstBad)firstBad=c[0];});
+      if(firstBad){
+        if(formError) formError.hidden=false;
+        firstBad.focus();
+        return;
+      }
+      if(formError) formError.hidden=true;
+      form.style.display='none';
+      success.classList.add('visible');
+      success.focus();
+    });
+  }
+
+  /* ---------- Init ---------- */
+  buildLawn();
+  buildCutlines();
+  observe();
+  showQuote(0);
+
+  /* Debug handle for headless verification */
+  window.__gw={
+    revealAll:function(){
+      document.querySelectorAll('.sec-head, .manifesto .container, .reveal, .draw, .cutline, [data-sweep]').forEach(function(t){t.classList.add('in-view');});
+    },
+    showQuote:showQuote
+  };
+})();
+</script>
+</body>
+</html>

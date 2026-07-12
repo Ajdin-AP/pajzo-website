@@ -6,3 +6,6 @@ dist
 .DS_Store
 .env*
 .vercel-global
+
+# staging copies of showcased sites — the served builds live in public/portfolio
+portofolio

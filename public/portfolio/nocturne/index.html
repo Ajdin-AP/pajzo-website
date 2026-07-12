@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOCTURNE Automobiles — The Night Exhibition</title>
+<meta name="description" content="NOCTURNE Automobiles. Sculpture, at speed. Four works on view, by appointment, dusk until midnight.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0908'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='19' fill='%23C6A15B' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..500;1,9..144,300..500&family=Archivo:wght@400;500&family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+  { "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body data-lit="false">
+
+<!-- ═══════════ The loader: the gallery is being lit ═══════════ -->
+<div id="loader" aria-hidden="true">
+  <p class="loader-line">The gallery is being lit.</p>
+  <div class="loader-rule"><span id="loader-progress"></span></div>
+</div>
+
+<!-- ═══════════ Custom cursor ═══════════ -->
+<div id="cursor" aria-hidden="true"><span id="cursor-word"></span></div>
+
+<!-- ═══════════ Roman rail (floor plan) ═══════════ -->
+<nav id="rail" aria-label="Rooms">
+  <a href="#room-1" data-room="1">I</a>
+  <a href="#room-2" data-room="2">II</a>
+  <a href="#room-3" data-room="3">III</a>
+  <a href="#room-4" data-room="4">IV</a>
+  <a href="#room-5" data-room="5">V</a>
+  <a href="#room-6" data-room="6">VI</a>
+  <a href="#room-7" data-room="7">VII</a>
+</nav>
+
+<!-- ═══════════ Header ═══════════ -->
+<header id="top-bar">
+  <a class="wordmark" href="#room-1">NOCTURNE<span> Automobiles</span></a>
+  <nav class="top-links" aria-label="Primary">
+    <a href="#room-2">Collection</a>
+    <a href="#room-4">Acquisition</a>
+    <a href="#room-5">Private viewing</a>
+  </nav>
+  <p class="clock" aria-label="Gallery time">Tonight, <span id="clock-time">23:47</span></p>
+</header>
+
+<main>
+  <!-- ═══════════ ROOM I — The Exhibition ═══════════ -->
+  <section id="room-1" class="room-exhibition" aria-label="Room I — The Exhibition">
+    <canvas id="stage" aria-label="Interactive showroom — drag to walk around the work"></canvas>
+
+    <p class="open-tonight reveal">NOCTURNE — OPEN TONIGHT UNTIL MIDNIGHT</p>
+
+    <h1 class="hero-line hero-line-a" aria-label="The night exhibition"><span aria-hidden="true">The night</span></h1>
+    <h1 class="hero-line hero-line-b" aria-hidden="true"><span>exhibition.</span></h1>
+
+    <!-- wall label -->
+    <aside class="wall-label">
+      <span id="wl-sr" class="sr-only" aria-live="polite"></span>
+      <p class="wl-no">No. <span id="wl-no">01</span> — <em id="wl-name">Vermilion Study</em></p>
+      <p class="wl-medium"><span id="wl-year">2026</span> · <span id="wl-medium">Aluminium, carbon, oxblood lacquer</span></p>
+      <p class="wl-specs mono" id="wl-specs">630 hp · 0–100 in 3.4 s · 318 km/h</p>
+      <p class="wl-loan">On loan from the founder's collection</p>
+      <div class="wl-controls">
+        <button id="lamplight" class="mono" aria-pressed="false">LAMPLIGHT — <span>OFF</span></button>
+        <div class="sightlines" role="group" aria-label="Viewpoints">
+          <button data-view="0" class="stud active" aria-label="Three-quarter view"><i></i><span>Three-quarter</span></button>
+          <button data-view="1" class="stud" aria-label="Profile view"><i></i><span>The profile</span></button>
+          <button data-view="2" class="stud" aria-label="Detail view"><i></i><span>The detail</span></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- configurator: works & lacquers -->
+    <aside class="hero-config">
+      <div class="works" role="group" aria-label="Works on view">
+        <button data-work="vermilion" class="work-num active" aria-label="No. 01 Vermilion Study">I</button>
+        <button data-work="basalt" class="work-num" aria-label="No. 02 Basalt Longtail">II</button>
+        <button data-work="citadel" class="work-num" aria-label="No. 03 The Citadel">III</button>
+        <button data-work="solstice" class="work-num" aria-label="No. 04 Solstice Speedster">IV</button>
+      </div>
+      <div class="chips" role="group" aria-label="Lacquers" id="chips"></div>
+    </aside>
+
+    <a class="walk-cue" href="#room-2"><span>Walk the rooms</span><i></i></a>
+  </section>
+
+  <!-- ═══════════ ROOM II — The Permanent Collection ═══════════ -->
+  <section id="room-2" class="room" aria-label="Room II — The Permanent Collection">
+    <header class="room-head reveal">
+      <p class="eyebrow">Room II — The Permanent Collection</p>
+      <h2>Four works, currently on view.</h2>
+      <p class="room-intro">Each is built the way sculpture is cast — a single silhouette, drawn first as a line,
+      then extruded in aluminium and lacquer. The drawings below are those lines.</p>
+    </header>
+    <div id="plates"></div>
+  </section>
+
+  <!-- ═══════════ ROOM III — Curator's Notes ═══════════ -->
+  <section id="room-3" class="room room-notes" aria-label="Room III — Curator's Notes">
+    <p class="eyebrow reveal">Room III — Curator's Notes</p>
+    <blockquote class="pull reveal" id="curator-quote">
+      <span class="pull-rule"></span>
+      <p>“This is what silence looks like at 350 km/h.”</p>
+      <cite>— the curator, on <em>Basalt Longtail</em></cite>
+    </blockquote>
+    <div class="notes-cols">
+      <article class="reveal">
+        <h3>Cast, not stamped</h3>
+        <p>Every NOCTURNE body begins as one continuous side-profile spline, drawn by hand and argued over
+        for months. The panel is then formed as a single piece. There are no seams to hide because there
+        are no seams.</p>
+      </article>
+      <article class="reveal">
+        <h3>The finish is the argument</h3>
+        <p>Five lacquers, mixed in-house, applied in nine coats and cut back by hand between each. Clearcoat
+        is polished until the reflection of a spotlight holds a straight edge. Then it is polished again.</p>
+      </article>
+      <article class="reveal">
+        <h3>Please do not touch</h3>
+        <p>Except this one, at 300 km/h. A work that cannot be driven hard is a paperweight with provenance;
+        each of ours is conserved precisely so that it can be used without apology.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══════════ ROOM IV — Acquisition & Patronage ═══════════ -->
+  <section id="room-4" class="room" aria-label="Room IV — Acquisition and Patronage">
+    <header class="room-head reveal">
+      <p class="eyebrow">Room IV — Acquisition &amp; Patronage</p>
+      <h2>Acquiring a work.</h2>
+      <p class="room-intro">Precision is how money whispers. Every figure below is exact; there are no asterisks
+      anywhere in this room.</p>
+    </header>
+
+    <div class="acq-grid">
+      <article class="plaque reveal">
+        <h3>Outright acquisition</h3>
+        <p>The work leaves the collection the same week. Delivery by covered transport is included, as are the
+        provenance documents and the first year of conservation.</p>
+        <p class="mono plaque-fig" id="acq-cash">$246,000</p>
+      </article>
+      <article class="plaque plaque-active reveal">
+        <h3>Patronage <span class="mono">— finance</span></h3>
+        <p>The gallery carries the balance while the work hangs with you. APR 4.90, stated in daylight,
+        sixty months, nothing folded into the corners.</p>
+        <p class="mono plaque-fig"><span id="odometer" class="odometer" aria-hidden="true"></span><span class="permo" aria-hidden="true"> / month</span><span id="odometer-sr" class="sr-only" aria-live="polite"></span></p>
+      </article>
+      <article class="plaque reveal">
+        <h3>Long-term loan <span class="mono">— lease</span></h3>
+        <p>The work hangs with you for thirty-six months, conserved by us, then returns to the collection —
+        or stays, if you cannot part with it. Most cannot.</p>
+        <p class="mono plaque-fig" id="acq-lease">$2,890 / month</p>
+      </article>
+    </div>
+
+    <div class="ledger reveal">
+      <div class="ledger-controls">
+        <label class="mono" for="dp">Deposit — <span id="dp-label">20%</span></label>
+        <input type="range" id="dp" min="0" max="60" step="5" value="20">
+        <label class="mono" for="work-select">The work</label>
+        <select id="work-select" class="mono">
+          <option value="vermilion">No. 01 — Vermilion Study</option>
+          <option value="basalt">No. 02 — Basalt Longtail</option>
+          <option value="citadel">No. 03 — The Citadel</option>
+          <option value="solstice">No. 04 — Solstice Speedster</option>
+        </select>
+      </div>
+      <table class="mono" aria-label="Full cost of patronage">
+        <tbody>
+          <tr><td>Acquisition estimate</td><td id="lg-price">$246,000.00</td></tr>
+          <tr><td>Deposit</td><td id="lg-deposit">$49,200.00</td></tr>
+          <tr><td>Amount financed</td><td id="lg-financed">$196,800.00</td></tr>
+          <tr><td>APR, fixed</td><td>4.90%</td></tr>
+          <tr><td>Term</td><td>60 months</td></tr>
+          <tr><td>Monthly</td><td id="lg-monthly">$3,705.05</td></tr>
+          <tr><td>Total interest</td><td id="lg-interest">$25,503.00</td></tr>
+          <tr><td>Total of payments</td><td id="lg-total">$222,303.00</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote">Every acquisition includes provenance documents and first-year conservation (servicing).</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ ROOM V — Private Viewing ═══════════ -->
+  <section id="room-5" class="room" aria-label="Room V — Private Viewing">
+    <header class="room-head reveal">
+      <p class="eyebrow">Room V — Private Viewing</p>
+      <h2>The gallery opens for one visitor at a time.</h2>
+      <p class="room-intro">A viewing is forty minutes, after hours, with the work started and warm.
+      Bring your licence; the road behind the gallery is unlit and entirely legal.</p>
+    </header>
+
+    <form id="booking" class="reveal" novalidate>
+      <fieldset class="bk-works">
+        <legend class="mono">The work</legend>
+        <div id="bk-works-grid"></div>
+      </fieldset>
+      <fieldset class="bk-dates">
+        <legend class="mono">The night</legend>
+        <div id="bk-dates-grid"></div>
+      </fieldset>
+      <div class="bk-person">
+        <label>
+          <span class="mono">Your name</span>
+          <input type="text" id="bk-name" autocomplete="name" required>
+        </label>
+        <label>
+          <span class="mono">Telephone</span>
+          <input type="tel" id="bk-phone" autocomplete="tel" required>
+        </label>
+      </div>
+      <button type="submit" class="btn-primary">Request the key</button>
+      <p class="form-note" id="bk-note" aria-live="polite"></p>
+    </form>
+
+    <div id="booking-done" class="wall-label-static" hidden>
+      <p class="wl-no">Viewing № <span id="bk-ref">0000</span> — <em>reserved</em></p>
+      <p class="wl-loan">A curator will telephone you before nightfall.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ ROOM VI — Provenance ═══════════ -->
+  <section id="room-6" class="room" aria-label="Room VI — Provenance">
+    <header class="room-head reveal">
+      <p class="eyebrow">Room VI — Provenance</p>
+      <h2>Every work arrives documented.</h2>
+    </header>
+    <div class="notes-cols">
+      <article class="reveal">
+        <h3>Provenance</h3>
+        <p>Fully documented history with every work: build sheets, conservation records, the 214-point
+        condition report, and the name of the person who signed each one.</p>
+      </article>
+      <article class="reveal">
+        <h3>The conservators</h3>
+        <p class="conservators">
+          <span class="cons-name">E. Marchetti</span><span class="cons-title">Master technician, drivetrain</span>
+          <span class="cons-name">H. Okonkwo</span><span class="cons-title">Master technician, chassis</span>
+          <span class="cons-name">S. Lindqvist</span><span class="cons-title">Conservator of finishes</span>
+        </p>
+      </article>
+      <article class="reveal">
+        <h3>The guarantee</h3>
+        <p>Insured and conserved for two years, as any work of consequence must be. If a fault is ours,
+        the transport to remedy it is also ours.</p>
+      </article>
+    </div>
+    <p class="colophon mono reveal">Factory certified · Insured covered transport · 400+ works placed since MMXI</p>
+  </section>
+
+  <!-- ═══════════ ROOM VII — Visitor Information ═══════════ -->
+  <footer id="room-7" class="room" aria-label="Room VII — Visitor Information">
+    <div class="foot-grid">
+      <div class="reveal">
+        <p class="wordmark">NOCTURNE<span> Automobiles</span></p>
+        <p class="foot-line">By appointment · Dusk until midnight</p>
+        <label class="newsletter">
+          <span class="mono">Receive the next catalogue</span>
+          <input type="email" id="newsletter" placeholder="you@address" autocomplete="email">
+          <span class="news-note" id="news-note" aria-live="polite"></span>
+        </label>
+      </div>
+      <address class="reveal">
+        <p>Gallery &amp; Garage</p>
+        <p>Kersnikova 7, Ljubljana</p>
+        <p>+386 1 234 50 67</p>
+        <p>viewings@nocturne.example</p>
+      </address>
+      <nav class="foot-index reveal" aria-label="Index">
+        <a href="#room-1">I — The Exhibition</a>
+        <a href="#room-2">II — The Collection</a>
+        <a href="#room-3">III — Curator's Notes</a>
+        <a href="#room-4">IV — Acquisition</a>
+        <a href="#room-5">V — Private Viewing</a>
+        <a href="#room-6">VI — Provenance</a>
+        <a href="#room-7">VII — Information</a>
+      </nav>
+    </div>
+    <p class="foot-rule mono">NOCTURNE Automobiles · Est. MMXI · The collection changes; the light does not.</p>
+  </footer>
+</main>
+
+<script type="module" src="js/showroom.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
