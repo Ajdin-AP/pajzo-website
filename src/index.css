@@ -1563,7 +1563,8 @@ select {
 }
 .footer__legal-links {
   display: flex;
-  gap: 22px;
+  flex-wrap: wrap;
+  gap: 10px 20px;
 }
 .footer__legal-links a {
   transition: color 0.2s var(--ease);

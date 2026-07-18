@@ -12,6 +12,9 @@ import Home from './Home';
 const ContactModal = lazy(() => import('./components/ContactModal'));
 const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./TermsOfService'));
+const RefundPolicy = lazy(() => import('./RefundPolicy'));
+const CookiePolicy = lazy(() => import('./CookiePolicy'));
+const CodeOfConduct = lazy(() => import('./CodeOfConduct'));
 const Portfolio = lazy(() => import('./Portfolio'));
 
 export type OpenModal = (service?: string) => void;
@@ -71,7 +74,10 @@ function App() {
       '/': 'Pajzo · Independent digital studio · Web, apps, branding, design',
       '/portfolio': 'Selected work · Pajzo',
       '/privacy-policy': 'Privacy Policy · Pajzo',
+      '/cookie-policy': 'Cookie Policy · Pajzo',
       '/terms-of-service': 'Terms of Service · Pajzo',
+      '/refund-policy': 'Refund Policy · Pajzo',
+      '/code-of-conduct': 'Code of Conduct · Pajzo',
     };
     const known = path in titles;
     document.title = titles[path] ?? 'Page not found · Pajzo';
@@ -155,6 +161,24 @@ function App() {
     content = (
       <Suspense fallback={null}>
         <TermsOfService />
+      </Suspense>
+    );
+  } else if (path === '/refund-policy') {
+    content = (
+      <Suspense fallback={null}>
+        <RefundPolicy />
+      </Suspense>
+    );
+  } else if (path === '/cookie-policy') {
+    content = (
+      <Suspense fallback={null}>
+        <CookiePolicy />
+      </Suspense>
+    );
+  } else if (path === '/code-of-conduct') {
+    content = (
+      <Suspense fallback={null}>
+        <CodeOfConduct />
       </Suspense>
     );
   } else if (path === '/portfolio') {

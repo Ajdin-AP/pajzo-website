@@ -11,6 +11,14 @@ const SITE_LINKS: { label: string; id: string; route?: string }[] = [
   { label: 'FAQ', id: 'faq' },
 ];
 
+const LEGAL_LINKS = [
+  { label: 'Privacy Policy', path: '/privacy-policy' },
+  { label: 'Cookie Policy', path: '/cookie-policy' },
+  { label: 'Terms of Service', path: '/terms-of-service' },
+  { label: 'Refund Policy', path: '/refund-policy' },
+  { label: 'Code of Conduct', path: '/code-of-conduct' },
+];
+
 const Footer = () => {
   const year = new Date().getFullYear();
 
@@ -103,12 +111,11 @@ const Footer = () => {
         <div className="footer__bottom">
           <p className="footer__legal">© {year} Pajzo · s.p. · Domžale, Slovenia</p>
           <div className="footer__legal-links">
-            <a href="/privacy-policy" onClick={(e) => goLegal(e, '/privacy-policy')}>
-              Privacy Policy
-            </a>
-            <a href="/terms-of-service" onClick={(e) => goLegal(e, '/terms-of-service')}>
-              Terms of Service
-            </a>
+            {LEGAL_LINKS.map((l) => (
+              <a key={l.path} href={l.path} onClick={(e) => goLegal(e, l.path)}>
+                {l.label}
+              </a>
+            ))}
           </div>
         </div>
       </div>
