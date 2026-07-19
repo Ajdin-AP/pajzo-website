@@ -434,6 +434,10 @@ select {
 .footer__giant .wm-p {
   fill: currentColor;
 }
+/* in the footer the P is white too (currentColor); the orange P stays in the nav */
+.footer__brand .wm-p {
+  fill: currentColor;
+}
 
 /* right cluster: nav + a single arrow-link CTA, right-aligned */
 .header__right {
