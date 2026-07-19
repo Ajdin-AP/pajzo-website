@@ -151,7 +151,7 @@ const Portfolio = () => {
           onClick={goHome}
           aria-label="Pajzo, back to home"
         >
-          <Wordmark keyline={false} />
+          <Wordmark />
         </a>
         <p className="pf__foot-note">
           &copy; {new Date().getFullYear()} Pajzo &middot; s.p. &middot; Domžale,

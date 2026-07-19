@@ -426,6 +426,14 @@ select {
   width: auto;
   display: block;
 }
+/* the wordmark's "P" mark is orange; "AJZO" stays currentColor (white) */
+.wm-p {
+  fill: var(--orange);
+}
+/* the giant footer watermark keeps one faint tone, so its P doesn't glare */
+.footer__giant .wm-p {
+  fill: currentColor;
+}
 
 /* right cluster: nav + a single arrow-link CTA, right-aligned */
 .header__right {

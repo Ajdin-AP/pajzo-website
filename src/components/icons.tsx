@@ -84,19 +84,20 @@ export const Globe = ({ className }: P) => (
 );
 
 // The Pajzo wordmark: "P" mark + "AJZO" set in Bungee (declared in index.css).
-// fill = currentColor (set per context), orange keyline stroke.
-// keyline={false} drops the orange stroke — used for the ghosted footer giant.
-export const Wordmark = ({ className, keyline = true }: P & { keyline?: boolean }) => (
+// The Pajzo wordmark: an orange "P" mark (.wm-p) + white "AJZO" in Bungee.
+// No keyline stroke. Colours come from CSS: the P is orange, AJZO is
+// currentColor; the giant footer watermark tones the P back down via CSS.
+export const Wordmark = ({ className }: P) => (
   <svg
     viewBox="-6 -6 1738 676"
     className={className}
     fill="currentColor"
-    stroke={keyline ? '#d9641e' : 'none'}
-    strokeWidth="20"
-    strokeMiterlimit="10"
     aria-hidden="true"
   >
-    <path d="M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z" />
+    <path
+      className="wm-p"
+      d="M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z"
+    />
     <text transform="translate(368.1129 511.6942)" fontFamily="Bungee" fontSize="478.5805">
       <tspan x="0" y="0">AJZO</tspan>
     </text>

@@ -121,7 +121,7 @@ const Footer = () => {
       </div>
 
       <div className="footer__giant" aria-hidden="true">
-        <Wordmark keyline={false} />
+        <Wordmark />
       </div>
     </footer>
   );
