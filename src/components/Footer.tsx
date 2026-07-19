@@ -1,17 +1,10 @@
 import React from 'react';
 import { navigate } from '../nav';
-import { scrollToId } from '../scroll';
 import { Instagram, XLogo, Mail, Wordmark } from './icons';
 
-const SITE_LINKS: { label: string; id: string; route?: string }[] = [
-  { label: 'Work', id: 'portfolio', route: '/portfolio' },
-  { label: 'Services', id: 'services' },
-  { label: 'Studio', id: 'studio' },
-  { label: 'Process', id: 'process' },
-  { label: 'FAQ', id: 'faq' },
-];
-
-const LEGAL_LINKS = [
+// The site sections live in the nav bar, so the footer lists the policies here
+// instead (it used to duplicate the nav under a "Site" heading).
+const POLICIES = [
   { label: 'Privacy Policy', path: '/privacy-policy' },
   { label: 'Cookie Policy', path: '/cookie-policy' },
   { label: 'Terms of Service', path: '/terms-of-service' },
@@ -25,27 +18,6 @@ const Footer = () => {
   const goLegal = (e: React.MouseEvent, path: string) => {
     e.preventDefault();
     navigate(path);
-  };
-
-  // Section links work from the legal pages too: go home first, then scroll.
-  const goSection = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    if (window.location.pathname !== '/') {
-      navigate('/');
-      requestAnimationFrame(() => requestAnimationFrame(() => scrollToId(id)));
-    } else {
-      scrollToId(id);
-    }
-  };
-
-  // A site link is either a section anchor (scroll) or its own route.
-  const goLink = (e: React.MouseEvent, l: { id: string; route?: string }) => {
-    if (l.route) {
-      e.preventDefault();
-      navigate(l.route);
-    } else {
-      goSection(e, l.id);
-    }
   };
 
   return (
@@ -66,14 +38,10 @@ const Footer = () => {
           </div>
 
           <div className="footer__col">
-            <h4>Site</h4>
+            <h4>Policies</h4>
             <div className="footer__links">
-              {SITE_LINKS.map((l) => (
-                <a
-                  key={l.id}
-                  href={l.route ?? `#${l.id}`}
-                  onClick={(e) => goLink(e, l)}
-                >
+              {POLICIES.map((l) => (
+                <a key={l.path} href={l.path} onClick={(e) => goLegal(e, l.path)}>
                   {l.label}
                 </a>
               ))}
@@ -110,13 +78,6 @@ const Footer = () => {
 
         <div className="footer__bottom">
           <p className="footer__legal">© {year} Pajzo · s.p. · Domžale, Slovenia</p>
-          <div className="footer__legal-links">
-            {LEGAL_LINKS.map((l) => (
-              <a key={l.path} href={l.path} onClick={(e) => goLegal(e, l.path)}>
-                {l.label}
-              </a>
-            ))}
-          </div>
         </div>
       </div>
 
