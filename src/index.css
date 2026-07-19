@@ -529,10 +529,16 @@ select {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    /* Absolutely positioned under the bar. In flow it kept its full height
+       even when closed (visibility: hidden still occupies space), which made
+       the fixed header ~450px tall and painted a huge dark panel over the
+       hero on scroll. Out of flow, the header is just the bar again. */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     padding: 12px var(--gutter) 28px;
-    background: rgba(13, 12, 10, 0.96);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    background: var(--bg);
     border-bottom: 1px solid var(--line);
     opacity: 0;
     visibility: hidden;
