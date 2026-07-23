@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { navigate } from './nav';
-import { Wordmark, ArrowRight } from './components/icons';
+import { useEffect } from 'react';
+import { ArrowRight } from './components/icons';
 
 type Project = {
   key: string;
@@ -56,23 +55,8 @@ const Portfolio = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const goHome = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate('/');
-  };
-
   return (
     <main id="main" tabIndex={-1} className="pf">
-      <header className="pf__bar">
-        <a href="/" className="pf__logo" onClick={goHome} aria-label="Pajzo, back to home">
-          <Wordmark />
-        </a>
-        <a href="/" className="pf__back" onClick={goHome}>
-          Back to site
-          <ArrowRight />
-        </a>
-      </header>
-
       <div className="container pf__wrap">
         <div className="pf__intro">
           <p className="pf__eyebrow">
@@ -143,21 +127,6 @@ const Portfolio = () => {
           ))}
         </ol>
       </div>
-
-      <footer className="pf__foot">
-        <a
-          href="/"
-          className="pf__foot-logo"
-          onClick={goHome}
-          aria-label="Pajzo, back to home"
-        >
-          <Wordmark />
-        </a>
-        <p className="pf__foot-note">
-          &copy; {new Date().getFullYear()} Pajzo &middot; s.p. &middot; Domžale,
-          Slovenia
-        </p>
-      </footer>
     </main>
   );
 };

@@ -60,6 +60,18 @@ export const Mail = ({ className }: P) => (
   </svg>
 );
 
+export const Facebook = ({ className }: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <path d="M14 8.5V7c0-.8.2-1.2 1.3-1.2H17V3h-2.6C11.5 3 10.5 4.6 10.5 7v1.5H8.5V11h2v10h3.5V11h2.4l.4-2.5H14z" />
+  </svg>
+);
+
+export const LinkedIn = ({ className }: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <path d="M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.3 8.4h3.3V21H3.3V8.4zm5.4 0h3.16v1.72h.05c.44-.83 1.5-1.72 3.1-1.72 3.3 0 3.9 2.18 3.9 5v6.6h-3.3v-5.85c0-1.4-.02-3.2-1.95-3.2-1.95 0-2.25 1.52-2.25 3.1V21H8.7V8.4z" />
+  </svg>
+);
+
 export const User = ({ className }: P) => (
   <svg {...base} className={className} aria-hidden="true">
     <circle cx="12" cy="8" r="3.6" />

@@ -1,15 +1,21 @@
 import React from 'react';
 import { navigate } from '../nav';
-import { Instagram, XLogo, Mail, Wordmark } from './icons';
+import { Instagram, XLogo, Facebook, LinkedIn, Wordmark } from './icons';
 
-// The site sections live in the nav bar, so the footer lists the policies here
-// instead (it used to duplicate the nav under a "Site" heading).
+// The site sections live in the nav bar, so the footer lists the policies here.
 const POLICIES = [
   { label: 'Privacy Policy', path: '/privacy-policy' },
   { label: 'Cookie Policy', path: '/cookie-policy' },
   { label: 'Terms of Service', path: '/terms-of-service' },
   { label: 'Refund Policy', path: '/refund-policy' },
   { label: 'Code of Conduct', path: '/code-of-conduct' },
+];
+
+const SOCIALS = [
+  { label: 'Instagram', href: 'https://www.instagram.com/pajzo_/', Icon: Instagram },
+  { label: 'X', href: 'https://x.com/Pajzo_', Icon: XLogo },
+  { label: 'Facebook', href: 'https://www.facebook.com/pajzo', Icon: Facebook },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/pajzo', Icon: LinkedIn },
 ];
 
 const Footer = () => {
@@ -24,19 +30,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="container">
         <div className="footer__top">
-          <div className="footer__brand">
-            <span className="wordmark">
-              <Wordmark />
-            </span>
-            <p className="footer__tagline">
-              An independent digital studio. Websites, apps, branding and
-              design.
-            </p>
-            <a className="footer__mail" href="mailto:info@pajzo.com">
-              info@pajzo.com
-            </a>
-          </div>
-
+          {/* left: policies */}
           <div className="footer__col">
             <h4>Policies</h4>
             <div className="footer__links">
@@ -48,31 +42,33 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="footer__col">
-            <h4>Elsewhere</h4>
+          {/* middle: social */}
+          <div className="footer__col footer__social-col">
             <div className="footer__socials">
-              <a
-                className="footer__social"
-                href="https://www.instagram.com/pajzo_/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-              >
-                <Instagram />
-              </a>
-              <a
-                className="footer__social"
-                href="https://x.com/Pajzo_"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X"
-              >
-                <XLogo />
-              </a>
-              <a className="footer__social" href="mailto:info@pajzo.com" aria-label="Email">
-                <Mail />
-              </a>
+              {SOCIALS.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  className="footer__social"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                >
+                  <Icon />
+                </a>
+              ))}
             </div>
+          </div>
+
+          {/* right: brand, right-aligned */}
+          <div className="footer__brand">
+            <span className="wordmark">
+              <Wordmark />
+            </span>
+            <p className="footer__tagline">Built for the long haul.</p>
+            <a className="footer__mail" href="mailto:info@pajzo.com">
+              info@pajzo.com
+            </a>
           </div>
         </div>
 

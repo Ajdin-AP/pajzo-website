@@ -207,19 +207,15 @@ function App() {
     content = <Home openModal={openModal} />;
   }
 
-  // The portfolio page carries its own minimal chrome (a small wordmark that
-  // links home), so the full site header/footer are left off there.
-  const isPortfolio = path === '/portfolio';
-
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
       <div className="grain" aria-hidden="true" />
-      {!isPortfolio && <Header route={route} openModal={openModal} />}
+      <Header route={route} openModal={openModal} />
       {content}
-      {!isPortfolio && <Footer />}
+      <Footer />
       <Suspense fallback={null}>
         <ContactModal
           open={modalOpen}
