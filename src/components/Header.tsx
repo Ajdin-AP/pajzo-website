@@ -6,6 +6,7 @@ import type { OpenModal } from '../App';
 
 const NAV: { label: string; id: string; route?: string }[] = [
   { label: 'Work', id: 'work', route: '/portfolio' },
+  { label: 'About', id: 'about', route: '/about' },
   { label: 'Services', id: 'services' },
   { label: 'Studio', id: 'studio' },
   { label: 'Process', id: 'process', route: '/process' },
