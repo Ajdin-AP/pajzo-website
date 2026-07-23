@@ -30,19 +30,18 @@ const Footer = () => {
     <footer className="footer">
       <div className="container">
         <div className="footer__top">
-          {/* left: policies */}
-          <div className="footer__col">
-            <h4>Policies</h4>
-            <div className="footer__links">
-              {POLICIES.map((l) => (
-                <a key={l.path} href={l.path} onClick={(e) => goLegal(e, l.path)}>
-                  {l.label}
-                </a>
-              ))}
-            </div>
+          {/* left: brand */}
+          <div className="footer__brand">
+            <span className="wordmark">
+              <Wordmark />
+            </span>
+            <p className="footer__tagline">Built for the long haul.</p>
+            <a className="footer__mail" href="mailto:info@pajzo.com">
+              info@pajzo.com
+            </a>
           </div>
 
-          {/* middle: social */}
+          {/* middle: social, centered */}
           <div className="footer__col footer__social-col">
             <div className="footer__socials">
               {SOCIALS.map(({ label, href, Icon }) => (
@@ -60,15 +59,16 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* right: brand, right-aligned */}
-          <div className="footer__brand">
-            <span className="wordmark">
-              <Wordmark />
-            </span>
-            <p className="footer__tagline">Built for the long haul.</p>
-            <a className="footer__mail" href="mailto:info@pajzo.com">
-              info@pajzo.com
-            </a>
+          {/* right: policies, right-aligned */}
+          <div className="footer__col footer__policies">
+            <h4>Policies</h4>
+            <div className="footer__links">
+              {POLICIES.map((l) => (
+                <a key={l.path} href={l.path} onClick={(e) => goLegal(e, l.path)}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 

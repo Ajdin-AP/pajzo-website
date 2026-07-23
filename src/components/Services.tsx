@@ -1,38 +1,43 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
+import { navigate } from '../nav';
 import { ArrowRight } from './icons';
 import ServicePreview from './ServicePreview';
-import type { OpenModal } from '../App';
 
-// ids match the service options in ContactModal.
+// id drives the 3D preview; slug is the service page each row opens.
 const ROWS = [
   {
     id: 'web',
+    slug: 'web-development',
     name: 'Web development',
-    desc: 'Marketing sites, product sites and web apps, designed and built by one team. Fast, accessible, free of page-builder bloat. You receive a site worth sending people to, and a codebase that is entirely yours.',
-    tags: ['React', 'TypeScript', 'CMS', 'Hosting & DNS'],
+    desc: 'Sites and web apps, designed and built by one team.',
   },
   {
     id: 'app',
+    slug: 'app-development',
     name: 'App development',
-    desc: 'Native iPhone, iPad and Mac apps in SwiftUI, designed for the platform rather than ported to it. One team carries it from first sketch to the App Store. The app you approved is the app that ships.',
-    tags: ['SwiftUI', 'iOS & macOS', 'Widgets', 'App Store'],
+    desc: 'Native iPhone, iPad and Mac apps in SwiftUI.',
   },
   {
     id: 'branding',
+    slug: 'branding',
     name: 'Branding',
-    desc: 'A name people remember, a mark that survives being small, and plain rules for using both. You receive a short, useful guide, not a ninety-page brand book nobody opens.',
-    tags: ['Logo & mark', 'Type & colour', 'Naming', 'Usage guide'],
+    desc: 'A name people remember, and a mark that survives being small.',
   },
   {
     id: 'design',
+    slug: 'design',
     name: 'Design',
-    desc: 'Interfaces, layouts and graphics, for products that exist or ones still on paper. Drawn by people who build for a living. What you approve is what can be made.',
-    tags: ['UI / UX', 'Design systems', 'Graphics', 'Print & digital'],
+    desc: 'Interfaces and graphics, drawn by people who build.',
   },
 ];
 
-const Services = ({ openModal }: { openModal: OpenModal }) => {
+const Services = () => {
   const listRef = useRef<HTMLDivElement>(null);
+
+  const goTo = (e: React.MouseEvent, slug: string) => {
+    e.preventDefault();
+    navigate(`/services/${slug}`);
+  };
 
   return (
     <section id="services" className="section svc">
@@ -53,29 +58,24 @@ const Services = ({ openModal }: { openModal: OpenModal }) => {
 
         <div className="svc__list" ref={listRef}>
           {ROWS.map((row, i) => (
-            <button
-              type="button"
+            <a
               key={row.id}
+              href={`/services/${row.slug}`}
               data-svc={row.id}
               className="svc__row reveal"
               data-delay={i % 2 ? '1' : undefined}
-              onClick={() => openModal(row.id)}
-              aria-label={`${row.name}: start a project`}
+              onClick={(e) => goTo(e, row.slug)}
+              aria-label={`${row.name}: view the service`}
             >
               <span className="svc__num">0{i + 1}</span>
               <span className="svc__name">{row.name}</span>
               <span className="svc__body">
                 <span className="svc__desc">{row.desc}</span>
-                <span className="svc__tags">
-                  {row.tags.map((t) => (
-                    <span key={t}>{t}</span>
-                  ))}
-                </span>
               </span>
               <span className="svc__go" aria-hidden="true">
                 <ArrowRight />
               </span>
-            </button>
+            </a>
           ))}
           <ServicePreview listRef={listRef} />
         </div>

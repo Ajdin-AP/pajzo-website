@@ -10,7 +10,7 @@ const Home = ({ openModal }: { openModal: OpenModal }) => (
   <main id="main" tabIndex={-1}>
     <Hero openModal={openModal} />
     <Marquee />
-    <Services openModal={openModal} />
+    <Services />
     <Studio />
     <Faq />
     <Cta openModal={openModal} />

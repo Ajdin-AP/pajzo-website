@@ -17,6 +17,13 @@ const CookiePolicy = lazy(() => import('./CookiePolicy'));
 const CodeOfConduct = lazy(() => import('./CodeOfConduct'));
 const Portfolio = lazy(() => import('./Portfolio'));
 const AboutPage = lazy(() => import('./AboutPage'));
+const ServicePage = lazy(() => import('./ServicePage'));
+
+const SERVICE_SLUGS = ['web-development', 'app-development', 'branding', 'design'];
+const serviceOf = (path: string) => {
+  const slug = path.startsWith('/services/') ? path.slice('/services/'.length) : '';
+  return SERVICE_SLUGS.includes(slug) ? slug : '';
+};
 const ProcessPage = lazy(() => import('./ProcessPage'));
 
 export type OpenModal = (service?: string) => void;
@@ -77,6 +84,10 @@ function App() {
       '/portfolio': 'Selected work · Pajzo',
       '/process': 'How we work · Pajzo',
       '/about': 'About · Pajzo',
+      '/services/web-development': 'Web development · Pajzo',
+      '/services/app-development': 'App development · Pajzo',
+      '/services/branding': 'Branding · Pajzo',
+      '/services/design': 'Design · Pajzo',
       '/privacy-policy': 'Privacy Policy · Pajzo',
       '/cookie-policy': 'Cookie Policy · Pajzo',
       '/terms-of-service': 'Terms of Service · Pajzo',
@@ -154,6 +165,33 @@ function App() {
     };
   }, []);
 
+  // Solid buttons: a warm highlight tracks the pointer across the button.
+  // Percentages only; the radial gradient itself is CSS. rAF-throttled.
+  useEffect(() => {
+    let raf = 0;
+    let pending: { btn: HTMLElement; x: number; y: number } | null = null;
+    const flush = () => {
+      raf = 0;
+      if (!pending) return;
+      const { btn, x, y } = pending;
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty('--mx', `${((x - r.left) / r.width) * 100}%`);
+      btn.style.setProperty('--my', `${((y - r.top) / r.height) * 100}%`);
+    };
+    const onMove = (e: PointerEvent) => {
+      const t = e.target as HTMLElement | null;
+      const btn = t?.closest?.('.btn--solid') as HTMLElement | null;
+      if (!btn) return;
+      pending = { btn, x: e.clientX, y: e.clientY };
+      if (!raf) raf = requestAnimationFrame(flush);
+    };
+    document.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      document.removeEventListener('pointermove', onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   let content;
   if (path === '/privacy-policy') {
     content = (
@@ -201,6 +239,12 @@ function App() {
     content = (
       <Suspense fallback={null}>
         <AboutPage openModal={openModal} />
+      </Suspense>
+    );
+  } else if (serviceOf(path)) {
+    content = (
+      <Suspense fallback={null}>
+        <ServicePage slug={serviceOf(path)} openModal={openModal} />
       </Suspense>
     );
   } else {
