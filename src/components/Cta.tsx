@@ -20,7 +20,7 @@ const Cta = ({ openModal }: { openModal: OpenModal }) => {
     </div>
     <div className="container reveal">
       <p className="tag cta__tag">
-        <span className="tag__num">05</span>&nbsp;/&nbsp;Contact
+        <span className="tag__num">04</span>&nbsp;/&nbsp;Contact
       </p>
       <h2>
         Start with an <em>email</em>.

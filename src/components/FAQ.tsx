@@ -43,7 +43,7 @@ const Faq = () => {
           <div className="faq__side">
             <div className="s-head reveal">
               <p className="tag">
-                <span className="tag__num">04</span>&nbsp;/&nbsp;FAQ
+                <span className="tag__num">03</span>&nbsp;/&nbsp;FAQ
               </p>
               <h2 className="h-section">Straight answers.</h2>
               <p className="lede">

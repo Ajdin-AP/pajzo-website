@@ -3,7 +3,6 @@ import Hero from './components/Hero';
 import Marquee from './components/Marquee';
 import Services from './components/Services';
 import Studio from './components/Studio';
-import Process from './components/Process';
 import Faq from './components/FAQ';
 import Cta from './components/Cta';
 
@@ -13,7 +12,6 @@ const Home = ({ openModal }: { openModal: OpenModal }) => (
     <Marquee />
     <Services openModal={openModal} />
     <Studio />
-    <Process />
     <Faq />
     <Cta openModal={openModal} />
   </main>

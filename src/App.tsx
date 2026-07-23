@@ -16,6 +16,7 @@ const RefundPolicy = lazy(() => import('./RefundPolicy'));
 const CookiePolicy = lazy(() => import('./CookiePolicy'));
 const CodeOfConduct = lazy(() => import('./CodeOfConduct'));
 const Portfolio = lazy(() => import('./Portfolio'));
+const ProcessPage = lazy(() => import('./ProcessPage'));
 
 export type OpenModal = (service?: string) => void;
 
@@ -73,6 +74,7 @@ function App() {
     const titles: Record<string, string> = {
       '/': 'Pajzo · Independent digital studio · Web, apps, branding, design',
       '/portfolio': 'Selected work · Pajzo',
+      '/process': 'How we work · Pajzo',
       '/privacy-policy': 'Privacy Policy · Pajzo',
       '/cookie-policy': 'Cookie Policy · Pajzo',
       '/terms-of-service': 'Terms of Service · Pajzo',
@@ -185,6 +187,12 @@ function App() {
     content = (
       <Suspense fallback={null}>
         <Portfolio />
+      </Suspense>
+    );
+  } else if (path === '/process') {
+    content = (
+      <Suspense fallback={null}>
+        <ProcessPage openModal={openModal} />
       </Suspense>
     );
   } else {

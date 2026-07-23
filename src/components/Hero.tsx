@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight } from './icons';
-import { scrollToId } from '../scroll';
+import { navigate } from '../nav';
 import type { OpenModal } from '../App';
 
 // The Pajzo shield — ghosted keyline, drawn on at load.
@@ -54,7 +54,7 @@ const Hero = ({ openModal }: { openModal: OpenModal }) => {
     };
   }, []);
 
-  const scrollToProcess = () => scrollToId('process');
+  const goProcess = () => navigate('/process');
 
   return (
     <section className="hero" ref={sectionRef}>
@@ -68,8 +68,6 @@ const Hero = ({ openModal }: { openModal: OpenModal }) => {
       </svg>
 
       <div className="container hero__wrap">
-        <p className="hero__eyebrow">Independent digital studio · taking projects</p>
-
         <h1 className="hero__title">
           <span className="hero__line">
             <span>Websites. Apps.</span>
@@ -82,18 +80,12 @@ const Hero = ({ openModal }: { openModal: OpenModal }) => {
           </span>
         </h1>
 
-        <p className="hero__sub">
-          Pajzo is an independent digital studio in Slovenia. The team that
-          designs your project is the team that builds it. Nothing is lost in
-          between.
-        </p>
-
         <div className="hero__cta">
           <button className="btn btn--solid btn--lg" onClick={() => openModal()}>
             Start a project
             <ArrowRight />
           </button>
-          <button className="btn btn--ghost btn--lg" onClick={scrollToProcess}>
+          <button className="btn btn--ghost btn--lg" onClick={goProcess}>
             How we work
           </button>
         </div>
