@@ -301,50 +301,43 @@ select {
   transform: translateX(3px);
 }
 
+/* magnetic button: it leans and pulls toward the pointer in 3D, then
+   springs back on release. --tx/--ty/--rx/--ry are driven from App.tsx. */
 .btn--solid {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
   background: var(--orange);
   color: #0d0c0a;
-  --mx: 50%;
-  --my: 50%;
+  --tx: 0px;
+  --ty: 0px;
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(560px) translate3d(var(--tx), var(--ty), 0)
+    rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.5s cubic-bezier(0.34, 1.45, 0.5, 1),
+    box-shadow 0.35s var(--ease);
+  will-change: transform;
 }
-/* a warm highlight that tracks the pointer across the button */
-.btn--solid::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    150px circle at var(--mx) var(--my),
-    var(--orange-hot),
-    transparent 62%
-  );
-  opacity: 0;
-  transition: opacity 0.3s var(--ease);
-}
-.btn--solid:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 38px -12px rgba(232, 98, 26, 0.7);
-}
-.btn--solid:hover::before {
-  opacity: 1;
+/* while it is tracking the pointer, follow quickly (no springy lag) */
+.btn--solid.is-magnet {
+  transition: transform 0.16s ease-out, box-shadow 0.35s var(--ease);
+  box-shadow: 0 22px 46px -14px rgba(232, 98, 26, 0.6);
 }
 .btn--solid:hover svg {
   transform: translateX(6px);
 }
 .btn--solid:active {
-  transform: translateY(0) scale(0.98);
+  transition: transform 0.12s ease-out;
+  transform: perspective(560px) translate3d(var(--tx), var(--ty), 0) scale(0.94);
 }
 @media (prefers-reduced-motion: reduce) {
   .btn--solid {
+    transform: none;
     transition: background 0.2s var(--ease);
   }
-  .btn--solid:hover {
-    transform: none;
-    background: var(--orange-hot);
+  .btn--solid.is-magnet {
     box-shadow: none;
+  }
+  .btn--solid:hover {
+    background: var(--orange-hot);
   }
 }
 

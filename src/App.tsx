@@ -165,25 +165,47 @@ function App() {
     };
   }, []);
 
-  // Solid buttons: a warm highlight tracks the pointer across the button.
-  // Percentages only; the radial gradient itself is CSS. rAF-throttled.
+  // Magnetic solid buttons: each one leans and pulls toward the pointer once
+  // it comes within reach, and springs back on release (CSS does the spring).
+  // Fine pointers only; disabled under reduced motion. rAF-throttled.
   useEffect(() => {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!fine || reduce) return;
+
     let raf = 0;
-    let pending: { btn: HTMLElement; x: number; y: number } | null = null;
-    const flush = () => {
+    let mx = 0;
+    let my = 0;
+    const clamp = (n: number, max: number) => Math.max(-max, Math.min(max, n));
+    const REACH = 64;
+
+    const tick = () => {
       raf = 0;
-      if (!pending) return;
-      const { btn, x, y } = pending;
-      const r = btn.getBoundingClientRect();
-      btn.style.setProperty('--mx', `${((x - r.left) / r.width) * 100}%`);
-      btn.style.setProperty('--my', `${((y - r.top) / r.height) * 100}%`);
+      document.querySelectorAll<HTMLElement>('.btn--solid').forEach((b) => {
+        const r = b.getBoundingClientRect();
+        if (!r.width) return;
+        const dx = mx - (r.left + r.width / 2);
+        const dy = my - (r.top + r.height / 2);
+        const inRange = Math.abs(dx) < r.width / 2 + REACH && Math.abs(dy) < r.height / 2 + REACH;
+        if (inRange) {
+          b.style.setProperty('--tx', `${clamp(dx * 0.32, 18)}px`);
+          b.style.setProperty('--ty', `${clamp(dy * 0.5, 13)}px`);
+          b.style.setProperty('--ry', `${clamp((dx / r.width) * 20, 9)}deg`);
+          b.style.setProperty('--rx', `${clamp((-dy / r.height) * 20, 9)}deg`);
+          b.classList.add('is-magnet');
+        } else if (b.classList.contains('is-magnet')) {
+          b.style.setProperty('--tx', '0px');
+          b.style.setProperty('--ty', '0px');
+          b.style.setProperty('--rx', '0deg');
+          b.style.setProperty('--ry', '0deg');
+          b.classList.remove('is-magnet');
+        }
+      });
     };
     const onMove = (e: PointerEvent) => {
-      const t = e.target as HTMLElement | null;
-      const btn = t?.closest?.('.btn--solid') as HTMLElement | null;
-      if (!btn) return;
-      pending = { btn, x: e.clientX, y: e.clientY };
-      if (!raf) raf = requestAnimationFrame(flush);
+      mx = e.clientX;
+      my = e.clientY;
+      if (!raf) raf = requestAnimationFrame(tick);
     };
     document.addEventListener('pointermove', onMove, { passive: true });
     return () => {
