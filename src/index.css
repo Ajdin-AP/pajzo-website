@@ -301,43 +301,91 @@ select {
   transform: translateX(3px);
 }
 
-/* magnetic button: it leans and pulls toward the pointer in 3D, then
-   springs back on release. --tx/--ty/--rx/--ry are driven from App.tsx. */
+/* The plate: the primary CTA is a sharp orange plate floating above its
+   dashed print-mark frame (the same perforation language as the quote
+   sheet). On hover the plate stamps down into register with the frame. */
 .btn--solid {
+  position: relative;
+  z-index: 0;
   background: var(--orange);
   color: #0d0c0a;
-  --tx: 0px;
-  --ty: 0px;
-  --rx: 0deg;
-  --ry: 0deg;
-  transform: perspective(560px) translate3d(var(--tx), var(--ty), 0)
-    rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.5s cubic-bezier(0.34, 1.45, 0.5, 1),
-    box-shadow 0.35s var(--ease);
-  will-change: transform;
+  border-radius: var(--radius-s);
+  text-transform: uppercase;
+  font-size: 13.5px;
+  letter-spacing: 0.12em;
+  box-shadow: 0 12px 26px -10px rgba(232, 98, 26, 0.45);
+  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1),
+    box-shadow 0.34s var(--ease), background 0.25s var(--ease);
 }
-/* while it is tracking the pointer, follow quickly (no springy lag) */
-.btn--solid.is-magnet {
-  transition: transform 0.16s ease-out, box-shadow 0.35s var(--ease);
-  box-shadow: 0 22px 46px -14px rgba(232, 98, 26, 0.6);
+/* the frame it will be stamped into: offset, dashed, waiting */
+.btn--solid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px dashed rgba(232, 98, 26, 0.65);
+  border-radius: inherit;
+  transform: translate(6px, 6px);
+  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1);
+  pointer-events: none;
+}
+/* the arrow rides in its own end cap, aimed up-right until the press */
+.btn--solid svg {
+  margin-left: 17px;
+  transform: rotate(-45deg);
+  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+/* the cap's divider is drawn on the plate, so the arrow can turn freely.
+   Only buttons that carry an arrow get the cap. */
+.btn--solid:has(svg)::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  right: 55px; /* padding 26 + arrow 16 + gap 13 */
+  width: 1px;
+  background: rgba(13, 12, 10, 0.35);
+  pointer-events: none;
+}
+.btn--lg.btn--solid:has(svg)::after {
+  right: 63px; /* padding 34 + arrow 16 + gap 13 */
+}
+.btn--solid:hover {
+  background: var(--orange-hot);
+  transform: translate(6px, 6px);
+  box-shadow: none;
+}
+.btn--solid:hover::before {
+  transform: translate(0, 0);
 }
 .btn--solid:hover svg {
-  transform: translateX(6px);
+  transform: rotate(0deg);
 }
 .btn--solid:active {
-  transition: transform 0.12s ease-out;
-  transform: perspective(560px) translate3d(var(--tx), var(--ty), 0) scale(0.94);
+  transition: transform 0.1s ease-out;
+  transform: translate(7px, 7px) scale(0.985);
+}
+@media (hover: none), (pointer: coarse) {
+  /* on touch the press itself does the stamping */
+  .btn--solid:active {
+    transform: translate(6px, 6px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn--solid {
-    transform: none;
+  .btn--solid,
+  .btn--solid::before,
+  .btn--solid svg {
     transition: background 0.2s var(--ease);
   }
-  .btn--solid.is-magnet {
+  .btn--solid:hover {
+    transform: none;
     box-shadow: none;
   }
-  .btn--solid:hover {
-    background: var(--orange-hot);
+  .btn--solid:hover::before {
+    transform: translate(6px, 6px);
+  }
+  .btn--solid:hover svg {
+    transform: rotate(-45deg);
   }
 }
 
