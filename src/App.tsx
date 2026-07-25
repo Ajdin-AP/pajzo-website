@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
@@ -27,6 +27,14 @@ const serviceOf = (path: string) => {
 const ProcessPage = lazy(() => import('./ProcessPage'));
 
 export type OpenModal = (service?: string) => void;
+
+// The Pajzo shield, drawn small at the centre of the transition curtain.
+const PT_MARK =
+  'M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z';
+
+// Curtain timing; the CSS transitions use the same values.
+const PT_COVER_MS = 320;
+const PT_REVEAL_MS = 440;
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
@@ -74,6 +82,48 @@ function App() {
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Page transition: navigate() announces the target; a curtain sweeps up to
+  // cover the page, the route (and scroll reset) swap underneath it, and the
+  // curtain continues up to reveal the new page. Reduced motion swaps instantly.
+  const [ptPhase, setPtPhase] = useState<'idle' | 'cover' | 'reveal'>('idle');
+  const ptBusy = useRef(false);
+  useEffect(() => {
+    let t1 = 0;
+    let t2 = 0;
+    const swap = (target: string) => {
+      window.history.pushState({}, '', target);
+      setRoute(target);
+      setModalOpen(false);
+      window.scrollTo(0, 0);
+    };
+    const onNavigate = (e: Event) => {
+      const target = (e as CustomEvent<string>).detail;
+      if (!target || target === window.location.pathname) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        swap(target);
+        return;
+      }
+      if (ptBusy.current) return; // one transition at a time
+      ptBusy.current = true;
+      setPtPhase('cover');
+      t1 = window.setTimeout(() => {
+        swap(target);
+        setPtPhase('reveal');
+        t2 = window.setTimeout(() => {
+          setPtPhase('idle');
+          ptBusy.current = false;
+        }, PT_REVEAL_MS);
+      }, PT_COVER_MS);
+    };
+    window.addEventListener('pajzo:navigate', onNavigate);
+    return () => {
+      window.removeEventListener('pajzo:navigate', onNavigate);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      ptBusy.current = false;
+    };
   }, []);
 
   // Per-route title + canonical, so the legal pages don't canonicalise to the
@@ -242,6 +292,11 @@ function App() {
           initialService={modalService}
         />
       </Suspense>
+      <div className={`pt pt--${ptPhase}`} aria-hidden="true">
+        <svg viewBox="-10 -10 460 540">
+          <path d={PT_MARK} />
+        </svg>
+      </div>
       <Analytics />
       <SpeedInsights />
     </>

@@ -4121,3 +4121,63 @@ section[id] {
     grid-template-columns: 1fr;
   }
 }
+
+/* ------------------------------------------------------------ page transition */
+
+/* The curtain: sweeps up to cover the page while the route swaps, then keeps
+   travelling up to reveal the new one. Transient layer only — it is hidden
+   and transition-free when idle, so it never holds a compositor layer. */
+.pt {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-lift);
+  transform: translateY(102%);
+  visibility: hidden;
+  pointer-events: none;
+}
+/* orange hairline on both travelling edges */
+.pt::before,
+.pt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--orange);
+}
+.pt::before {
+  top: 0;
+}
+.pt::after {
+  bottom: 0;
+}
+.pt svg {
+  width: 38px;
+  fill: none;
+  stroke: var(--bone-mute);
+  stroke-width: 16;
+  stroke-miterlimit: 10;
+  opacity: 0;
+}
+.pt--cover {
+  visibility: visible;
+  transform: translateY(0);
+  transition: transform 0.32s var(--ease-io);
+}
+.pt--cover svg {
+  opacity: 1;
+  transition: opacity 0.18s ease 0.12s;
+}
+.pt--reveal {
+  visibility: visible;
+  transform: translateY(-102%);
+  transition: transform 0.44s var(--ease-io);
+}
+.pt--reveal svg {
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
