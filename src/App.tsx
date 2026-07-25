@@ -33,8 +33,8 @@ const PT_MARK =
   'M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z';
 
 // Curtain timing; the CSS transitions use the same values.
-const PT_COVER_MS = 320;
-const PT_REVEAL_MS = 440;
+const PT_COVER_MS = 450;
+const PT_REVEAL_MS = 550;
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
