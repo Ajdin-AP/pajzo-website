@@ -222,13 +222,15 @@ export function buildBodyGeometry(spec) {
      a cone), carry the loft past each end over a quarter-ellipse: the
      ring shrinks toward the tip height while x advances. The result is
      quads with clean normals and a blunt, rounded fascia. */
-  const CAPN = 5;
+  const CAPN = 7;
   const capRows = (endRow, dir, dome) => {
     const tipY = endRow.reduce((a, p) => a + p.y, 0) / endRow.length;
     const x0 = endRow[0].x;
     const out = [];
     for (let k = 1; k <= CAPN; k++) {
       const th = (k / CAPN) * (Math.PI / 2);
+      // stop short of a true point: the remaining tip is closed by a fan,
+      // and a fan over a wide ring shades like a cone
       const s = Math.max(0.075, Math.cos(th));
       const dx = Math.sin(th) * dome * dir;
       out.push(endRow.map((p) => ({
@@ -318,10 +320,16 @@ export function buildBodyGeometry(spec) {
     cy /= loop.length;
     const centre = push({ x: row[0].x, y: cy, z: 0 }, 0.5, outward > 0 ? 1 : 0);
     const ring = loop.map((p, k) => push(p, k / (loop.length - 1), outward > 0 ? 1 : 0));
+    // Winding: the loop climbs the +z flank, crosses the crown, comes down
+    // the -z flank and returns along the floor. With the fan centre on the
+    // axis that ordering gives a normal along +x, so the NOSE takes (c,b,a)
+    // and the TAIL takes (c,a,b). These were the other way round, which left
+    // the tail tip disc facing into the car: back-face culling then made it
+    // a see-through hole at the centre of the tail.
     for (let k = 0; k < ring.length; k++) {
       const a = ring[k], b = ring[(k + 1) % ring.length];
-      if (outward > 0) idx.push(centre, a, b);
-      else idx.push(centre, b, a);
+      if (outward > 0) idx.push(centre, b, a);
+      else idx.push(centre, a, b);
     }
   };
   capTip(NST - 1, 1);

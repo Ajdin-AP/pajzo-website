@@ -254,7 +254,7 @@ export const CARS = {
       lamps: { frontX: 2.22, frontY: 0.665, frontW: 0.30, rearX: -2.20, rearY: 0.685, rearW: 0.26 },
       intake: { x: 2.20, y: 0.335, w: 0.52, h: 0.155, fins: 7 },
       mirror: { x: 0.40, y: 0.905 },
-      exhaust: { y: 0.275, z: 0.34 },
+      exhaust: { y: 0.315, z: 0.34 }, badgeY: 0.70,
       shut: { doorFront: 0.30, doorRear: -1.10, bonnet: 0.74 },
       diffuser: true,
     },
@@ -301,7 +301,7 @@ export const CARS = {
       lamps: { frontX: 2.16, frontY: 0.585, frontW: 0.28, rearX: -2.23, rearY: 0.735, rearW: 0.30 },
       intake: { x: 2.15, y: 0.265, w: 0.60, h: 0.16, fins: 9 },
       mirror: { x: 0.60, y: 0.885 },
-      exhaust: { y: 0.30, z: 0.20 },
+      exhaust: { y: 0.325, z: 0.20 }, badgeY: 0.78,
       shut: { doorFront: 0.32, doorRear: -0.90, bonnet: 0.80 },
       splitter: true, diffuser: true, carbonSills: true,
     },
@@ -380,7 +380,7 @@ export const CARS = {
       lamps: { frontX: 2.27, frontY: 0.915, frontW: 0.30, rearX: -2.29, rearY: 1.05, rearW: 0.24 },
       intake: { x: 2.26, y: 0.535, w: 0.50, h: 0.19, fins: 7 },
       mirror: { x: 0.55, y: 1.20 },
-      exhaust: { y: 0.345, z: 0.36 },
+      exhaust: { y: 0.445, z: 0.36 }, badgeY: 1.06,
       shut: { doorFront: 0.28, doorRear: -1.72, bonnet: 0.74 },
       skidPlate: true,
     },
@@ -438,7 +438,7 @@ export const CARS = {
       lamps: { frontX: 2.05, frontY: 0.615, frontW: 0.26, rearX: -2.05, rearY: 0.675, rearW: 0.24 },
       intake: { x: 2.04, y: 0.30, w: 0.46, h: 0.14, fins: 6 },
       mirror: { x: 0.46, y: 0.815 },
-      exhaust: { y: 0.26, z: 0.30 },
+      exhaust: { y: 0.30, z: 0.30 }, badgeY: 0.70,
       shut: { doorFront: 0.36, doorRear: -0.95, bonnet: 0.86 },
       diffuser: true,
     },
@@ -729,16 +729,31 @@ function addHardware(g, loft, B) {
     g.add(s);
   }
 
-  // exhaust tips, recessed into a dark cut-out
+  // exhaust tips, seated in the rear fascia. Their x is probed off the
+  // surface: hard-coding it left them hanging up to 100 mm behind the
+  // bumper on the taller cars.
+  const exLen = 0.13, proud = 0.038;
+  const exX = surfaceXAt(loft, B.exhaust.y, B.exhaust.z + 0.05, -1);
   for (const side of [1, -1]) {
-    const t = tip(0.052, 0.040, 0.15, chrome);
-    t.position.set(B.rearX + 0.03, B.exhaust.y, side * B.exhaust.z);
+    // 38 mm proud of the fascia, the rest of the tip buried in it
+    const t = tip(0.052, 0.040, exLen, chrome);
+    t.position.set(exX - proud + exLen / 2, B.exhaust.y, side * B.exhaust.z);
     g.add(t);
-    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.045, 16), MAT.shadowline());
-    hole.position.set(B.rearX + 0.055, B.exhaust.y, side * B.exhaust.z);
+    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.040, 16), MAT.shadowline());
+    hole.position.set(exX - proud + 0.014, B.exhaust.y, side * B.exhaust.z);
     hole.rotation.y = -Math.PI / 2;
     g.add(hole);
   }
+
+  // the badge that belongs at the centre of the tail
+  const bx = surfaceXAt(loft, B.badgeY, 0.09, -1);
+  const badge = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, 0.014, 28),
+    MAT.brass()
+  );
+  badge.rotation.z = Math.PI / 2;
+  badge.position.set(bx - 0.005, B.badgeY, 0);
+  g.add(badge);
 }
 
 /* ---------- wheels ---------- */
