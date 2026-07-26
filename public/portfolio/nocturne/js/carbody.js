@@ -371,6 +371,29 @@ function rowZAt(row, M, y) {
   return z;
 }
 
+/** Deck height at (x, zTarget) on the +z flank — for standing parts such as
+    wing struts and roof rails on the surface instead of floating above it. */
+export function skinYAt(loft, x, zTarget) {
+  const { rows, xs, M } = loft;
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < xs.length; i++) {
+    const d = Math.abs(xs[i] - x);
+    if (d < bd) { bd = d; best = i; }
+  }
+  const row = rows[best];
+  let y = -Infinity;
+  const z = Math.abs(zTarget);
+  for (let j = 0; j < M - 1; j++) {
+    const a = row[j], b = row[j + 1];
+    const lo = Math.min(a.z, b.z), hi = Math.max(a.z, b.z);
+    if (z >= lo && z <= hi) {
+      const t = Math.abs(b.z - a.z) < 1e-6 ? 0 : (z - a.z) / (b.z - a.z);
+      y = Math.max(y, a.y + (b.y - a.y) * t);
+    }
+  }
+  return y === -Infinity ? row[M - 1].y : y;
+}
+
 /** The x where the fascia is still at least `zTarget` wide at height y.
     `dir` 1 searches from the nose back, -1 from the tail forward. Used to
     seat lamps and grilles on the curved end panels instead of guessing. */

@@ -13,7 +13,7 @@
    ============================================================ */
 import * as THREE from 'three';
 import {
-  curve, buildBodyGeometry, surfacePatch, archLiner, skinZAt, maxZAt, surfaceXAt, mirrorJ,
+  curve, buildBodyGeometry, surfacePatch, archLiner, skinZAt, skinYAt, maxZAt, surfaceXAt, mirrorJ,
   RING_HALF, J_SHOULDER, J_RAIL, mergeGeometries, toCreasedNormals,
 } from './carbody.js';
 import { buildWheel } from './wheels.js';
@@ -281,10 +281,11 @@ export const CARS = {
       noseDome: 0.16, tailDome: 0.13, floorLift: 0.04,
       keys: {
         sill: [[-2.30, 0.20], [-1.9, 0.14], [-1.0, 0.115], [1.0, 0.115], [1.9, 0.145], [2.26, 0.21]],
-        belt: [[-2.30, 0.62], [-1.75, 0.735], [-0.9, 0.75], [0.2, 0.715], [1.1, 0.685], [1.85, 0.60], [2.26, 0.48]],
+        belt: [[-2.30, 0.62], [-1.75, 0.735], [-0.9, 0.75], [0.2, 0.725], [0.95, 0.775],
+               [1.44, 0.855], [1.9, 0.735], [2.26, 0.50]],
         roof: [[-2.30, 0.60], [-2.0, 0.80], [-1.55, 0.955], [-1.05, 1.045], [-0.55, 1.115],
-               [-0.05, 1.11], [0.42, 0.99], [0.72, 0.815], [1.1, 0.74], [1.62, 0.715],
-               [2.0, 0.615], [2.26, 0.44]],
+               [-0.05, 1.11], [0.42, 0.99], [0.72, 0.875], [1.06, 0.845], [1.44, 0.895],
+               [1.86, 0.815], [2.1, 0.665], [2.26, 0.47]],
         wBelt: [[-2.30, 0.74], [-1.98, 0.90], [-1.44, 1.00], [-0.7, 0.93], [0.3, 0.895],
                 [1.44, 0.955], [2.0, 0.80], [2.26, 0.52]],
         roofRatio: [[-2.30, 0.70], [-1.7, 0.63], [-1.0, 0.545], [-0.3, 0.535], [0.35, 0.60],
@@ -297,38 +298,44 @@ export const CARS = {
         side: [-0.95, 0.30],
         rear: [-1.55, -1.00],
       },
-      lamps: { frontX: 2.16, frontY: 0.545, frontW: 0.28, rearX: -2.23, rearY: 0.735, rearW: 0.30 },
+      lamps: { frontX: 2.16, frontY: 0.585, frontW: 0.28, rearX: -2.23, rearY: 0.735, rearW: 0.30 },
       intake: { x: 2.15, y: 0.265, w: 0.60, h: 0.16, fins: 9 },
-      mirror: { x: 0.60, y: 0.845 },
+      mirror: { x: 0.60, y: 0.885 },
       exhaust: { y: 0.30, z: 0.20 },
       shut: { doorFront: 0.32, doorRear: -0.90, bonnet: 0.80 },
       splitter: true, diffuser: true, carbonSills: true,
     },
     extras(g, paint, loft, B) {
       const carbon = MAT.carbon();
-      // swan-neck rear wing: airfoil blade hung from above
+      // swan-neck rear wing. The blade is an airfoil profile drawn in XY and
+      // extruded along Z, so the extrusion axis IS the span: rotating it to
+      // face the airflow (as this used to) turned the wing fore-aft instead.
+      const SPAN = 1.44;
+      const neckZ = 0.44;
+      const neckH = 0.26;
+      const deckY = skinYAt(loft, -1.90, neckZ);
       for (const side of [1, -1]) {
-        const neck = slab(0.06, 0.22, 0.07, 0.02, carbon);
-        neck.position.set(-1.88, 1.02, side * 0.46);
+        const neck = slab(0.07, neckH, 0.075, 0.022, carbon);
+        neck.position.set(-1.90, deckY + neckH / 2 - 0.03, side * neckZ);
         g.add(neck);
       }
+      const bladeY = deckY + neckH - 0.02;
       const foil = new THREE.Shape();
       foil.moveTo(-0.19, 0);
       foil.quadraticCurveTo(-0.02, 0.055, 0.19, 0.012);
       foil.quadraticCurveTo(-0.02, -0.012, -0.19, 0);
       const fg = new THREE.ExtrudeGeometry(foil, {
-        depth: 1.48, bevelEnabled: false, curveSegments: 8, steps: 1,
+        depth: SPAN, bevelEnabled: false, curveSegments: 8, steps: 1,
       });
-      fg.rotateY(Math.PI / 2);
-      fg.translate(0, 0, 0.74);
+      fg.translate(0, 0, -SPAN / 2);          // centre the span on the car
       const blade = new THREE.Mesh(fg, carbon);
-      blade.position.set(-1.96, 1.13, 0);
-      blade.rotation.z = -0.10;
+      blade.position.set(-1.98, bladeY, 0);
+      blade.rotation.z = -0.10;               // a little angle of attack
       g.add(blade);
+      // endplates: chord in X, height in Y, thin across Z — no rotation
       for (const side of [1, -1]) {
-        const plate = slab(0.26, 0.10, 0.016, 0.025, carbon);
-        plate.position.set(-1.96, 1.12, side * 0.75);
-        plate.rotation.y = Math.PI / 2;
+        const plate = slab(0.30, 0.13, 0.014, 0.03, carbon);
+        plate.position.set(-1.98, bladeY + 0.01, side * (SPAN / 2));
         g.add(plate);
       }
     },
