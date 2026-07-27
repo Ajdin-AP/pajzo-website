@@ -852,10 +852,6 @@ export function profileSVG(key, targetW = 240) {
   const c = {
     roof: curve(B.keys.roof), sill: curve(B.keys.sill), belt: curve(B.keys.belt),
   };
-  const wheels = [
-    { x: B.wheels.front, y: B.wheelR },
-    { x: B.wheels.rear, y: B.wheelR },
-  ];
   const minX = B.rearX - 0.06, maxX = B.frontX + 0.06;
   let maxY = 0;
   for (let x = minX; x <= maxX; x += 0.05) maxY = Math.max(maxY, c.roof(x));
@@ -870,20 +866,13 @@ export function profileSVG(key, targetW = 240) {
   seg.push(`M ${X(B.frontX)} ${Y(c.roof(B.frontX))}`);
   for (let x = B.frontX; x >= B.rearX; x -= 0.05) seg.push(`L ${X(x)} ${Y(c.roof(x))}`);
   seg.push(`L ${X(B.rearX)} ${Y(c.sill(B.rearX))}`);
-  // bottom edge, tail to nose, arching over the wheels
-  const sorted = [...wheels].sort((a, b) => a.x - b.x);
-  let cursor = B.rearX;
-  for (const w of sorted) {
-    const dy = w.y - c.sill(w.x);
-    const alpha = Math.asin(Math.min(0.999, Math.max(-0.999, dy / B.archR)));
-    const halfW = B.archR * Math.cos(alpha);
-    for (let x = cursor; x <= w.x - halfW; x += 0.05) seg.push(`L ${X(x)} ${Y(c.sill(x))}`);
-    const r = (B.archR * s).toFixed(1);
-    seg.push(`L ${X(w.x - halfW)} ${Y(c.sill(w.x))}`);
-    seg.push(`A ${r} ${r} 0 0 0 ${X(w.x + halfW)} ${Y(c.sill(w.x))}`);
-    cursor = w.x + halfW;
-  }
-  for (let x = cursor; x <= B.frontX; x += 0.05) seg.push(`L ${X(x)} ${Y(c.sill(x))}`);
+  // bottom edge, tail to nose: the sill, unbroken.
+  // These plates are a drawing of the body alone. Cutting wheel arches into
+  // the underside also swept the arcs the wrong way, so they bulged below
+  // the sill instead of up into it and the viewBox clipped them, leaving a
+  // stray hook at each wheel that read as a wheel poking out.
+  for (let x = B.rearX; x <= B.frontX; x += 0.05) seg.push(`L ${X(x)} ${Y(c.sill(x))}`);
+  seg.push(`L ${X(B.frontX)} ${Y(c.sill(B.frontX))}`);
   seg.push('Z');
 
   // the greenhouse, as a second stroke
