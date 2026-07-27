@@ -393,9 +393,14 @@ export const CARS = {
         rail.position.set(-0.72, 1.675, z);
         g.add(rail);
       }
-      // roof spoiler over the tailgate
-      const sp = slab(0.26, 0.05, 1.24, 0.02, paint);
-      sp.position.set(-2.10, 1.60, 0);
+      // roof spoiler, seated on the tailgate deck. At a fixed 1.60 it stood
+      // clear of a roof that has already started to fall away by here.
+      const crown = skinYAt(loft, -2.10, 0);
+      const spHalf = skinZAt(loft, -2.10, crown - 0.07) * 0.90;
+      let deck = Infinity;
+      for (let i = 0; i <= 4; i++) deck = Math.min(deck, skinYAt(loft, -2.10, (spHalf * i) / 4));
+      const sp = slab(0.26, 0.05, spHalf * 2, 0.02, paint);
+      sp.position.set(-2.10, deck + 0.004, 0);
       sp.rotation.z = 0.18;
       g.add(sp);
     },
@@ -672,6 +677,22 @@ function addInterior(g, loft, B) {
   }
 }
 
+/** A blade across the nose: splitter, skid plate. Both took a hard-coded
+    x of `frontX - 0.20` and a constant y, which on a car whose nose curves
+    up and inboard left the blade hanging in front of the bodywork with
+    nothing holding it. Seat it on the fascia instead: take the underside
+    height from the car's own sill curve, probe the fascia for x, and take
+    the span from the width actually there. */
+function noseBlade(g, loft, B, len, h, mat, widthFrac) {
+  const yb = curve(B.keys.sill)(B.frontX - 0.34);
+  const fx = surfaceXAt(loft, yb + 0.045, 0.14, 1);
+  const half = skinZAt(loft, fx - 0.09, yb + 0.045) * widthFrac;
+  const s = slab(len, h, half * 2, 0.02, mat);
+  // the rear 85 mm of the blade sits inside the fascia
+  s.position.set(fx - len / 2 + 0.085, yb + 0.012, 0);
+  g.add(s);
+}
+
 /* ---------- mirrors, sills, aero, exhaust ---------- */
 function addHardware(g, loft, B) {
   const trim = MAT.trim();
@@ -698,19 +719,22 @@ function addHardware(g, loft, B) {
 
   // rocker sills, hugging the lower flank between the arches
   const sillY = curve(B.keys.sill)(0) + 0.055;
-  const sillLen = Math.abs(B.wheels.front - B.wheels.rear) - B.archR * 1.5;
+  const sillMid = (B.wheels.front + B.wheels.rear) / 2;
+  const sillLen = Math.abs(B.wheels.front - B.wheels.rear) - B.archR * 2.0;
   for (const side of [1, -1]) {
-    const z = skinZAt(loft, 0, sillY);
+    // the flank tucks inboard toward the arches, so seat the bar against the
+    // NARROWEST half-width it spans. Sampling one z at the car's centre left
+    // the ends of the bar standing off the body.
+    let z = Infinity;
+    for (let i = 0; i <= 8; i++) {
+      z = Math.min(z, skinZAt(loft, sillMid - sillLen / 2 + (sillLen * i) / 8, sillY));
+    }
     const sill = slab(sillLen, 0.055, 0.05, 0.018, B.carbonSills ? carbon : MAT.shadowline());
-    sill.position.set((B.wheels.front + B.wheels.rear) / 2, sillY, side * (z - 0.012));
+    sill.position.set(sillMid, sillY, side * (z - 0.014));
     g.add(sill);
   }
 
-  if (B.splitter) {
-    const sp = slab(0.36, 0.045, 1.62, 0.02, carbon);
-    sp.position.set(B.frontX - 0.20, 0.115, 0);
-    g.add(sp);
-  }
+  if (B.splitter) noseBlade(g, loft, B, 0.36, 0.045, carbon, 0.98);
   if (B.diffuser) {
     const d = slab(0.34, 0.10, 1.42, 0.03, carbon);
     d.position.set(B.rearX + 0.19, 0.155, 0);
@@ -723,11 +747,7 @@ function addHardware(g, loft, B) {
     }
     g.add(new THREE.Mesh(mergeGeometries(finGeos, false), MAT.trim()));
   }
-  if (B.skidPlate) {
-    const s = slab(0.26, 0.05, 0.66, 0.02, MAT.brake());
-    s.position.set(B.frontX - 0.20, 0.215, 0);
-    g.add(s);
-  }
+  if (B.skidPlate) noseBlade(g, loft, B, 0.28, 0.05, MAT.brake(), 0.40);
 
   // exhaust tips, seated in the rear fascia. Their x is probed off the
   // surface: hard-coding it left them hanging up to 100 mm behind the
