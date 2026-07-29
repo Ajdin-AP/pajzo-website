@@ -35,6 +35,66 @@ const PT_MARK =
 // Curtain timing; the CSS transitions use the same values.
 const PT_COVER_MS = 450;
 const PT_REVEAL_MS = 550;
+// The curtain holds until the destination is actually ready. Floor so a
+// cached page still reads as a deliberate beat rather than a flicker;
+// ceiling so a chunk that never arrives can't trap anyone behind it.
+const PT_HOLD_MIN_MS = 240;
+const PT_HOLD_MAX_MS = 5000;
+
+// Each lazy route's import, so a transition can wait on the page it is
+// actually going to instead of a fixed timer. Home is in the main bundle.
+const ROUTE_CHUNK: Record<string, () => Promise<unknown>> = {
+  '/portfolio': () => import('./Portfolio'),
+  '/about': () => import('./AboutPage'),
+  '/process': () => import('./ProcessPage'),
+  '/privacy-policy': () => import('./PrivacyPolicy'),
+  '/terms-of-service': () => import('./TermsOfService'),
+  '/refund-policy': () => import('./RefundPolicy'),
+  '/cookie-policy': () => import('./CookiePolicy'),
+  '/code-of-conduct': () => import('./CodeOfConduct'),
+};
+
+const PT_LABEL: Record<string, string> = {
+  '/': 'Home',
+  '/portfolio': 'Selected work',
+  '/about': 'About',
+  '/process': 'How we work',
+  '/services/web-development': 'Web development',
+  '/services/app-development': 'App development',
+  '/services/branding': 'Branding',
+  '/services/design': 'Design',
+  '/privacy-policy': 'Privacy policy',
+  '/terms-of-service': 'Terms of service',
+  '/refund-policy': 'Refund policy',
+  '/cookie-policy': 'Cookie policy',
+  '/code-of-conduct': 'Code of conduct',
+};
+
+const normalise = (p: string) => (p.length > 1 ? p.replace(/\/+$/, '') : p);
+
+/** Two frames: the first schedules the commit's paint, the second lands after it. */
+const nextPaint = () =>
+  new Promise<void>((res) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => res()));
+  });
+
+/** Webfonts, plus any image the visitor is about to land on. Never blocks
+    longer than `cap` — a slow asset should not hold the curtain shut. */
+async function pageAssetsReady(cap: number) {
+  const jobs: Promise<unknown>[] = [];
+  const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+  if (fonts && fonts.status !== 'loaded') jobs.push(fonts.ready.catch(() => {}));
+  document.querySelectorAll('img').forEach((img) => {
+    if (img.complete) return;
+    if (img.getBoundingClientRect().top > window.innerHeight * 1.25) return;
+    jobs.push(img.decode().catch(() => {}));
+  });
+  if (!jobs.length) return;
+  await Promise.race([
+    Promise.all(jobs),
+    new Promise((res) => window.setTimeout(res, cap)),
+  ]);
+}
 
 function App() {
   const [route, setRoute] = useState(window.location.pathname);
@@ -87,17 +147,116 @@ function App() {
   // Page transition: navigate() announces the target; a curtain sweeps up to
   // cover the page, the route (and scroll reset) swap underneath it, and the
   // curtain continues up to reveal the new page. Reduced motion swaps instantly.
-  const [ptPhase, setPtPhase] = useState<'idle' | 'cover' | 'reveal'>('idle');
+  const [ptPhase, setPtPhase] = useState<'idle' | 'cover' | 'hold' | 'reveal'>('idle');
+  const [ptLabel, setPtLabel] = useState('');
   const ptBusy = useRef(false);
+  const ptMarkRef = useRef<SVGPathElement>(null);
+  // Progress lives outside React: the mark is redrawn every frame, and
+  // re-rendering the whole tree at 60fps to move a stroke would be absurd.
+  const ptGoal = useRef(0);
+  const ptNow = useRef(0);
+
   useEffect(() => {
-    let t1 = 0;
-    let t2 = 0;
+    let raf = 0;
+    let cancelled = false;
+    const timers: number[] = [];
+    const wait = (ms: number) =>
+      new Promise<void>((res) => timers.push(window.setTimeout(res, ms)));
+
+    // The mark draws itself as the destination loads: dashoffset is the
+    // progress bar. getTotalLength is measured once the node exists.
+    let len = 0;
+    const paintMark = () => {
+      const el = ptMarkRef.current;
+      if (!el) return;
+      if (!len) len = el.getTotalLength();
+      el.style.strokeDasharray = String(len);
+      el.style.strokeDashoffset = String(len * (1 - ptNow.current));
+    };
+    const tick = () => {
+      // Each stage sets a CEILING, not a value, and the draw creeps toward it
+      // asymptotically: it keeps moving for as long as the wait lasts, so a
+      // slow chunk reads as loading rather than as stuck, but it can never
+      // reach the end until the page is genuinely there. Completion is a
+      // deliberate snap.
+      const ceil = ptGoal.current;
+      const k = ceil >= 1 ? 0.36 : 0.014;
+      ptNow.current += (ceil - ptNow.current) * k;
+      if (ceil - ptNow.current < 0.002) ptNow.current = ceil;
+      paintMark();
+      raf = requestAnimationFrame(tick);
+    };
+
     const swap = (target: string) => {
       window.history.pushState({}, '', target);
       setRoute(target);
       setModalOpen(false);
       window.scrollTo(0, 0);
     };
+
+    const run = async (target: string) => {
+      const p = normalise(target);
+      const chunk = serviceOf(p) ? () => import('./ServicePage') : ROUTE_CHUNK[p];
+      const started = performance.now();
+      const deadline = new Promise<void>((res) =>
+        timers.push(window.setTimeout(res, PT_HOLD_MAX_MS))
+      );
+
+      ptNow.current = 0;
+      ptGoal.current = 0.55; // ceiling while the chunk is in flight
+      setPtLabel(PT_LABEL[p] ?? '');
+      setPtPhase('cover');
+      raf = requestAnimationFrame(tick);
+
+      // Fetch the destination while the curtain is still closing, so the
+      // two costs overlap instead of stacking.
+      let failed = false;
+      const loading = chunk
+        ? chunk().then(
+            () => {},
+            () => {
+              failed = true;
+            }
+          )
+        : Promise.resolve();
+      await Promise.race([Promise.all([loading, wait(PT_COVER_MS)]), deadline]);
+      if (cancelled) return;
+      // A chunk that will not load would render nothing behind a lifted
+      // curtain, so hand the route to the browser and let it fetch the page
+      // properly rather than reveal a blank screen.
+      if (failed) {
+        window.location.href = target;
+        return;
+      }
+      ptGoal.current = 0.85; // chunk in, waiting on the commit to paint
+
+      setPtPhase('hold');
+      swap(target);
+      await Promise.race([nextPaint(), deadline]);
+      if (cancelled) return;
+      ptGoal.current = 0.95; // painted, waiting on fonts and images
+
+      await Promise.race([pageAssetsReady(2200), deadline]);
+      if (cancelled) return;
+
+      // hold the floor, so an instant route still gets its beat
+      const left = PT_HOLD_MIN_MS - (performance.now() - started - PT_COVER_MS);
+      if (left > 0) await wait(left);
+      if (cancelled) return;
+
+      ptGoal.current = 1;
+      await wait(240); // let the mark snap closed before it leaves
+      if (cancelled) return;
+
+      setPtPhase('reveal');
+      await wait(PT_REVEAL_MS);
+      if (cancelled) return;
+      cancelAnimationFrame(raf);
+      setPtPhase('idle');
+      setPtLabel('');
+      ptBusy.current = false;
+    };
+
     const onNavigate = (e: Event) => {
       const target = (e as CustomEvent<string>).detail;
       if (!target || target === window.location.pathname) return;
@@ -107,21 +266,14 @@ function App() {
       }
       if (ptBusy.current) return; // one transition at a time
       ptBusy.current = true;
-      setPtPhase('cover');
-      t1 = window.setTimeout(() => {
-        swap(target);
-        setPtPhase('reveal');
-        t2 = window.setTimeout(() => {
-          setPtPhase('idle');
-          ptBusy.current = false;
-        }, PT_REVEAL_MS);
-      }, PT_COVER_MS);
+      void run(target);
     };
     window.addEventListener('pajzo:navigate', onNavigate);
     return () => {
+      cancelled = true;
       window.removeEventListener('pajzo:navigate', onNavigate);
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      timers.forEach(window.clearTimeout);
+      cancelAnimationFrame(raf);
       ptBusy.current = false;
     };
   }, []);
@@ -293,9 +445,14 @@ function App() {
         />
       </Suspense>
       <div className={`pt pt--${ptPhase}`} aria-hidden="true">
-        <svg viewBox="-10 -10 460 540">
-          <path d={PT_MARK} />
-        </svg>
+        <div className="pt__stack">
+          <svg viewBox="-10 -10 460 540">
+            {/* the unlit mark, so the drawn stroke has something to travel over */}
+            <path className="pt__ghost" d={PT_MARK} />
+            <path className="pt__draw" ref={ptMarkRef} d={PT_MARK} />
+          </svg>
+          <span className="pt__label">{ptLabel}</span>
+        </div>
       </div>
       <Analytics />
       <SpeedInsights />
