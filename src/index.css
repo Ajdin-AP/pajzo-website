@@ -80,6 +80,21 @@
   --radius-l: 20px;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* the nav material. Saturation is lifted well past 100% so colour behind
+     the pane survives the blur instead of going grey, which is what separates
+     glass from frosted plastic. */
+  --nav-h: 74px;
+  --glass-blur: 20px;
+  --glass-sat: 180%;
+  /* The pane sits LIGHTER than the page behind it. This is the move that
+     makes a dark material read as glass: tinting with the background colour
+     only ever darkens, so the bar disappears into the page. Lifting the
+     backdrop and then tinting it back down leaves a pane you can see the
+     edge of. */
+  --glass-lift: brightness(1.34);
+  --glass-tint: rgba(18, 16, 13, 0.3);
+  --glass-tint-thick: rgba(15, 14, 11, 0.58);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -366,6 +381,14 @@ select {
   transform: translate(7px, 7px) scale(0.985);
 }
 @media (hover: none), (pointer: coarse) {
+  /* A shallower pane on touch. iOS Safari has twice rendered whole regions of
+     this site dark on scroll-up when too much of it was held on permanent
+     compositor layers, and a fixed blurred bar is exactly such a layer. The
+     material stays; its radius does not need to be desktop-deep on a phone. */
+  :root {
+    --glass-blur: 14px;
+  }
+
   /* on touch the press itself does the stamping */
   .btn--solid:active {
     transform: translate(6px, 6px);
@@ -459,38 +482,131 @@ select {
 
 /* ------------------------------------------------------------ header */
 
+/* ---------- the bar, as a material ----------
+   A pane of glass rather than a painted strip: the page behind it is blurred
+   and its colour lifted, then a tint is laid over the result. Two details do
+   most of the work of making it read as glass and not as a translucent box:
+   a specular gradient on the top edge, where light would catch a real pane,
+   and a half-pixel separator at the bottom instead of a full 1px rule.
+
+   The blur radius never animates. Only the tint and the edges cross-fade on
+   scroll, which is a repaint of a 74px strip; animating the radius would
+   re-run the whole Gaussian every frame. */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  transition: background 0.35s var(--ease), border-color 0.35s var(--ease),
-    transform 0.5s var(--ease);
-  border-bottom: 1px solid transparent;
+  -webkit-backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
+  background: var(--glass-tint);
+  transition: background 0.4s var(--ease), transform 0.5s var(--ease);
   /* keep the bar on its own GPU layer so the hide/show slide stays smooth,
      especially on iOS where a fixed bar otherwise re-rasterises each frame */
   will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+/* specular: the light along the top edge of the pane. Sits above the tint and
+   below the content, and never intercepts a click. */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(236, 231, 220, 0.075),
+    rgba(236, 231, 220, 0.014) 38%,
+    transparent 70%
+  );
+  opacity: 0.55;
+  transition: opacity 0.4s var(--ease);
+}
+/* the separator, at half a device pixel: a 1px rule reads as a drawn line,
+   a 0.5px one reads as the edge of the glass */
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  transform: scaleY(0.5);
+  transform-origin: bottom center;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--line-strong) 14%,
+    var(--line-strong) 86%,
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+}
 /* hides on scroll-down, returns on any scroll-up */
 .header.is-hidden {
   transform: translateY(-100%);
 }
+/* Off the top of the page the glass thickens: more tint, a brighter edge and
+   the separator arrives. The pane is at its most transparent over the hero,
+   where there is a composed image to look through. */
 .header.scrolled {
-  /* A near-opaque bar instead of translucent + backdrop-filter. A blurred,
-     fixed header re-renders a full-width Gaussian blur of the page behind it
-     on every scroll frame — the main cause of scroll/nav jank. This is free. */
-  background: rgba(13, 12, 10, 0.94);
-  border-bottom-color: var(--line);
+  background: var(--glass-tint-thick);
+}
+.header.scrolled::before {
+  opacity: 1;
+}
+.header.scrolled::after {
+  opacity: 1;
+}
+
+/* No backdrop-filter (older Firefox, and anything with the feature off): fall
+   back to a tint solid enough to carry the type on its own. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header {
+    background: rgba(13, 12, 10, 0.9);
+  }
+  .header.scrolled {
+    background: rgba(13, 12, 10, 0.96);
+  }
+  /* the panel's own rules sit in the responsive block further down: same
+     specificity, later in the file, so these need to outrank them */
+  html .mobile-nav {
+    background: rgba(13, 12, 10, 0.98);
+  }
+}
+
+/* Someone who has asked the OS to cut transparency gets a solid bar. This is
+   an accessibility setting, not a taste one: the material is the thing being
+   turned off, so nothing here should still be see-through. */
+@media (prefers-reduced-transparency: reduce) {
+  .header,
+  .header.scrolled,
+  html .mobile-nav {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(13, 12, 10, 0.97);
+  }
+  .header::before {
+    display: none;
+  }
+}
+
+/* the specular and the separator are positioned, so they paint above static
+   in-flow content. Lift the bar's contents over both. */
+.header > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .header__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 74px;
+  height: var(--nav-h);
   gap: 24px;
 }
 
@@ -585,6 +701,8 @@ select {
   transform: translateX(3px);
 }
 
+/* a control cut from the same material as the bar: a faint fill, a hairline,
+   and an inner highlight on its top edge so it reads as raised glass */
 .menu-toggle {
   display: none;
   width: 42px;
@@ -593,7 +711,14 @@ select {
   justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
+  background: rgba(236, 231, 220, 0.05);
+  box-shadow: inset 0 1px 0 rgba(236, 231, 220, 0.08);
   color: var(--bone);
+  transition: background 0.24s var(--ease), border-color 0.24s var(--ease);
+}
+.menu-toggle:hover {
+  background: rgba(236, 231, 220, 0.1);
+  border-color: rgba(236, 231, 220, 0.32);
 }
 .menu-toggle svg {
   width: 20px;
@@ -623,13 +748,19 @@ select {
        even when closed (visibility: hidden still occupies space), which made
        the fixed header ~450px tall and painted a huge dark panel over the
        hero on scroll. Out of flow, the header is just the bar again. */
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: var(--nav-h);
     left: 0;
     right: 0;
+    z-index: 99;
     padding: 12px var(--gutter) 28px;
-    background: var(--bg);
+    /* the same material, tinted heavier: this one has type over its whole
+       height, not just a 74px strip */
+    -webkit-backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
+    backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
+    background: rgba(15, 14, 11, 0.76);
     border-bottom: 1px solid var(--line);
+    box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);

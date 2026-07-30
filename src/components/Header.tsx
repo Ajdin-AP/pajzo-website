@@ -63,48 +63,54 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
   };
 
   return (
-    <header
-      className={`header${scrolled ? ' scrolled' : ''}${
-        hidden && !menuOpen ? ' is-hidden' : ''
-      }`}
-    >
-      <div className="container">
-        <div className="header__inner">
-          <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo, home">
-            <Wordmark />
-          </a>
+    <>
+      <header
+        className={`header${scrolled ? ' scrolled' : ''}${
+          hidden && !menuOpen ? ' is-hidden' : ''
+        }`}
+      >
+        <div className="container">
+          <div className="header__inner">
+            <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo, home">
+              <Wordmark />
+            </a>
 
-          <div className="header__right">
-            <nav className="header__nav">
-              {NAV.map((item) => (
-                <a
-                  key={item.route}
-                  href={item.route}
-                  className={`navlink${current === item.route ? ' navlink--active' : ''}`}
-                  onClick={(e) => goTo(e, item.route)}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
+            <div className="header__right">
+              <nav className="header__nav">
+                {NAV.map((item) => (
+                  <a
+                    key={item.route}
+                    href={item.route}
+                    className={`navlink${current === item.route ? ' navlink--active' : ''}`}
+                    onClick={(e) => goTo(e, item.route)}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
 
-            <button className="header__cta" onClick={() => openModal()}>
-              Start a project
-              <ArrowRight />
-            </button>
+              <button className="header__cta" onClick={() => openModal()}>
+                Start a project
+                <ArrowRight />
+              </button>
 
-            <button
-              className="menu-toggle"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
-            >
-              {menuOpen ? <Close /> : <Menu />}
-            </button>
+              <button
+                className="menu-toggle"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={menuOpen}
+              >
+                {menuOpen ? <Close /> : <Menu />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
+      {/* Sibling of the bar, not a child: the bar carries a transform for its
+          hide-on-scroll and a backdrop-filter for its material, and either one
+          on an ancestor stops a descendant's own backdrop-filter from sampling
+          the page. Out here the panel gets real glass too. */}
       <div className={`mobile-nav${menuOpen ? ' open' : ''}`}>
         {NAV.map((item) => (
           <a
@@ -126,7 +132,7 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
           Start a project
         </button>
       </div>
-    </header>
+    </>
   );
 };
 
