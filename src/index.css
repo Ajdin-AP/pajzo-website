@@ -679,26 +679,38 @@ select {
   transform: scaleX(1);
 }
 
-/* arrow-link CTA — always present, no pill */
-.header__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--bone);
-  transition: color 0.2s var(--ease);
+/* The CTA is the hero's stamped plate, not a second button design: same
+   plate, same offset dashed frame, same end cap and the same arrow that
+   straightens on press. Only the scale changes, so it sits in a 74px bar
+   without crowding the nav. Everything it needs comes from .btn--solid;
+   .btn--nav below is purely the smaller size. */
+.btn--nav {
+  padding: 10px 17px;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  gap: 7px;
+  /* a shorter throw than the hero's, in proportion to the smaller plate */
+  box-shadow: 0 8px 18px -8px rgba(232, 98, 26, 0.45);
 }
-.header__cta svg {
-  width: 15px;
-  height: 15px;
-  transition: transform 0.25s var(--ease);
+.btn--nav.btn--solid::before {
+  transform: translate(4px, 4px);
 }
-.header__cta:hover {
-  color: var(--orange-hot);
+.btn--nav.btn--solid svg {
+  width: 13px;
+  height: 13px;
+  margin-left: 12px;
 }
-.header__cta:hover svg {
-  transform: translateX(3px);
+.btn--nav.btn--solid:has(svg)::after {
+  top: 7px;
+  bottom: 7px;
+  right: 39px; /* padding 17 + arrow 13 + gap 9 */
+}
+.btn--nav.btn--solid:hover {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+.btn--nav.btn--solid:active {
+  transform: translate(5px, 5px) scale(0.985);
 }
 
 /* a control cut from the same material as the bar: a faint fill, a hairline,

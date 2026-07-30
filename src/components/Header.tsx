@@ -7,6 +7,7 @@ import type { OpenModal } from '../App';
 // A single, standard nav shown on every page. Every item is its own page;
 // there are no same-page section jumps here (the home page is a scroll).
 const NAV: { label: string; route: string }[] = [
+  { label: 'Home', route: '/' },
   { label: 'Work', route: '/portfolio' },
   { label: 'About', route: '/about' },
   { label: 'Process', route: '/process' },
@@ -59,6 +60,12 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
   const goTo = (e: React.MouseEvent, path: string) => {
     e.preventDefault();
     setMenuOpen(false);
+    // navigate() drops a target equal to the current path, which would leave
+    // the tab you are already on doing nothing. Send it to the top instead.
+    if (path === current) {
+      requestAnimationFrame(() => smoothScrollTo(0));
+      return;
+    }
     navigate(path);
   };
 
@@ -89,7 +96,10 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
                 ))}
               </nav>
 
-              <button className="header__cta" onClick={() => openModal()}>
+              <button
+                className="btn btn--solid btn--nav header__cta"
+                onClick={() => openModal()}
+              >
                 Start a project
                 <ArrowRight />
               </button>
