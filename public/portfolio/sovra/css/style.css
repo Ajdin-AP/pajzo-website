@@ -1138,11 +1138,25 @@ section { position: relative; z-index: 4; }
   padding: 15px 28px;
   font-size: 13px;
   letter-spacing: 0.04em;
-  transition: transform 0.5s var(--ease-lux);
+  transition: transform 0.5s var(--ease-lux), opacity 0.35s var(--ease-lux),
+    visibility 0s linear 0.5s;
   max-width: 90vw;
   text-align: center;
+  /* Hidden outright when there is no message. It used to rely on being
+     translated 140% of its own height out of view, but an empty toast is
+     only its padding, about 32 px: 140% of that is 45 px, and sitting 34 px
+     up from the bottom it needed 66 px to clear. So the top 21 px of an empty
+     bordered box sat at the bottom of every page, always. A percentage of a
+     box whose height depends on its text cannot be trusted to clear it. */
+  opacity: 0;
+  visibility: hidden;
 }
-#toast.show { transform: translate(-50%, 0); }
+#toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.5s var(--ease-lux), opacity 0.35s var(--ease-lux);
+}
 
 /* ============ responsive ============ */
 @media (max-width: 1100px) {
