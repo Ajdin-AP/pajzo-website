@@ -486,9 +486,16 @@ body[data-cursor="on"] #cursor { display: flex; }
   position: relative;
   padding-left: clamp(3rem, 6vw, 5rem);
 }
+/* Anchored by its BOTTOM to the top of the plate, not by its top. The four
+   drawings are different heights, so a top anchor left each one's baseline
+   in a different place: the Citadel's dropped 11 px into its image while the
+   Solstice's floated 12 px clear of it. Bottom-anchored, and with the box now
+   drawn tight to the ink, every silhouette rests on its frame the same way. */
 .plate .etching {
   position: absolute;
-  top: -3.2rem;
+  top: auto;
+  bottom: 100%;
+  margin-bottom: -2px; /* cancels the box's 2 px of air, so the ink meets the frame */
   left: clamp(3rem, 6vw, 5rem);
   width: 200px;
   height: auto;

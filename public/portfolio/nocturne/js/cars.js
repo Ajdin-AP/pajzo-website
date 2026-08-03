@@ -852,14 +852,22 @@ export function profileSVG(key, targetW = 240) {
   const c = {
     roof: curve(B.keys.roof), sill: curve(B.keys.sill), belt: curve(B.keys.belt),
   };
-  const minX = B.rearX - 0.06, maxX = B.frontX + 0.06;
-  let maxY = 0;
-  for (let x = minX; x <= maxX; x += 0.05) maxY = Math.max(maxY, c.roof(x));
-  maxY += 0.08;
-  const s = targetW / (maxX - minX);
-  const H = maxY * s + 2;
-  const X = (x) => ((x - minX) * s).toFixed(1);
-  const Y = (y) => (H - y * s).toFixed(1);
+  // The box is drawn tight to the ink, with the same 2 px of air on every
+  // side of every car. It used to run from the ground up, so each plate
+  // carried a different amount of empty space below its silhouette (6 px on
+  // the Basalt, 11 px on the Citadel), and with the boxes top-anchored the
+  // drawings ended up sitting at visibly different heights above their images.
+  const PAD = 2;
+  const minX = B.rearX, maxX = B.frontX;
+  let maxY = -Infinity, minY = Infinity;
+  for (let x = minX; x <= maxX; x += 0.02) {
+    maxY = Math.max(maxY, c.roof(x));
+    minY = Math.min(minY, c.sill(x));
+  }
+  const s = (targetW - PAD * 2) / (maxX - minX);
+  const H = (maxY - minY) * s + PAD * 2;
+  const X = (x) => (PAD + (x - minX) * s).toFixed(1);
+  const Y = (y) => (H - PAD - (y - minY) * s).toFixed(1);
 
   const seg = [];
   // top edge, nose to tail
