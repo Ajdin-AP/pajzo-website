@@ -54,21 +54,6 @@ const ROUTE_CHUNK: Record<string, () => Promise<unknown>> = {
   '/code-of-conduct': () => import('./CodeOfConduct'),
 };
 
-const PT_LABEL: Record<string, string> = {
-  '/': 'Home',
-  '/portfolio': 'Selected work',
-  '/about': 'About',
-  '/process': 'How we work',
-  '/services/web-development': 'Web development',
-  '/services/app-development': 'App development',
-  '/services/branding': 'Branding',
-  '/services/design': 'Design',
-  '/privacy-policy': 'Privacy policy',
-  '/terms-of-service': 'Terms of service',
-  '/refund-policy': 'Refund policy',
-  '/cookie-policy': 'Cookie policy',
-  '/code-of-conduct': 'Code of conduct',
-};
 
 const normalise = (p: string) => (p.length > 1 ? p.replace(/\/+$/, '') : p);
 
@@ -148,7 +133,6 @@ function App() {
   // cover the page, the route (and scroll reset) swap underneath it, and the
   // curtain continues up to reveal the new page. Reduced motion swaps instantly.
   const [ptPhase, setPtPhase] = useState<'idle' | 'cover' | 'hold' | 'reveal'>('idle');
-  const [ptLabel, setPtLabel] = useState('');
   const ptBusy = useRef(false);
   const ptMarkRef = useRef<SVGPathElement>(null);
   // Progress lives outside React: the mark is redrawn every frame, and
@@ -204,7 +188,6 @@ function App() {
 
       ptNow.current = 0;
       ptGoal.current = 0.55; // ceiling while the chunk is in flight
-      setPtLabel(PT_LABEL[p] ?? '');
       setPtPhase('cover');
       raf = requestAnimationFrame(tick);
 
@@ -253,7 +236,6 @@ function App() {
       if (cancelled) return;
       cancelAnimationFrame(raf);
       setPtPhase('idle');
-      setPtLabel('');
       ptBusy.current = false;
     };
 
@@ -445,14 +427,11 @@ function App() {
         />
       </Suspense>
       <div className={`pt pt--${ptPhase}`} aria-hidden="true">
-        <div className="pt__stack">
-          <svg viewBox="-10 -10 460 540">
-            {/* the unlit mark, so the drawn stroke has something to travel over */}
-            <path className="pt__ghost" d={PT_MARK} />
-            <path className="pt__draw" ref={ptMarkRef} d={PT_MARK} />
-          </svg>
-          <span className="pt__label">{ptLabel}</span>
-        </div>
+        <svg viewBox="-10 -10 460 540">
+          {/* the unlit mark, so the drawn stroke has something to travel over */}
+          <path className="pt__ghost" d={PT_MARK} />
+          <path className="pt__draw" ref={ptMarkRef} d={PT_MARK} />
+        </svg>
       </div>
       <Analytics />
       <SpeedInsights />

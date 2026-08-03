@@ -4306,12 +4306,6 @@ section[id] {
 .pt::after {
   bottom: 0;
 }
-.pt__stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
 .pt svg {
   width: clamp(72px, 9vw, 110px);
   overflow: visible;
@@ -4330,15 +4324,6 @@ section[id] {
 .pt__draw {
   stroke: var(--orange);
 }
-.pt__label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--bone-mute);
-  opacity: 0;
-  transform: translateY(4px);
-}
 .pt--cover,
 .pt--hold {
   visibility: visible;
@@ -4350,25 +4335,17 @@ section[id] {
   opacity: 1;
   transition: opacity 0.26s ease 0.18s;
 }
-.pt--cover .pt__label,
-.pt--hold .pt__label {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.3s ease 0.26s, transform 0.3s var(--ease-io) 0.26s;
-}
 .pt--reveal {
   visibility: visible;
   transform: translateY(-102%);
   transition: transform 0.55s var(--ease-io);
 }
-.pt--reveal svg,
-.pt--reveal .pt__label {
+.pt--reveal svg {
   opacity: 0;
   transition: opacity 0.22s ease;
 }
 @media (prefers-reduced-motion: reduce) {
-  .pt,
-  .pt__label {
+  .pt {
     transition: none;
   }
 }
