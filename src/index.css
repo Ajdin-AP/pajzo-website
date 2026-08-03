@@ -695,6 +695,14 @@ select {
 .btn--nav.btn--solid::before {
   transform: translate(4px, 4px);
 }
+/* The frame has to travel back as the plate presses out; that swap is the
+   whole animation. Without this the rule above wins on hover too, because
+   .btn--nav.btn--solid::before and .btn--solid:hover::before have identical
+   specificity and this block sits later in the file, so the frame just sat
+   still and only the plate moved. */
+.btn--nav.btn--solid:hover::before {
+  transform: translate(0, 0);
+}
 .btn--nav.btn--solid svg {
   width: 13px;
   height: 13px;
