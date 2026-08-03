@@ -41,7 +41,7 @@
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 0.8, 0);
   controls.enableDamping = true;
-  window.__rig = { camera, controls };
+  window.__rig = { camera, controls, scene };
 
   // floor
   const floor = new THREE.Mesh(
@@ -72,6 +72,7 @@
   });
   window.__showCar = (n) => { groups.forEach((g, i) => { g.visible = i === n; g.position.set(0, 0, 0); }); return keys[n]; };
 
+  window.__groups = groups;   // for isolating one mesh while debugging
   window.__carsReady = true; // probe flag for verification
 
   addEventListener('resize', () => {

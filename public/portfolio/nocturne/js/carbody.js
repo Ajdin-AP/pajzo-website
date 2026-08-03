@@ -79,7 +79,14 @@ const clamp01 = (t) => (t < 0 ? 0 : t > 1 ? 1 : t);
    same feature at every station. That is what lets creases and UV
    columns run cleanly down the length of the car. */
 
-const SEG = { flank: 6, shoulder: 5, tumble: 7, rail: 4, crown: 6 };
+/* Samples per section segment. The flank carries the wheel arch, and the
+   arch is a 120 mm inset that ramps over about 70 mm of surface: at 6 samples
+   across a 450 mm flank the ring stepped through that ramp in one go, so
+   neighbouring ring points sat 100 mm apart in z and the recess came out as a
+   staircase with slivers where its edge crossed the station grid diagonally.
+   16 puts three or four samples across the ramp. The un-inset shape is
+   unchanged, since these segments are sampled along straight runs. */
+const SEG = { flank: 20, shoulder: 5, tumble: 7, rail: 4, crown: 6 };
 export const RING_HALF = SEG.flank + SEG.shoulder + SEG.tumble + SEG.rail + SEG.crown;
 /* ring index of the shoulder crease, for the feature-line pass */
 export const J_SHOULDER = SEG.flank + Math.floor(SEG.shoulder / 2);
@@ -147,7 +154,10 @@ function stations(spec) {
   const dense = [];
   for (const w of spec.wheels) {
     const r = spec.archR;
-    for (let i = -18; i <= 18; i++) dense.push(w.x + (r * 1.14 * i) / 18);
+    // The arch edge is a circle crossing a rectangular grid, so it staircases
+    // unless both axes resolve it. At 18 the stations were 27 mm apart, about
+    // the width of the ramp itself.
+    for (let i = -30; i <= 30; i++) dense.push(w.x + (r * 1.14 * i) / 30);
   }
   // guarantee stations at authored features (shut lines, glass edges) so a
   // narrow surface patch always has at least two rows to span
@@ -418,22 +428,20 @@ export function surfaceXAt(loft, y, zTarget, dir) {
 /** z of the skin at (x, y) on the +z flank — for placing hardware on the surface. */
 export function skinZAt(loft, x, y) {
   const { rows, xs, M } = loft;
-  let best = 0, bd = Infinity;
-  for (let i = 0; i < xs.length; i++) {
-    const d = Math.abs(xs[i] - x);
-    if (d < bd) { bd = d; best = i; }
-  }
-  const row = rows[best];
-  let z = 0.02;
-  for (let j = 0; j < M - 1; j++) {
-    const a = row[j], b = row[j + 1];
-    const lo = Math.min(a.y, b.y), hi = Math.max(a.y, b.y);
-    if (y >= lo && y <= hi) {
-      const t = hi - lo < 1e-6 ? 0 : (y - a.y) / (b.y - a.y);
-      z = Math.max(z, a.z + (b.z - a.z) * t);
-    }
-  }
-  return z;
+  const n = xs.length;
+  // Interpolate between the two stations either side of x rather than
+  // snapping to the nearest. Through a wheel arch the half-width ramps hard
+  // over a few centimetres, so the nearest station could be 17 mm wider than
+  // the surface actually is at x — enough to push anything seated on this
+  // reading out through the paint.
+  let i = 0;
+  while (i < n - 2 && xs[i + 1] < x) i++;
+  const x0 = xs[i], x1 = xs[i + 1];
+  const t = x1 - x0 < 1e-9 ? 0 : Math.min(1, Math.max(0, (x - x0) / (x1 - x0)));
+  const z0 = rowZAt(rows[i], M, y);
+  const z1 = rowZAt(rows[i + 1], M, y);
+  const z = z0 + (z1 - z0) * t;
+  return z > 0.02 ? z : 0.02;
 }
 
 export function surfacePatch(loft, xRange, jFrom, jTo, offset) {
@@ -492,17 +500,38 @@ export function surfacePatch(loft, xRange, jFrom, jTo, offset) {
 /* ---------- arch liner ----------
    A dark half-tube just inboard of the fender opening, so the gap
    between lip and tire reads black instead of showing paint. */
-export function archLiner(spec, w) {
+/** The wheel house: a ribbon swept around the arch, spanning both flanks so
+    the opening reads as a dark cavity rather than a hole through the car.
+
+    Its half-width at every angle is taken from the body's own opening. The
+    old liner was a constant-width band, but the flank tucks inboard through
+    the arch, and wherever the body was narrower than that constant the band
+    came out through the paint: 20 to 34 of its 92 vertices sat outside the
+    shell on every car, up to 105 mm proud, which is what read as shards
+    around the wheel. Sampled off the skin it cannot protrude at all.
+
+    Also swept at 48 steps rather than 22: at 8 degrees a step the arc was
+    visibly faceted at the close range these are seen from. */
+export function archLiner(loft, spec, w) {
   const R = spec.archR - 0.012;
-  const halfW = w.halfW;
+  const NA = 48;
+  const a0 = -Math.PI * 0.03, a1 = Math.PI * 1.03;
+  // Deep enough to absorb what is left: the surface bows slightly between
+  // stations, so a reading taken on the chord can still sit a couple of
+  // millimetres proud of the real skin.
+  const TUCK = 0.020;
   const pos = [], idx = [];
-  const NA = 22;
-  const a0 = Math.PI * 0.02, a1 = Math.PI * 0.98;
   for (let i = 0; i <= NA; i++) {
     const a = a0 + (a1 - a0) * (i / NA);
-    const y = w.y + Math.sin(a) * R;
     const x = w.x + Math.cos(a) * R;
-    pos.push(x, y, -halfW, x, y, halfW);
+    const y = w.y + Math.sin(a) * R;
+    // Below the sill the probe runs off the body and returns its own floor,
+    // and the ribbon tapers to nothing there. That is correct: those steps
+    // are behind the tyre and under the rocker. Holding a minimum width
+    // instead pushed the bottom of the arch back out through the flank.
+    const skin = skinZAt(loft, x, y);
+    const z = Math.min(w.halfW, Math.max(0.02, skin - TUCK));
+    pos.push(x, y, -z, x, y, z);
   }
   for (let i = 0; i < NA; i++) {
     const a = i * 2, b = a + 1, c = a + 2, d = a + 3;

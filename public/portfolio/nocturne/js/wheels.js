@@ -52,7 +52,7 @@ function tireGeometry(R, W) {
     [R * 0.74, h * 0.95],
     [R * 0.64, h * 0.84],
   ];
-  return revolve(p, 48);
+  return revolve(p, 64);
 }
 
 /* ---------- rim barrel and flanges ---------- */
@@ -68,7 +68,7 @@ function barrelGeometry(R, W) {
     [rim * 1.03, -h * 0.79],  // inboard flange
     [rim * 0.99, -h * 0.86],
   ];
-  return revolve(p, 44);
+  return revolve(p, 56);
 }
 
 /* ---------- one spoke, tapered and machined ---------- */
@@ -89,8 +89,11 @@ function spokeGeometry(R, W, dishZ) {
     bevelEnabled: true,
     bevelThickness: R * 0.014,
     bevelSize: R * 0.014,
-    bevelSegments: 2,
-    curveSegments: 4,
+    // the spoke's rounded outer end and its bevel are what catch the light on
+    // a wheel this close to camera; four segments on the curve left it
+    // polygonal and the bevel too abrupt to read as machined
+    bevelSegments: 3,
+    curveSegments: 9,
     steps: 1,
   });
   g.deleteAttribute('uv');
@@ -123,7 +126,7 @@ function discGeometry(R, W) {
     [rOut * 0.97, face + 0.011],
     [rIn, face + 0.011],
   ];
-  return revolve(p, 40);
+  return revolve(p, 48);
 }
 
 function hatGeometry(R, W) {
@@ -134,7 +137,7 @@ function hatGeometry(R, W) {
     [R * 0.30, h * 0.02],
     [R * 0.12, h * 0.05],
   ];
-  return revolve(p, 28);
+  return revolve(p, 36);
 }
 
 function caliperGeometry(R, W) {
@@ -188,7 +191,7 @@ export function buildWheel(MAT, o) {
 
   const cap = new THREE.Mesh(
     revolve([[0, dishZ + R * 0.02], [R * 0.115, dishZ + R * 0.022], [R * 0.125, dishZ - R * 0.01],
-             [R * 0.125, dishZ - R * 0.05]], 24),
+             [R * 0.125, dishZ - R * 0.05]], 32),
     MAT.chrome()
   );
   g.add(cap);

@@ -230,7 +230,7 @@ export const CARS = {
       frontX: 2.30, rearX: -2.28,
       wheelR: 0.365, wheelW: 0.255, spokes: 10,
       wheels: { front: 1.50, rear: -1.42 },
-      archR: 0.445, archBand: 0.16, archInset: 0.115,
+      archR: 0.445, archBand: 0.160, archInset: 0.115,
       rShoulder: 0.045, rRail: 0.05,
       noseDome: 0.17, tailDome: 0.14, floorLift: 0.055,
       keys: {
@@ -357,7 +357,7 @@ export const CARS = {
       frontX: 2.36, rearX: -2.36,
       wheelR: 0.415, wheelW: 0.26, spokes: 10,
       wheels: { front: 1.50, rear: -1.46 },
-      archR: 0.50, archBand: 0.16, archInset: 0.115,
+      archR: 0.50, archBand: 0.160, archInset: 0.115,
       rShoulder: 0.05, rRail: 0.06,
       noseDome: 0.16, tailDome: 0.13, floorLift: 0.06,
       keys: {
@@ -798,10 +798,14 @@ function addWheels(g, loft, B) {
       g.add(w);
       wheels.push(w);
     }
-    // one dark liner spanning both flanks, so the arch gap reads black
+    // one dark liner spanning both flanks, so the arch gap reads black.
+    // Double-sided: it is a single sheet seen from above and below as the
+    // car turns, and a culled back face would open the arch to the plinth.
+    const linMat = MAT.shadowline();
+    linMat.side = THREE.DoubleSide;
     const lin = new THREE.Mesh(
-      archLiner({ archR: B.archR }, { x: s.x, y: R, halfW: Math.max(0.05, fender - 0.10) }),
-      MAT.shadowline()
+      archLiner(loft, { archR: B.archR }, { x: s.x, y: R, halfW: Math.max(0.05, fender - 0.04) }),
+      linMat
     );
     g.add(lin);
   }
@@ -817,10 +821,15 @@ export function buildCar(key, paintColor) {
 
   const loft = buildBodyGeometry(loftSpec(B));
 
-  // crisp feature lines where a car has them, smooth everywhere else
+  // Crisp feature lines where a car has them, smooth everywhere else. The
+  // threshold matters most at the wheel arch: the recess rim sits near 40
+  // degrees, so at PI*0.22 the splitter took some rim triangles and not
+  // others and the arch read as a zigzag of hard facets. Above the rim angle
+  // it shades as one continuous line, and at full-car distance the shoulder
+  // and sill creases are indistinguishable from before.
   let skin = loft.geometry;
   try {
-    skin = toCreasedNormals(skin.toNonIndexed ? skin : skin, Math.PI * 0.22);
+    skin = toCreasedNormals(skin.toNonIndexed ? skin : skin, Math.PI * 0.38);
   } catch (e) {
     skin = loft.geometry;
   }
