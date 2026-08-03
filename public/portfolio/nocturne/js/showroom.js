@@ -348,6 +348,10 @@ function key_dim(f) {
   rim.intensity = 0.5 * (0.25 + 0.75 * f);
 }
 
+/* Where the paint-change lean should return the camera to; null when no lean
+   is in flight. See selectPaint(). */
+let camHome = null;
+
 function selectPaint(idx) {
   const w = works[currentKey];
   if (idx === w.paintIndex || !PAINTS[idx]) return;
@@ -364,15 +368,27 @@ function selectPaint(idx) {
     sweep.target.position.x = THREE.MathUtils.lerp(2.6, -2.6, t);
   }, () => { sweep.intensity = 0; }, 'paint');
 
-  // a conservator's step toward the rear haunch, where clearcoat reads best
+  // A conservator's step toward the rear haunch, where clearcoat reads best,
+  // and then back again. It used to be one way: every chip click left the
+  // camera 0.15 nearer than the one before, so trying the five lacquers in
+  // turn walked you steadily into the car with no way back out.
+  //
+  // `camHome` is the position to return to. It is captured on the first click
+  // of a run and only released when a lean finishes, so a rapid series of
+  // clicks — each cancelling the last mid-lean — still returns to where the
+  // run began rather than settling wherever it was interrupted.
   if (!REDUCED) {
     cancelTweens('cam');
-    const dir = camera.position.clone().sub(controls.target).normalize();
-    const start = camera.position.clone();
-    const end = start.clone().sub(dir.multiplyScalar(0.15));
+    if (!camHome) camHome = camera.position.clone();
+    const home = camHome.clone();
+    const step = home.clone().sub(controls.target).normalize().multiplyScalar(0.15);
     tween(dur, (t) => {
-      camera.position.lerpVectors(start, end, t);
-    }, null, 'cam');
+      // in and back out over the sweep, so the ends meet exactly
+      camera.position.copy(home).addScaledVector(step, -Math.sin(t * Math.PI));
+    }, () => {
+      camera.position.copy(home);
+      camHome = null;
+    }, 'cam');
   }
 
   dispatchEvent(new CustomEvent('nocturne:paint', {
@@ -417,6 +433,9 @@ function sightline(i) {
   controls.autoRotate = false;
   lastTouch = performance.now();
   cancelTweens('cam');
+  // this move owns the camera now; a lean interrupted by it must not later
+  // pull the view back to where that lean started
+  camHome = null;
   const p0 = camera.position.clone();
   const t0 = controls.target.clone();
   const p1 = new THREE.Vector3(...s.pos);
