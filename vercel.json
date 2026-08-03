@@ -1,4 +1,16 @@
 {
+    "redirects": [
+        {
+            "source": "/portfolio",
+            "destination": "/work",
+            "permanent": true
+        },
+        {
+            "source": "/portfolio/",
+            "destination": "/work",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/((?!api/).*)",

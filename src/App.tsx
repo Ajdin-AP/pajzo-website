@@ -44,7 +44,7 @@ const PT_HOLD_MAX_MS = 5000;
 // Each lazy route's import, so a transition can wait on the page it is
 // actually going to instead of a fixed timer. Home is in the main bundle.
 const ROUTE_CHUNK: Record<string, () => Promise<unknown>> = {
-  '/portfolio': () => import('./Portfolio'),
+  '/work': () => import('./Portfolio'),
   '/about': () => import('./AboutPage'),
   '/process': () => import('./ProcessPage'),
   '/privacy-policy': () => import('./PrivacyPolicy'),
@@ -87,8 +87,12 @@ function App() {
   const [modalService, setModalService] = useState<string>('');
   // Bumped on every open so the modal knows to reset itself to a fresh form.
   const [modalNonce, setModalNonce] = useState(0);
-  // Treat /portfolio and /portfolio/ as the same route (strip trailing slashes).
-  const path = route.length > 1 ? route.replace(/\/+$/, '') : route;
+  // Treat /work and /work/ as the same route (strip trailing slashes). The
+  // page used to live at /portfolio; the host redirects that permanently, and
+  // this keeps an old link rendering the right page anyway, which matters in
+  // dev where the host's redirects do not run.
+  const raw = route.length > 1 ? route.replace(/\/+$/, '') : route;
+  const path = raw === '/portfolio' ? '/work' : raw;
 
   const openModal = useCallback<OpenModal>((service) => {
     setModalService(service ?? '');
@@ -265,7 +269,7 @@ function App() {
   useEffect(() => {
     const titles: Record<string, string> = {
       '/': 'Pajzo · Independent digital studio · Web, apps, branding, design',
-      '/portfolio': 'Selected work · Pajzo',
+      '/work': 'Selected work · Pajzo',
       '/process': 'How we work · Pajzo',
       '/about': 'About · Pajzo',
       '/services/web-development': 'Web development · Pajzo',
@@ -381,7 +385,7 @@ function App() {
         <CodeOfConduct />
       </Suspense>
     );
-  } else if (path === '/portfolio') {
+  } else if (path === '/work') {
     content = (
       <Suspense fallback={null}>
         <Portfolio />
@@ -415,7 +419,8 @@ function App() {
         Skip to content
       </a>
       <div className="grain" aria-hidden="true" />
-      <Header route={route} openModal={openModal} />
+      {/* the normalised path, so the old /portfolio link still lights Work */}
+      <Header route={path} openModal={openModal} />
       {content}
       <Footer />
       <Suspense fallback={null}>

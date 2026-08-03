@@ -201,7 +201,7 @@ const ServicePage = ({ slug, openModal }: { slug: string; openModal: OpenModal }
               Start a project
               <ArrowRight />
             </button>
-            <a href="/portfolio" className="btn btn--ghost btn--lg" onClick={(e) => go(e, '/portfolio')}>
+            <a href="/work" className="btn btn--ghost btn--lg" onClick={(e) => go(e, '/work')}>
               See the work
             </a>
           </div>

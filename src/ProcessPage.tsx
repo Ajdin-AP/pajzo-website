@@ -663,11 +663,11 @@ const ProcessPage = ({ openModal }: { openModal: OpenModal }) => {
                 <ArrowRight />
               </button>
               <a
-                href="/portfolio"
+                href="/work"
                 className="pw__skip"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/portfolio');
+                  navigate('/work');
                 }}
               >
                 See finished files · portfolio

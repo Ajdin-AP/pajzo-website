@@ -177,9 +177,9 @@ const AboutPage = ({ openModal }: { openModal: OpenModal }) => {
               <ArrowRight />
             </button>
             <a
-              href="/portfolio"
+              href="/work"
               className="btn btn--ghost btn--lg"
-              onClick={(e) => go(e, '/portfolio')}
+              onClick={(e) => go(e, '/work')}
             >
               See the work
             </a>

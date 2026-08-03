@@ -8,7 +8,7 @@ import type { OpenModal } from '../App';
 // there are no same-page section jumps here (the home page is a scroll).
 const NAV: { label: string; route: string }[] = [
   { label: 'Home', route: '/' },
-  { label: 'Work', route: '/portfolio' },
+  { label: 'Work', route: '/work' },
   { label: 'About', route: '/about' },
   { label: 'Process', route: '/process' },
 ];
