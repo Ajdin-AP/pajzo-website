@@ -38,6 +38,17 @@ const PROJECTS: Project[] = [
     thumb: '/portfolio/thumbs/sovra.jpg',
   },
   {
+    key: 'dobro',
+    name: 'Dobro',
+    category: 'Marketplace',
+    year: '2026',
+    blurb:
+      'A general store that stays legible. Six departments, each with its own signage colour that the whole interface takes on as you move between them, and delivery dates worked out live rather than promised vaguely. Every product is drawn in the browser, so the shop ships no photographs at all.',
+    tags: ['Web design', 'E-commerce', 'SVG', 'Design system'],
+    href: '/portfolio/dobro/index.html',
+    thumb: '/portfolio/thumbs/dobro.jpg',
+  },
+  {
     key: 'greensward',
     name: 'Greensward & Co.',
     category: 'Services',
