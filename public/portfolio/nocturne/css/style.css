@@ -495,7 +495,6 @@ body[data-cursor="on"] #cursor { display: flex; }
   position: absolute;
   top: auto;
   bottom: 100%;
-  margin-bottom: -2px; /* cancels the box's 2 px of air, so the ink meets the frame */
   left: clamp(3rem, 6vw, 5rem);
   width: 200px;
   height: auto;
@@ -899,10 +898,16 @@ body[data-lit="true"] .walk-cue { transition-delay: 1400ms; }
 /* ═══════════ responsive ═══════════ */
 @media (max-width: 1080px) {
   .plate { grid-template-columns: 1fr; align-items: start; }
-  .plate .etching { position: static; margin-bottom: 1rem; }
+  /* The etching stays absolute and bottom-anchored here too. Dropped into the
+     flow it became its own grid row, so the row gap plus its own margin put
+     40 to 70 px between the drawing and the image it belongs to. Out of flow
+     it sits on the frame at every width, and it has room to: the plates are
+     spaced 4rem apart at the tightest. */
   #bk-works-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 860px) {
+  /* a smaller drawing on phones, so it clears the plate above it */
+  .plate .etching { width: 148px; }
   #rail { display: none; }
   .top-links { display: none; }
   .wordmark span { display: none; } /* keep the header to one line */

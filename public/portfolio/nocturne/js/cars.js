@@ -852,12 +852,13 @@ export function profileSVG(key, targetW = 240) {
   const c = {
     roof: curve(B.keys.roof), sill: curve(B.keys.sill), belt: curve(B.keys.belt),
   };
-  // The box is drawn tight to the ink, with the same 2 px of air on every
-  // side of every car. It used to run from the ground up, so each plate
-  // carried a different amount of empty space below its silhouette (6 px on
-  // the Basalt, 11 px on the Citadel), and with the boxes top-anchored the
-  // drawings ended up sitting at visibly different heights above their images.
-  const PAD = 2;
+  // The box bounds the ink exactly: lowest sill to highest roof, nose to
+  // tail. It used to run from the ground up, so each plate carried a
+  // different amount of empty space below its silhouette (6 px on the Basalt,
+  // 11 px on the Citadel) and the drawings sat at different heights above
+  // their images. With no padding in the box there is none to cancel in CSS
+  // either, so the drawing meets its frame the same way at any width.
+  const PAD = 0;
   const minX = B.rearX, maxX = B.frontX;
   let maxY = -Infinity, minY = Infinity;
   for (let x = minX; x <= maxX; x += 0.02) {
