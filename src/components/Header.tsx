@@ -30,6 +30,24 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
 
      Following focus as well as hover is the part that earns its keep: a
      keyboard user gets the same read of where they are as a mouse user. */
+  /* The wordmark unfolds from its own mark on arrival. It is the scroll fold
+     played backwards, so the logo has one mechanism and two moments rather
+     than a separate entrance animation bolted on. One shot, never a loop:
+     a fixed header that animates forever is what put this site's iOS
+     dark-on-scroll bug on screen twice. */
+  const [wmSet, setWmSet] = useState(false);
+  useEffect(() => {
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // landing part-way down the page, from a deep link or a restored scroll,
+    // should not play an entrance that immediately folds shut again
+    if (still || window.scrollY > 8) {
+      setWmSet(true);
+      return;
+    }
+    const t = window.setTimeout(() => setWmSet(true), 140);
+    return () => window.clearTimeout(t);
+  }, []);
+
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [aim, setAim] = useState<number | null>(null);
@@ -120,7 +138,12 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
                 PAJZO contracts and the orange P is what is left. It buys back
                 space in a bar that is also shrinking, and it is the brand doing
                 it rather than a generic logo swap. */}
-            <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo, home">
+            <a
+              href="/"
+              className={`wordmark${wmSet ? ' is-set' : ''}`}
+              onClick={goHome}
+              aria-label="Pajzo, home"
+            >
               <Wordmark />
             </a>
 

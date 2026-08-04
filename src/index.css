@@ -590,6 +590,9 @@ select {
   html .wordmark {
     transition: none;
   }
+  html .wordmark:active {
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -629,15 +632,36 @@ select {
   display: inline-flex;
   align-items: center;
   color: var(--bone);
-  width: 108px;
-  overflow: hidden;
-  transition: width 0.5s var(--ease-io);
-}
-.header.scrolled .wordmark {
+  /* folded is the resting state: the name unfolds out of the mark once the
+     bar is up, and folds back into it on scroll */
   width: 23px;
+  overflow: hidden;
+  transition: width 0.62s var(--ease-io), transform 0.18s var(--ease);
+}
+.wordmark.is-set {
+  width: 108px;
+}
+.header.scrolled .wordmark.is-set {
+  width: 23px;
+}
+/* folded to a mark, it still answers: point at it and the name comes back */
+.header.scrolled .wordmark.is-set:hover,
+.header.scrolled .wordmark.is-set:focus-visible {
+  width: 108px;
 }
 .wordmark svg {
   flex: none;
+}
+/* the same press the plate makes, at a tenth the size */
+.wordmark:active {
+  transform: translateY(1px);
+}
+.wordmark .wm-p {
+  transition: fill 0.25s var(--ease);
+}
+.wordmark:hover .wm-p,
+.wordmark:focus-visible .wm-p {
+  fill: var(--orange-hot);
 }
 .wordmark svg {
   height: 42px;
