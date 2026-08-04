@@ -14,8 +14,10 @@ const POLICIES = [
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/pajzo_/', Icon: Instagram },
   { label: 'X', href: 'https://x.com/Pajzo_', Icon: XLogo },
-  { label: 'Facebook', href: 'https://www.facebook.com/pajzo', Icon: Facebook },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/pajzo', Icon: LinkedIn },
+  { label: 'Facebook', href: 'https://www.facebook.com/XpajzoX', Icon: Facebook },
+  // the profile slug contains a ć; percent-encoded so the link survives
+  // being copied out of the page into things that do not encode it themselves
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ajdin-pajazetovi%C4%87-96b19540a', Icon: LinkedIn },
 ];
 
 const Footer = () => {
