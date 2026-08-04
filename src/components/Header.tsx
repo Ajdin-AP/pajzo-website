@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { navigate } from '../nav';
 import { smoothScrollTo } from '../scroll';
 import { Menu, Close, Wordmark, ArrowRight } from './icons';
@@ -20,6 +20,44 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
   const isHome = route === '/';
   // Normalise trailing slashes so /about and /about/ both light the nav item.
   const current = route.length > 1 ? route.replace(/\/+$/, '') : route;
+
+  /* ---- the composing rail ----
+     One registration frame for the whole nav, not a border per item. It marks
+     the page you are on and travels to whichever item you point at or tab to,
+     stretching to that word's width, the way a compositor slides a slug along
+     a stick. It is the same dashed frame the CTA presses into, so the nav and
+     the button are one idea rather than two.
+
+     Following focus as well as hover is the part that earns its keep: a
+     keyboard user gets the same read of where they are as a mouse user. */
+  const navRef = useRef<HTMLElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [aim, setAim] = useState<number | null>(null);
+  const [slug, setSlug] = useState({ x: 0, w: 0, on: false });
+
+  const activeIndex = NAV.findIndex((i) => i.route === current);
+  const target = aim ?? activeIndex;
+
+  const measure = useCallback(() => {
+    const nav = navRef.current;
+    const el = target >= 0 ? itemRefs.current[target] : null;
+    if (!nav || !el) {
+      setSlug((s) => ({ ...s, on: false }));
+      return;
+    }
+    const n = nav.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    setSlug({ x: Math.round(r.left - n.left), w: Math.round(r.width), on: true });
+  }, [target]);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    // the words are set in a webfont; measuring before it lands puts the frame
+    // in the wrong place and it never corrects itself
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => window.removeEventListener('resize', measure);
+  }, [measure]);
 
   // Scrolled state + hide on scroll-down, return on scroll-up. rAF-throttled
   // with an 8px hysteresis band so momentum scrolling doesn't flicker the bar.
@@ -78,18 +116,40 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
       >
         <div className="container">
           <div className="header__inner">
+            {/* Off the top of the page the wordmark folds down to its own mark:
+                PAJZO contracts and the orange P is what is left. It buys back
+                space in a bar that is also shrinking, and it is the brand doing
+                it rather than a generic logo swap. */}
             <a href="/" className="wordmark" onClick={goHome} aria-label="Pajzo, home">
               <Wordmark />
             </a>
 
             <div className="header__right">
-              <nav className="header__nav">
-                {NAV.map((item) => (
+              <nav
+                className="header__nav"
+                ref={navRef}
+                onMouseLeave={() => setAim(null)}
+              >
+                <span
+                  className="navslug"
+                  aria-hidden="true"
+                  data-on={slug.on}
+                  style={
+                    { '--sx': `${slug.x}px`, '--sw': `${slug.w}px` } as React.CSSProperties
+                  }
+                />
+                {NAV.map((item, i) => (
                   <a
                     key={item.route}
                     href={item.route}
+                    ref={(el) => {
+                      itemRefs.current[i] = el;
+                    }}
                     className={`navlink${current === item.route ? ' navlink--active' : ''}`}
                     onClick={(e) => goTo(e, item.route)}
+                    onMouseEnter={() => setAim(i)}
+                    onFocus={() => setAim(i)}
+                    onBlur={() => setAim(null)}
                   >
                     {item.label}
                   </a>
@@ -122,18 +182,25 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
           on an ancestor stops a descendant's own backdrop-filter from sampling
           the page. Out here the panel gets real glass too. */}
       <div className={`mobile-nav${menuOpen ? ' open' : ''}`}>
-        {NAV.map((item) => (
+        {/* A type case rather than a dropdown: the routes set large in the
+            display face, numbered like sorts in their compartments, each
+            sliding in a beat after the one above it. */}
+        {NAV.map((item, i) => (
           <a
             key={item.route}
             href={item.route}
             className={current === item.route ? 'is-active' : undefined}
+            style={{ '--i': i } as React.CSSProperties}
             onClick={(e) => goTo(e, item.route)}
           >
-            {item.label}
+            <span className="mn-no">{String(i + 1).padStart(2, '0')}</span>
+            <span className="mn-word">{item.label}</span>
+            <span className="mn-rule" aria-hidden="true" />
           </a>
         ))}
         <button
           className="btn btn--solid"
+          style={{ '--i': NAV.length } as React.CSSProperties}
           onClick={() => {
             setMenuOpen(false);
             openModal();

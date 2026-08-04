@@ -582,6 +582,16 @@ select {
 /* Someone who has asked the OS to cut transparency gets a solid bar. This is
    an accessibility setting, not a taste one: the material is the thing being
    turned off, so nothing here should still be see-through. */
+@media (prefers-reduced-motion: reduce) {
+  /* html-prefixed: .navslug and .wordmark declare their own transitions later
+     in this file, and at equal specificity the later rule wins on source
+     order. The frame still marks the page here, it just stops travelling. */
+  html .navslug,
+  html .wordmark {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .header,
   .header.scrolled,
@@ -610,10 +620,24 @@ select {
   gap: 24px;
 }
 
+/* Measured, not estimated: at a 42px cap height the svg renders 108px wide
+   and the P's bounding box ends at 23.24px — which is exactly where the "A"
+   begins, since the wordmark is set tight. So the fold is 23px. Anything
+   wider catches a sliver of the A; the svg keeps its width and is clipped
+   rather than squashed. */
 .wordmark {
   display: inline-flex;
   align-items: center;
   color: var(--bone);
+  width: 108px;
+  overflow: hidden;
+  transition: width 0.5s var(--ease-io);
+}
+.header.scrolled .wordmark {
+  width: 23px;
+}
+.wordmark svg {
+  flex: none;
 }
 .wordmark svg {
   height: 42px;
@@ -640,10 +664,46 @@ select {
   gap: clamp(20px, 3vw, 44px);
 }
 
+/* ═══════════ the composing rail ═══════════
+   The nav is a stick and the frame is a slug set in it. One frame for the
+   whole nav rather than a border per item: it marks the page you are on and
+   slides to whatever you point at or tab to, stretching to that word's width.
+   It is the same dashed frame the CTA presses into, so the bar and the button
+   read as one idea instead of two unrelated ones. */
 .header__nav {
+  position: relative;
   display: flex;
   align-items: center;
   gap: clamp(16px, 2.2vw, 32px);
+}
+.navslug {
+  position: absolute;
+  inset-block: -8px;
+  inset-inline-start: 0;
+  width: var(--sw, 0);
+  transform: translateX(var(--sx, 0));
+  border: 1px dashed rgba(232, 98, 26, 0.55);
+  border-radius: var(--radius-s);
+  opacity: 0;
+  pointer-events: none;
+  /* the same spring the stamped plate uses when it presses home */
+  transition: transform 0.44s cubic-bezier(0.34, 1.4, 0.5, 1),
+    width 0.44s cubic-bezier(0.34, 1.4, 0.5, 1), opacity 0.24s var(--ease);
+}
+.navslug[data-on='true'] {
+  opacity: 1;
+}
+/* The inked edge. Sitting on the frame's own bottom rule rather than
+   floating below it keeps the slug reading as one object instead of a box
+   with a stray underline. */
+.navslug::after {
+  content: '';
+  position: absolute;
+  inset-inline: -1px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 0 0 var(--radius-s) var(--radius-s);
 }
 
 .navlink {
@@ -656,27 +716,16 @@ select {
   padding: 4px 0;
   transition: color 0.2s var(--ease);
 }
-/* a hairline that draws in under the section currently in view */
-.navlink::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 1px;
-  background: var(--orange);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.3s var(--ease);
-}
-.navlink:hover {
+.navlink:hover,
+.navlink:focus-visible {
   color: var(--bone);
 }
 .navlink--active {
   color: var(--bone);
 }
-.navlink--active::after {
-  transform: scaleX(1);
+/* the slug already says which item is which; a ring on top of it is noise */
+.navlink:focus-visible {
+  outline: none;
 }
 
 /* The CTA is the hero's stamped plate, not a second button design: same
@@ -795,23 +844,67 @@ select {
     pointer-events: auto;
     transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
   }
+  /* the compartments of a type case: number, word, rule */
   .mobile-nav a {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 14px;
+    padding: 18px 2px 16px;
     color: var(--bone-soft);
-    padding: 14px 4px;
-    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s var(--ease), transform 0.5s var(--ease-io),
+      color 0.2s var(--ease);
+    transition-delay: calc(var(--i) * 55ms);
   }
-  .mobile-nav a:last-of-type {
-    border-bottom: none;
-  }
-  .mobile-nav a.is-active {
-    color: var(--orange);
+  .mobile-nav.open a,
+  .mobile-nav.open .btn {
+    opacity: 1;
+    transform: none;
   }
   .mobile-nav .btn {
-    margin-top: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s var(--ease), transform 0.5s var(--ease-io);
+    transition-delay: calc(var(--i) * 55ms);
+  }
+  .mn-no {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--bone-mute);
+  }
+  .mn-word {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 9vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  /* the rule is a compartment edge, and it fills orange on the page you are on */
+  .mn-rule {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .mobile-nav a.is-active {
+    color: var(--bone);
+  }
+  .mobile-nav a.is-active .mn-no {
+    color: var(--orange);
+  }
+  .mobile-nav a.is-active .mn-rule {
+    background: var(--orange);
+  }
+  .mobile-nav a:last-of-type .mn-rule {
+    background: var(--line);
+  }
+  .mobile-nav .btn {
+    margin-top: 22px;
     justify-content: center;
     opacity: 1 !important;
     pointer-events: auto !important;
