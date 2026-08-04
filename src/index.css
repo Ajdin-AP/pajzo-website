@@ -680,8 +680,13 @@ select {
   position: absolute;
   inset-block: -8px;
   inset-inline-start: 0;
-  width: var(--sw, 0);
-  transform: translateX(var(--sx, 0));
+  /* The frame sits wider than the word it marks. Measuring the word and
+     drawing the frame on exactly that box read as a tight crop; the pad is
+     added here rather than in the measurement so the geometry stays honest
+     and the breathing room stays tunable. */
+  --slug-pad: 10px;
+  width: calc(var(--sw, 0px) + var(--slug-pad) * 2);
+  transform: translateX(calc(var(--sx, 0px) - var(--slug-pad)));
   border: 1px dashed rgba(232, 98, 26, 0.55);
   border-radius: var(--radius-s);
   opacity: 0;
