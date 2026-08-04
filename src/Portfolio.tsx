@@ -12,7 +12,7 @@ type Project = {
   thumb: string;
 };
 
-// The live sites live as static files under /portfolio/<key>/ (served straight,
+// The live sites live as static files under /work/<key>/ (served straight,
 // ahead of the SPA rewrite), so the cards open the real, working builds.
 const PROJECTS: Project[] = [
   {
@@ -23,8 +23,8 @@ const PROJECTS: Project[] = [
     blurb:
       'A car showroom reimagined as a midnight gallery. Every car is built and lit live in the browser as real 3D, so you can turn it in the light and walk the rooms, with no heavy model files to wait on.',
     tags: ['Web design', 'Three.js', 'WebGL', 'Art direction'],
-    href: '/portfolio/nocturne/index.html',
-    thumb: '/portfolio/thumbs/nocturne.jpg',
+    href: '/work/nocturne/index.html',
+    thumb: '/work/thumbs/nocturne.jpg',
   },
   {
     key: 'sovra',
@@ -34,8 +34,8 @@ const PROJECTS: Project[] = [
     blurb:
       'A basketball atelier that treats the ball like couture. A hand-finished sphere is rendered live in 3D, with an exploded view of how it is made and a storefront built to match the craft.',
     tags: ['Web design', 'Three.js', 'WebGL', 'Storefront'],
-    href: '/portfolio/sovra/index.html',
-    thumb: '/portfolio/thumbs/sovra.jpg',
+    href: '/work/sovra/index.html',
+    thumb: '/work/thumbs/sovra.jpg',
   },
   {
     key: 'dobro',
@@ -45,8 +45,8 @@ const PROJECTS: Project[] = [
     blurb:
       'A general store that stays legible. Six departments, each with its own signage colour that the whole interface takes on as you move between them, and delivery dates worked out live rather than promised vaguely. Every product is drawn in the browser, so the shop ships no photographs at all.',
     tags: ['Web design', 'E-commerce', 'SVG', 'Design system'],
-    href: '/portfolio/dobro/index.html',
-    thumb: '/portfolio/thumbs/dobro.jpg',
+    href: '/work/dobro/index.html',
+    thumb: '/work/thumbs/dobro.jpg',
   },
   {
     key: 'greensward',
@@ -56,8 +56,8 @@ const PROJECTS: Project[] = [
     blurb:
       'Private grounds care for a boutique lawn company. Quiet, editorial and unhurried, the kind of restraint that lets the work speak for itself.',
     tags: ['Web design', 'Editorial', 'Branding'],
-    href: '/portfolio/greensward/index.html',
-    thumb: '/portfolio/thumbs/greensward.jpg',
+    href: '/work/greensward/index.html',
+    thumb: '/work/thumbs/greensward.jpg',
   },
 ];
 
