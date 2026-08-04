@@ -102,6 +102,22 @@ function App() {
 
   const closeModal = useCallback(() => setModalOpen(false), []);
 
+  /* Hover styles are scoped behind html.can-hover, set only where hovering is
+     real: a device that can hover, with a fine pointer, on a screen wide
+     enough for it. On touch, :hover fires *after* a tap and sticks until you
+     tap elsewhere, so a hover reveal lands at the wrong moment or never
+     clears. Narrow desktop windows count as phone here too, since that is
+     what the layout is built for at that width. */
+  useEffect(() => {
+    const mq = window.matchMedia(
+      '(hover: hover) and (pointer: fine) and (min-width: 768px)'
+    );
+    const apply = () => document.documentElement.classList.toggle('can-hover', mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
   // Warm the modal chunk shortly after load, so opening it is instant.
   useEffect(() => {
     const t = window.setTimeout(() => {

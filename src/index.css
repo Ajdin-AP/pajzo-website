@@ -312,7 +312,7 @@ select {
   height: 16px;
   transition: transform 0.25s var(--ease);
 }
-.btn:hover svg {
+html.can-hover .btn:hover svg{
   transform: translateX(3px);
 }
 
@@ -365,15 +365,15 @@ select {
 .btn--lg.btn--solid:has(svg)::after {
   right: 63px; /* padding 34 + arrow 16 + gap 13 */
 }
-.btn--solid:hover {
+html.can-hover .btn--solid:hover{
   background: var(--orange-hot);
   transform: translate(6px, 6px);
   box-shadow: none;
 }
-.btn--solid:hover::before {
+html.can-hover .btn--solid:hover::before{
   transform: translate(0, 0);
 }
-.btn--solid:hover svg {
+html.can-hover .btn--solid:hover svg{
   transform: rotate(0deg);
 }
 .btn--solid:active {
@@ -400,14 +400,14 @@ select {
   .btn--solid svg {
     transition: background 0.2s var(--ease);
   }
-  .btn--solid:hover {
+  html.can-hover .btn--solid:hover{
     transform: none;
     box-shadow: none;
   }
-  .btn--solid:hover::before {
+  html.can-hover .btn--solid:hover::before{
     transform: translate(6px, 6px);
   }
-  .btn--solid:hover svg {
+  html.can-hover .btn--solid:hover svg{
     transform: rotate(-45deg);
   }
 }
@@ -417,7 +417,7 @@ select {
   color: var(--bone);
   background: transparent;
 }
-.btn--ghost:hover {
+html.can-hover .btn--ghost:hover{
   border-color: var(--bone);
   transform: translateY(-1px);
 }
@@ -450,11 +450,11 @@ select {
   height: 15px;
   transition: transform 0.25s var(--ease);
 }
-.linkarrow:hover {
+html.can-hover .linkarrow:hover{
   color: var(--orange-hot);
   border-color: var(--orange-hot);
 }
-.linkarrow:hover svg {
+html.can-hover .linkarrow:hover svg{
   transform: translateX(3px);
 }
 
@@ -587,10 +587,10 @@ select {
      in this file, and at equal specificity the later rule wins on source
      order. The frame still marks the page here, it just stops travelling. */
   html .navslug,
-  html .wordmark {
+  html .header .wordmark {
     transition: none;
   }
-  html .wordmark:active {
+  html .header .wordmark:active {
     transform: none;
   }
 }
@@ -632,35 +632,42 @@ select {
   display: inline-flex;
   align-items: center;
   color: var(--bone);
+}
+.wordmark svg {
+  flex: none;
+}
+
+/* ---- the fold belongs to the bar, and only to the bar ----
+   The footer uses this same class and never receives .is-set, so leaving the
+   folded width on .wordmark itself clipped the footer's mark to a P and a
+   sliver of the A. Everything to do with folding is scoped to .header. */
+.header .wordmark {
   /* folded is the resting state: the name unfolds out of the mark once the
      bar is up, and folds back into it on scroll */
   width: 23px;
   overflow: hidden;
   transition: width 0.62s var(--ease-io), transform 0.18s var(--ease);
 }
-.wordmark.is-set {
+.header .wordmark.is-set {
   width: 108px;
 }
 .header.scrolled .wordmark.is-set {
   width: 23px;
 }
-/* folded to a mark, it still answers: point at it and the name comes back */
+/* folded to a mark, html.can-hover it still answers: point at it and the name comes back */
 .header.scrolled .wordmark.is-set:hover,
 .header.scrolled .wordmark.is-set:focus-visible {
   width: 108px;
 }
-.wordmark svg {
-  flex: none;
-}
 /* the same press the plate makes, at a tenth the size */
-.wordmark:active {
+.header .wordmark:active {
   transform: translateY(1px);
 }
-.wordmark .wm-p {
+.header .wordmark .wm-p {
   transition: fill 0.25s var(--ease);
 }
-.wordmark:hover .wm-p,
-.wordmark:focus-visible .wm-p {
+html.can-hover .header .wordmark:hover .wm-p,
+.header .wordmark:focus-visible .wm-p {
   fill: var(--orange-hot);
 }
 .wordmark svg {
@@ -745,7 +752,7 @@ select {
   padding: 4px 0;
   transition: color 0.2s var(--ease);
 }
-.navlink:hover,
+html.can-hover .navlink:hover,
 .navlink:focus-visible {
   color: var(--bone);
 }
@@ -774,11 +781,11 @@ select {
   transform: translate(4px, 4px);
 }
 /* The frame has to travel back as the plate presses out; that swap is the
-   whole animation. Without this the rule above wins on hover too, because
+   whole animation. Without this the rule above wins on hover too, html.can-hover because
    .btn--nav.btn--solid::before and .btn--solid:hover::before have identical
-   specificity and this block sits later in the file, so the frame just sat
+   specificity and this block sits later in the file, html.can-hover so the frame just sat
    still and only the plate moved. */
-.btn--nav.btn--solid:hover::before {
+.btn--nav.btn--solid:hover::before{
   transform: translate(0, 0);
 }
 .btn--nav.btn--solid svg {
@@ -791,7 +798,7 @@ select {
   bottom: 7px;
   right: 39px; /* padding 17 + arrow 13 + gap 9 */
 }
-.btn--nav.btn--solid:hover {
+html.can-hover .btn--nav.btn--solid:hover{
   transform: translate(4px, 4px);
   box-shadow: none;
 }
@@ -814,7 +821,7 @@ select {
   color: var(--bone);
   transition: background 0.24s var(--ease), border-color 0.24s var(--ease);
 }
-.menu-toggle:hover {
+html.can-hover .menu-toggle:hover{
   background: rgba(236, 231, 220, 0.1);
   border-color: rgba(236, 231, 220, 0.32);
 }
@@ -1078,7 +1085,7 @@ select {
 .marquee.is-off .marquee__track {
   animation-play-state: paused;
 }
-.marquee:hover .marquee__track {
+html.can-hover .marquee:hover .marquee__track{
   animation-play-state: paused;
 }
 @keyframes marquee {
@@ -1146,7 +1153,7 @@ select {
   transition: opacity 0.35s var(--ease);
   pointer-events: none;
 }
-.svc__row:hover::before,
+html.can-hover .svc__row:hover::before,
 .svc__row:focus-visible::before {
   opacity: 1;
 }
@@ -1162,7 +1169,7 @@ select {
   padding-top: 10px;
   transition: color 0.3s var(--ease);
 }
-.svc__row:hover .svc__num {
+html.can-hover .svc__row:hover .svc__num{
   color: var(--orange);
 }
 
@@ -1174,7 +1181,7 @@ select {
   color: var(--bone);
   transition: transform 0.35s var(--ease);
 }
-.svc__row:hover .svc__name {
+html.can-hover .svc__row:hover .svc__name{
   transform: translateX(8px);
 }
 
@@ -1207,8 +1214,8 @@ select {
   border-radius: 999px;
   transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
 }
-.svc__row:hover .svc__tags li,
-.svc__row:hover .svc__tags span {
+html.can-hover .svc__row:hover .svc__tags li,
+html.can-hover .svc__row:hover .svc__tags span{
   border-color: rgba(232, 98, 26, 0.4);
 }
 
@@ -1232,7 +1239,7 @@ select {
   transform: rotate(-45deg);
   transition: transform 0.3s var(--ease);
 }
-.svc__row:hover .svc__go {
+html.can-hover .svc__row:hover .svc__go{
   background: var(--orange);
   border-color: var(--orange);
   color: #0d0c0a;
@@ -1266,7 +1273,7 @@ select {
   .svc__go {
     display: none;
   }
-  .svc__row:hover .svc__name {
+  html.can-hover .svc__row:hover .svc__name{
     transform: none;
   }
 }
@@ -1302,7 +1309,7 @@ select {
   overflow: hidden;
   transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
 }
-.tenet:hover {
+html.can-hover .tenet:hover{
   border-color: var(--line-strong);
   transform: translateY(-3px);
 }
@@ -1321,7 +1328,7 @@ select {
   user-select: none;
   transition: -webkit-text-stroke-color 0.4s var(--ease);
 }
-.tenet:hover .tenet__num {
+html.can-hover .tenet:hover .tenet__num{
   -webkit-text-stroke-color: rgba(232, 98, 26, 0.5);
 }
 .tenet h3,
@@ -1367,7 +1374,7 @@ select {
   justify-content: space-between;
   transition: transform 0.3s var(--ease);
 }
-.bento__promise:hover {
+html.can-hover .bento__promise:hover{
   transform: translateY(-3px);
 }
 .bento__promise .bento__label {
@@ -1505,7 +1512,7 @@ select {
   color: var(--bone);
   transition: color 0.2s var(--ease);
 }
-.faq__q:hover {
+html.can-hover .faq__q:hover{
   color: var(--orange-hot);
 }
 .faq__idx {
@@ -1654,7 +1661,7 @@ select {
   border-bottom: 1px solid var(--line-strong);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-.cta__mail a:hover {
+html.can-hover .cta__mail a:hover{
   color: var(--orange-hot);
   border-color: var(--orange-hot);
 }
@@ -1718,7 +1725,7 @@ select {
   padding-bottom: 2px;
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-.footer__mail:hover {
+html.can-hover .footer__mail:hover{
   color: var(--orange-hot);
   border-color: var(--orange-hot);
 }
@@ -1745,8 +1752,8 @@ select {
   width: fit-content;
   transition: color 0.2s var(--ease);
 }
-.footer__links a:hover,
-.footer__links button:hover {
+html.can-hover .footer__links a:hover,
+html.can-hover .footer__links button:hover{
   color: var(--bone);
 }
 
@@ -1770,7 +1777,7 @@ select {
   width: 17px;
   height: 17px;
 }
-.footer__social:hover {
+html.can-hover .footer__social:hover{
   color: #0d0c0a;
   background: var(--orange);
   border-color: var(--orange);
@@ -1799,7 +1806,7 @@ select {
 .footer__legal-links a {
   transition: color 0.2s var(--ease);
 }
-.footer__legal-links a:hover {
+html.can-hover .footer__legal-links a:hover{
   color: var(--bone);
 }
 
@@ -1902,7 +1909,7 @@ select {
   width: 19px;
   height: 19px;
 }
-.cform__close:hover {
+html.can-hover .cform__close:hover{
   background: var(--orange);
   border-color: var(--orange);
   color: #0d0c0a;
@@ -2046,7 +2053,7 @@ select {
   background: var(--bg-card);
   transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
 }
-.copt:hover {
+html.can-hover .copt:hover{
   border-color: var(--bone-mute);
 }
 .copt b {
@@ -2118,7 +2125,7 @@ select {
   color: var(--bone-soft);
   transition: color 0.2s var(--ease);
 }
-.cform__budget-toggle:hover {
+html.can-hover .cform__budget-toggle:hover{
   color: var(--bone);
 }
 .cform__budget-box {
@@ -2282,7 +2289,7 @@ select {
   margin-bottom: 34px;
   transition: color 0.2s var(--ease);
 }
-.legal__back:hover {
+html.can-hover .legal__back:hover{
   color: var(--orange-hot);
 }
 .legal__wrap h1 {
@@ -2331,7 +2338,7 @@ a.inline {
   border-bottom: 1px solid var(--line-strong);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-a.inline:hover {
+html.can-hover a.inline:hover{
   color: var(--orange-hot);
   border-color: var(--orange-hot);
 }
@@ -2497,11 +2504,11 @@ section[id] {
   pointer-events: none;
 }
 @media (hover: hover) and (pointer: fine) {
-  .btn--ghost:hover {
+  html.can-hover .btn--ghost:hover{
     color: #0d0c0a;
     border-color: var(--orange);
   }
-  .btn--ghost:hover::before {
+  html.can-hover .btn--ghost:hover::before{
     transform: translate(-50%, -50%) scale(1.05);
   }
 }
@@ -2522,9 +2529,9 @@ section[id] {
   transition: color 0.2s var(--ease), background-size 0.35s var(--ease);
   padding-bottom: 2px;
 }
-.footer__links a:hover,
-.footer__links button:hover,
-.footer__legal-links a:hover {
+html.can-hover .footer__links a:hover,
+html.can-hover .footer__links button:hover,
+html.can-hover .footer__legal-links a:hover{
   background-size: 100% 1px;
   background-position: 0% 100%;
 }
@@ -2546,7 +2553,11 @@ section[id] {
   will-change: transform, opacity;
   filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.45));
 }
-@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+/* Width belongs in this list too: a desktop window dragged narrow keeps its
+   fine pointer, so without it the canvas stays in the layout at phone widths
+   even though the JS never starts it. */
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce),
+  (max-width: 1023px) {
   .svc__preview {
     display: none;
   }
@@ -2617,7 +2628,7 @@ section[id] {
   transition: opacity 0.45s var(--ease);
   pointer-events: none;
 }
-.tenet:hover::after {
+html.can-hover .tenet:hover::after{
   opacity: 1;
 }
 
@@ -2701,12 +2712,12 @@ section[id] {
   display: block;
   transition: transform 0.7s var(--ease);
 }
-.pf__shot:hover {
+html.can-hover .pf__shot:hover{
   transform: translateY(-4px);
   border-color: var(--line-strong);
   box-shadow: 0 34px 80px rgba(0, 0, 0, 0.5);
 }
-.pf__shot:hover img {
+html.can-hover .pf__shot:hover img{
   transform: scale(1.03);
 }
 .pf__open {
@@ -2734,7 +2745,7 @@ section[id] {
   width: 14px;
   height: 14px;
 }
-.pf__shot:hover .pf__open,
+html.can-hover .pf__shot:hover .pf__open,
 .pf__shot:focus-visible .pf__open {
   opacity: 1;
   transform: translateY(0);
@@ -2817,11 +2828,11 @@ section[id] {
   height: 15px;
   transition: transform 0.3s var(--ease);
 }
-.pf__view:hover {
+html.can-hover .pf__view:hover{
   color: var(--orange);
   border-color: var(--orange);
 }
-.pf__view:hover svg {
+html.can-hover .pf__view:hover svg{
   transform: translateX(4px);
 }
 
@@ -2934,7 +2945,7 @@ section[id] {
   padding-bottom: 3px;
   transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
 }
-.pw__skip:hover {
+html.can-hover .pw__skip:hover{
   color: var(--orange);
   border-color: var(--orange);
 }
@@ -3104,7 +3115,7 @@ section[id] {
   color: var(--bone-mute);
   font-variant-numeric: tabular-nums;
 }
-.pw__toc-row:hover .pw__toc-num {
+html.can-hover .pw__toc-row:hover .pw__toc-num{
   color: var(--orange);
 }
 .pw__toc-foot {
@@ -4088,11 +4099,11 @@ section[id] {
   height: 15px;
   transition: transform 0.3s var(--ease);
 }
-.ab__side-link:hover {
+html.can-hover .ab__side-link:hover{
   color: var(--orange);
   border-color: var(--orange);
 }
-.ab__side-link:hover svg {
+html.can-hover .ab__side-link:hover svg{
   transform: translateX(4px);
 }
 .ab__disciplines {
@@ -4350,14 +4361,14 @@ section[id] {
   width: 22px;
   height: 22px;
 }
-.sv__other:hover {
+html.can-hover .sv__other:hover{
   padding-left: 18px;
 }
-.sv__other:hover .sv__other-go {
+html.can-hover .sv__other:hover .sv__other-go{
   color: var(--orange);
   transform: translateX(5px);
 }
-.sv__other:hover .sv__other-name {
+html.can-hover .sv__other:hover .sv__other-name{
   color: var(--orange);
 }
 

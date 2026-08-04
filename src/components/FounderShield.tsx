@@ -20,7 +20,11 @@ const FounderShield = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
-    if (!('IntersectionObserver' in window) || conn?.saveData) {
+    // Phones get the flat mark. A 150px decorative shield is not worth a
+    // 734 KB three.js download on a phone connection, and the card was
+    // designed to fall back to the SVG anyway.
+    const narrow = !window.matchMedia('(min-width: 1024px)').matches;
+    if (!('IntersectionObserver' in window) || conn?.saveData || narrow) {
       setFallback(true);
       return;
     }

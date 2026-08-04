@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type * as THREE from 'three';
 import { webglAvailable, watchDpr } from '../webgl';
 
@@ -11,8 +11,23 @@ const H = 250;
 
 const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement | null> }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // A fine pointer is not enough. A desktop window dragged narrow still has a
+  // mouse, and this panel is 340px wide — at phone widths it lands on top of
+  // the copy instead of beside it. Width decides, and it is watched so the
+  // panel starts and stops as the window is resized.
+  const [roomFor3D, setRoomFor3D] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(
+      '(hover: hover) and (pointer: fine) and (min-width: 1024px)'
+    );
+    const apply = () => setRoomFor3D(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   useEffect(() => {
+    if (!roomFor3D) return;
     const list = listRef.current;
     const canvas = canvasRef.current;
     if (!list || !canvas) return;
@@ -209,7 +224,7 @@ const ServicePreview = ({ listRef }: { listRef: React.RefObject<HTMLDivElement |
       if (teardownFn) teardownFn(renderer, scene);
       else renderer?.dispose();
     };
-  }, [listRef]);
+  }, [listRef, roomFor3D]);
 
   return (
     <canvas
