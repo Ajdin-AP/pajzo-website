@@ -30,24 +30,6 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
 
      Following focus as well as hover is the part that earns its keep: a
      keyboard user gets the same read of where they are as a mouse user. */
-  /* The wordmark unfolds from its own mark on arrival. It is the scroll fold
-     played backwards, so the logo has one mechanism and two moments rather
-     than a separate entrance animation bolted on. One shot, never a loop:
-     a fixed header that animates forever is what put this site's iOS
-     dark-on-scroll bug on screen twice. */
-  const [wmSet, setWmSet] = useState(false);
-  useEffect(() => {
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // landing part-way down the page, from a deep link or a restored scroll,
-    // should not play an entrance that immediately folds shut again
-    if (still || window.scrollY > 8) {
-      setWmSet(true);
-      return;
-    }
-    const t = window.setTimeout(() => setWmSet(true), 140);
-    return () => window.clearTimeout(t);
-  }, []);
-
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [aim, setAim] = useState<number | null>(null);
@@ -134,13 +116,13 @@ const Header = ({ route, openModal }: { route: string; openModal: OpenModal }) =
       >
         <div className="container">
           <div className="header__inner">
-            {/* Off the top of the page the wordmark folds down to its own mark:
-                PAJZO contracts and the orange P is what is left. It buys back
-                space in a bar that is also shrinking, and it is the brand doing
-                it rather than a generic logo swap. */}
+            {/* The wordmark prints itself in on arrival, left to right, mark
+                first. It never changes width: the previous fold collapsed it to
+                23px on scroll, which emptied the left of the bar and threw all
+                the weight to the right. */}
             <a
               href="/"
-              className={`wordmark${wmSet ? ' is-set' : ''}`}
+              className="wordmark"
               onClick={goHome}
               aria-label="Pajzo, home"
             >

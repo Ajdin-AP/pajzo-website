@@ -6,6 +6,7 @@ import './index.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './Home';
+import { POLICIES, legalSlug } from './legal/policies';
 
 // Off the critical path: the legal pages are rarely visited, and the contact
 // modal is prefetched on idle so it's mounted long before the first click.
@@ -25,6 +26,14 @@ const serviceOf = (path: string) => {
   return SERVICE_SLUGS.includes(slug) ? slug : '';
 };
 const ProcessPage = lazy(() => import('./ProcessPage'));
+
+// App store policies. The registry is metadata only, so it costs the main
+// bundle a few lines; each policy's prose is its own chunk, fetched when
+// someone actually follows the URL off a store listing.
+const LegalIndex = lazy(() => import('./legal/LegalIndex'));
+const POLICY_VIEWS: Record<string, ReturnType<typeof lazy>> = Object.fromEntries(
+  POLICIES.map((p) => [p.slug, lazy(p.load)])
+);
 
 export type OpenModal = (service?: string) => void;
 
@@ -52,6 +61,8 @@ const ROUTE_CHUNK: Record<string, () => Promise<unknown>> = {
   '/refund-policy': () => import('./RefundPolicy'),
   '/cookie-policy': () => import('./CookiePolicy'),
   '/code-of-conduct': () => import('./CodeOfConduct'),
+  '/legal': () => import('./legal/LegalIndex'),
+  ...Object.fromEntries(POLICIES.map((p) => [`/legal/${p.slug}`, p.load])),
 };
 
 
@@ -297,6 +308,10 @@ function App() {
       '/terms-of-service': 'Terms of Service · Pajzo',
       '/refund-policy': 'Refund Policy · Pajzo',
       '/code-of-conduct': 'Code of Conduct · Pajzo',
+      '/legal': 'App privacy policies · Pajzo',
+      ...Object.fromEntries(
+        POLICIES.map((p) => [`/legal/${p.slug}`, `${p.app} Privacy Policy · Pajzo`])
+      ),
     };
     const known = path in titles;
     document.title = titles[path] ?? 'Page not found · Pajzo';
@@ -417,6 +432,19 @@ function App() {
     content = (
       <Suspense fallback={null}>
         <AboutPage openModal={openModal} />
+      </Suspense>
+    );
+  } else if (path === '/legal') {
+    content = (
+      <Suspense fallback={null}>
+        <LegalIndex />
+      </Suspense>
+    );
+  } else if (POLICY_VIEWS[legalSlug(path)]) {
+    const Policy = POLICY_VIEWS[legalSlug(path)];
+    content = (
+      <Suspense fallback={null}>
+        <Policy />
       </Suspense>
     );
   } else if (serviceOf(path)) {

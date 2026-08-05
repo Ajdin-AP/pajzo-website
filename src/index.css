@@ -589,6 +589,7 @@ html.can-hover .linkarrow:hover svg{
   html .navslug,
   html .header .wordmark {
     transition: none;
+    animation: none;
   }
   html .header .wordmark:active {
     transform: none;
@@ -637,34 +638,42 @@ html.can-hover .linkarrow:hover svg{
   flex: none;
 }
 
-/* ---- the fold belongs to the bar, and only to the bar ----
-   The footer uses this same class and never receives .is-set, so leaving the
-   folded width on .wordmark itself clipped the footer's mark to a P and a
-   sliver of the A. Everything to do with folding is scoped to .header. */
+/* ---- the wordmark prints ----
+   It reveals left to right on arrival, mark first, like a sheet coming out
+   from under a press. Its width never changes, and that is the point: the
+   previous version folded it to 23 px on scroll, and with the bar set
+   space-between that emptied the left side and threw the bar's whole weight
+   to the right.
+
+   A keyframe rather than a class transition, so it needs no JavaScript to
+   start. No delay and no backwards fill on purpose: both of those hold the
+   clipped, invisible first frame before the animation runs, so anything that
+   stops it running leaves the logo gone. Unanimated has to mean visible. */
+@keyframes wm-print {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
 .header .wordmark {
-  /* folded is the resting state: the name unfolds out of the mark once the
-     bar is up, and folds back into it on scroll */
-  width: 23px;
-  overflow: hidden;
-  transition: width 0.62s var(--ease-io), transform 0.18s var(--ease);
-}
-.header .wordmark.is-set {
-  width: 108px;
-}
-.header.scrolled .wordmark.is-set {
-  width: 23px;
-}
-/* folded to a mark, html.can-hover it still answers: point at it and the name comes back */
-.header.scrolled .wordmark.is-set:hover,
-.header.scrolled .wordmark.is-set:focus-visible {
-  width: 108px;
+  animation: wm-print 0.78s var(--ease-io);
+  transition: transform 0.18s var(--ease);
 }
 /* the same press the plate makes, at a tenth the size */
 .header .wordmark:active {
   transform: translateY(1px);
 }
+/* the mark answers when pointed at, without moving anything around it */
 .header .wordmark .wm-p {
-  transition: fill 0.25s var(--ease);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 0.25s var(--ease), transform 0.32s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+html.can-hover .header .wordmark:hover .wm-p,
+.header .wordmark:focus-visible .wm-p {
+  transform: scale(1.07);
 }
 html.can-hover .header .wordmark:hover .wm-p,
 .header .wordmark:focus-visible .wm-p {
@@ -781,9 +790,9 @@ html.can-hover .navlink:hover,
   transform: translate(4px, 4px);
 }
 /* The frame has to travel back as the plate presses out; that swap is the
-   whole animation. Without this the rule above wins on hover too, html.can-hover because
+   whole animation. Without this the rule above wins on hover too, because
    .btn--nav.btn--solid::before and .btn--solid:hover::before have identical
-   specificity and this block sits later in the file, html.can-hover so the frame just sat
+   specificity and this block sits later in the file, so the frame just sat
    still and only the plate moved. */
 .btn--nav.btn--solid:hover::before{
   transform: translate(0, 0);
@@ -2333,6 +2342,70 @@ html.can-hover .legal__back:hover{
   background: var(--line);
   margin: 44px 0;
 }
+/* ---- app policies ---- */
+/* the app's name sits above the h1, so a reader arriving cold from a store
+   listing knows in one glance which app this covers */
+.legal__wrap .legal__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 14px;
+}
+.legal__wrap code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: var(--bone);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.legal__index {
+  list-style: none;
+  padding-left: 0;
+  margin: 26px 0 34px;
+  display: grid;
+  gap: 10px;
+}
+.legal__index li + li {
+  margin-top: 0;
+}
+.legal__index a {
+  display: grid;
+  gap: 5px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  transition: border-color 0.24s var(--ease), background 0.24s var(--ease);
+}
+html.can-hover .legal__index a:hover,
+.legal__index a:focus-visible {
+  border-color: var(--orange);
+  background: rgba(232, 98, 26, 0.045);
+}
+.legal__index-app {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--bone);
+}
+.legal__index-note {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--bone-soft);
+}
+.legal__index-date {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-mute);
+  margin-top: 3px;
+}
+
 a.inline {
   color: var(--bone);
   border-bottom: 1px solid var(--line-strong);
