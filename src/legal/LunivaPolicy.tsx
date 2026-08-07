@@ -131,9 +131,11 @@ const LunivaPolicy = () => (
       and no notification token is sent anywhere.
     </p>
     <p>
-      Widgets and the Lock Screen activity read a small summary of
-      today&rsquo;s data through a private app group on your device. That data
-      never leaves the device.
+      Widgets, the Lock Screen Live Activity and the Dynamic Island read a small
+      summary of today&rsquo;s data &mdash; the coming prayer, its time, and
+      which prayers you have marked &mdash; through a private app group on your
+      device. That data never leaves the device, and nothing about it is sent to
+      us or to anyone else.
     </p>
 
     <h2>Face ID / Touch ID</h2>
