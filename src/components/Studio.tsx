@@ -7,7 +7,7 @@ const SHIELD =
 const MANIFESTO =
   'Pajzo puts the whole studio behind your project. The door only opens for work we can do properly, and everyone who touches it sits at the same table. Most of what goes wrong in this business goes wrong in the handoffs. There are none here.';
 
-// Laid out as a bento: wide/narrow tenets plus one solid-orange promise cell.
+// Laid out as a bento: wide/narrow tenets plus one solid-violet promise cell.
 // Order matters — it defines the grid rhythm.
 const TENETS = [
   {

@@ -4,7 +4,7 @@ import { ArrowRight } from './icons';
 import { useOffscreenPause } from '../hooks';
 import type { OpenModal } from '../App';
 
-// A dozen slow embers drifting up from the glow — CSS only, staggered by index.
+// A dozen slow sparks rising off the horizon — CSS only, staggered by index.
 const EMBERS = Array.from({ length: 12 }, (_, i) => i);
 
 const Cta = ({ openModal }: { openModal: OpenModal }) => {

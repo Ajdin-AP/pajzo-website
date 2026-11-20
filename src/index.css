@@ -1,6 +1,9 @@
 /* ============================================================
    PAJZO® — independent digital studio
-   Dark atelier system: warm black, bone type, one orange.
+   Violet night: black with a violet cast, purple light, one lime signal.
+   Purple is the atmosphere (glows, gradient type, the mark). Lime is the
+   signal, kept for things you can press and things that mark state, so the
+   eye always knows where the action is.
    Websites · Apps · Branding · Design — built end to end.
    ============================================================ */
 
@@ -42,31 +45,42 @@
 }
 
 :root {
-  /* --- surfaces (warm black atelier) --- */
-  --bg: #0d0c0a;
-  --bg-lift: #131110;
-  --bg-card: #161412;
-  --bg-hover: #1c1917;
+  color-scheme: dark;
 
-  /* --- text --- */
-  --bone: #ece7dc;
-  --bone-soft: #a99f90;
-  /* muted, but still ≥4.5:1 on the warm black for the small mono labels */
-  --bone-mute: #857b6b;
+  /* --- surfaces: black with a violet cast --- */
+  --bg: #08060e;
+  --bg-lift: #0e0b17;
+  --bg-card: #14101f;
+  --bg-hover: #1b1529;
 
-  /* --- the one orange --- */
-  --orange: #e8621a;
-  --orange-hot: #ff7a33;
-  --orange-dim: rgba(232, 98, 26, 0.14);
+  /* --- text (contrast measured on --bg / --bg-card) --- */
+  --fg: #f2eefb; /* 17.6:1 */
+  --fg-soft: #b4abcb; /* 9.2:1 */
+  --fg-mute: #8d85a6; /* 5.8:1 / 5.4:1, still fine for the small mono labels */
+  /* type set on the light fills (lime, pale violet) */
+  --ink: #08060e;
+
+  /* --- purple: the brand and the light --- */
+  --violet: #a07bff; /* text-safe on black, 6.5:1 */
+  --violet-soft: #c7b3ff; /* 10.9:1, outlines and gradient tops */
+  --violet-deep: #6c3bef; /* fills that carry white type, 6:1 */
+  --violet-ink: #4c1d95;
+  --violet-dim: rgba(160, 123, 255, 0.14);
+  --grad-violet: linear-gradient(100deg, #d9ccff 0%, #a07bff 48%, #7c4dff 100%);
+
+  /* --- lime: the signal --- */
+  --lime: #ccff4d; /* 17:1 on black, and black on it */
+  --lime-hot: #dcff85;
+  --lime-dim: rgba(204, 255, 77, 0.12);
 
   /* --- lines --- */
-  --line: rgba(236, 231, 220, 0.1);
-  --line-strong: rgba(236, 231, 220, 0.22);
+  --line: rgba(242, 238, 251, 0.09);
+  --line-strong: rgba(242, 238, 251, 0.2);
+  --line-violet: rgba(160, 123, 255, 0.34);
 
   /* --- type ---
      Clash Display carries the display headings; General Sans is the body and
-     secondary face (and everything's default); Bungee is the wordmark only.
-     Inter was dropped 2026-07-02 — General Sans covers ž/ć/š. */
+     secondary face (and everything's default); Bungee is the wordmark only. */
   --font-body: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Clash Display', 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-ui: var(--font-body);
@@ -75,11 +89,13 @@
   /* --- layout --- */
   --container: 1280px;
   --gutter: clamp(20px, 4.5vw, 56px);
-  --radius-s: 6px;
-  --radius-m: 12px;
-  --radius-l: 20px;
+  --radius-s: 10px;
+  --radius-m: 18px;
+  --radius-l: 26px;
+  --radius-xl: 34px;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
 
   /* the nav material. Saturation is lifted well past 100% so colour behind
      the pane survives the blur instead of going grey, which is what separates
@@ -87,14 +103,13 @@
   --nav-h: 74px;
   --glass-blur: 20px;
   --glass-sat: 180%;
-  /* The pane sits LIGHTER than the page behind it. This is the move that
-     makes a dark material read as glass: tinting with the background colour
-     only ever darkens, so the bar disappears into the page. Lifting the
-     backdrop and then tinting it back down leaves a pane you can see the
-     edge of. */
+  /* The pane sits LIGHTER than the page behind it. Tinting with the
+     background colour only ever darkens, so the bar disappears into the page.
+     Lifting the backdrop and then tinting it back down leaves a pane you can
+     see the edge of. */
   --glass-lift: brightness(1.34);
-  --glass-tint: rgba(18, 16, 13, 0.3);
-  --glass-tint-thick: rgba(15, 14, 11, 0.58);
+  --glass-tint: rgba(14, 10, 26, 0.3);
+  --glass-tint-thick: rgba(10, 8, 20, 0.62);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -113,19 +128,22 @@ html {
   /* Smoothness is applied explicitly per scroll (see scroll.ts) so route
      changes stay instant; a global rule would animate scroll-to-top jumps. */
   background: var(--bg);
+  accent-color: var(--violet);
+  scrollbar-color: #2c2245 var(--bg);
 }
 
 body {
   font-family: var(--font-body);
   background: var(--bg);
-  color: var(--bone);
+  color: var(--fg);
   line-height: 1.6;
   font-size: 17px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* clip (not hidden) so the body doesn't become its own scroll container —
      that is what makes native smooth-scroll silently fall back to a jump.
-     `hidden` stays as a fallback for browsers without `clip`. */
+     `hidden` stays as a fallback for browsers without `clip`. It is also what
+     lets the tilted marquee band overhang the viewport without a side scroll. */
   overflow-x: hidden;
   overflow-x: clip;
 }
@@ -145,6 +163,17 @@ body {
 .pf__title,
 .pf__name {
   font-family: var(--font-display);
+}
+
+/* The tilted marquee band overhangs the viewport on purpose. Body's clip
+   alone is not enough on phones: there body's overflow is handed to the
+   viewport, and mobile browsers still widen the layout viewport to fit the
+   overhang, so the whole page goes sideways. Clipping main horizontally
+   keeps the overhang out of the page's scrollable width. `clip` rather than
+   `hidden` because clip makes no scroll container, so position: sticky
+   inside (the FAQ intro) keeps working. */
+main {
+  overflow-x: clip;
 }
 
 img {
@@ -173,12 +202,13 @@ select {
 }
 
 ::selection {
-  background: var(--orange);
-  color: #0d0c0a;
+  background: var(--violet-deep);
+  color: #fff;
 }
 
+/* lime on violet-black is the most visible ring the palette has */
 :focus-visible {
-  outline: 2px solid var(--orange);
+  outline: 2px solid var(--lime);
   outline-offset: 3px;
 }
 
@@ -189,26 +219,26 @@ select {
   left: 16px;
   z-index: 200;
   padding: 10px 18px;
-  background: var(--orange);
-  color: #0d0c0a;
+  background: var(--lime);
+  color: var(--ink);
   font-weight: 600;
   font-size: 14px;
-  border-radius: var(--radius-s);
+  border-radius: 999px;
   transition: top 0.2s var(--ease);
 }
 .skip-link:focus-visible {
   top: 12px;
 }
 
-/* film grain over everything, very quiet.
-   -25% overhang is plenty: the largest keyframe shift is 8% of the element
-   (12vw < 25vw), while -100% made a 9x-viewport GPU layer for nothing. */
+/* film grain over everything, very quiet. On a page this full of soft
+   gradients it earns its keep twice: texture, and no banding in the glows.
+   -25% overhang is plenty: the largest keyframe shift is 8% of the element. */
 .grain {
   position: fixed;
   inset: -25%;
   z-index: 99;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain-shift 9s steps(10) infinite;
 }
@@ -242,26 +272,36 @@ select {
   border-top: 1px solid var(--line);
 }
 
-/* mono technical label — "01 / SERVICES" */
+/* the section label — "01 / SERVICES" — set as a glass capsule with a lit
+   lime dot, the one bit of lime every section gets */
 .tag {
   display: flex;
+  width: fit-content;
   align-items: center;
-  gap: 12px;
+  padding: 7px 15px 7px 12px;
+  border: 1px solid var(--line-violet);
+  border-radius: 999px;
+  background: rgba(160, 123, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(242, 238, 251, 0.06);
   font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.22em;
+  font-size: 11.5px;
+  line-height: 1.3;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-soft);
 }
 .tag::before {
   content: '';
-  width: 26px;
-  height: 1px;
-  background: var(--orange);
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(204, 255, 77, 0.75);
   flex: none;
 }
 .tag .tag__num {
-  color: var(--orange);
+  color: var(--violet-soft);
 }
 
 /* section heading block */
@@ -270,25 +310,35 @@ select {
   margin-bottom: clamp(44px, 7vw, 84px);
 }
 .s-head .tag {
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 .h-section {
   font-size: clamp(32px, 4.6vw, 58px);
   font-weight: 600;
   line-height: 1.06;
   letter-spacing: -0.025em;
-  color: var(--bone);
+  color: var(--fg);
   text-wrap: balance;
 }
-.h-section em {
+/* the emphasised word is lit from inside: violet gradient type */
+.h-section em,
+.cta h2 em,
+.pw__h1 em,
+.ab__h1 em,
+.sv__h1 em,
+.sv__close-head em,
+.hero__accent {
   font-style: normal;
-  color: var(--orange);
+  background: var(--grad-violet);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .lede {
   margin-top: 20px;
   font-size: clamp(16px, 1.6vw, 19px);
   line-height: 1.65;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 620px;
 }
 
@@ -297,89 +347,68 @@ select {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-weight: 600;
   font-size: 15px;
   line-height: 1;
-  padding: 16px 26px;
+  letter-spacing: -0.005em;
+  padding: 16px 24px;
   border-radius: 999px;
   transition: background 0.25s var(--ease), color 0.25s var(--ease),
-    border-color 0.25s var(--ease), transform 0.25s var(--ease);
+    border-color 0.25s var(--ease), transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
   white-space: nowrap;
 }
 .btn svg {
   width: 16px;
   height: 16px;
-  transition: transform 0.25s var(--ease);
+  flex: none;
+  transition: transform 0.3s var(--ease);
 }
-html.can-hover .btn:hover svg{
+html.can-hover .btn:hover svg {
   transform: translateX(3px);
 }
 
-/* The plate: the primary CTA is a sharp orange plate floating above its
-   dashed print-mark frame (the same perforation language as the quote
-   sheet). On hover the plate stamps down into register with the frame. */
+/* Primary: a lime pill. When it carries an arrow, the arrow rides in its own
+   dark cap set flush into the right end, pointing up-right, and turns to
+   point straight ahead when you aim at it. The cap is the svg itself (an
+   outer svg takes a background, padding and a radius like any box), so there
+   is no extra markup. */
 .btn--solid {
   position: relative;
-  z-index: 0;
-  background: var(--orange);
-  color: #0d0c0a;
-  border-radius: var(--radius-s);
-  text-transform: uppercase;
-  font-size: 13.5px;
-  letter-spacing: 0.12em;
-  box-shadow: 0 12px 26px -10px rgba(232, 98, 26, 0.45);
-  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1),
-    box-shadow 0.34s var(--ease), background 0.25s var(--ease);
+  background: var(--lime);
+  color: var(--ink);
+  box-shadow: 0 14px 34px -16px rgba(204, 255, 77, 0.55);
 }
-/* the frame it will be stamped into: offset, dashed, waiting */
-.btn--solid::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border: 1px dashed rgba(232, 98, 26, 0.65);
-  border-radius: inherit;
-  transform: translate(6px, 6px);
-  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1);
-  pointer-events: none;
+.btn--solid:has(svg) {
+  padding: 7px 7px 7px 24px;
+  gap: 16px;
 }
-/* the arrow rides in its own end cap, aimed up-right until the press */
 .btn--solid svg {
-  margin-left: 17px;
+  width: 36px;
+  height: 36px;
+  padding: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--lime);
   transform: rotate(-45deg);
-  transition: transform 0.34s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transition: transform 0.42s var(--spring);
 }
-/* the cap's divider is drawn on the plate, so the arrow can turn freely.
-   Only buttons that carry an arrow get the cap. */
-.btn--solid:has(svg)::after {
-  content: '';
-  position: absolute;
-  top: 9px;
-  bottom: 9px;
-  right: 55px; /* padding 26 + arrow 16 + gap 13 */
-  width: 1px;
-  background: rgba(13, 12, 10, 0.35);
-  pointer-events: none;
+html.can-hover .btn--solid:hover {
+  background: var(--lime-hot);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 6px rgba(204, 255, 77, 0.12),
+    0 20px 40px -16px rgba(204, 255, 77, 0.65);
 }
-.btn--lg.btn--solid:has(svg)::after {
-  right: 63px; /* padding 34 + arrow 16 + gap 13 */
-}
-html.can-hover .btn--solid:hover{
-  background: var(--orange-hot);
-  transform: translate(6px, 6px);
-  box-shadow: none;
-}
-html.can-hover .btn--solid:hover::before{
-  transform: translate(0, 0);
-}
-html.can-hover .btn--solid:hover svg{
+html.can-hover .btn--solid:hover svg {
   transform: rotate(0deg);
 }
 .btn--solid:active {
-  transition: transform 0.1s ease-out;
-  transform: translate(7px, 7px) scale(0.985);
+  transition-duration: 0.1s;
+  transform: translateY(0) scale(0.98);
 }
+
 @media (hover: none), (pointer: coarse) {
   /* A shallower pane on touch. iOS Safari has twice rendered whole regions of
      this site dark on scroll-up when too much of it was held on permanent
@@ -388,49 +417,54 @@ html.can-hover .btn--solid:hover svg{
   :root {
     --glass-blur: 14px;
   }
-
-  /* on touch the press itself does the stamping */
-  .btn--solid:active {
-    transform: translate(6px, 6px);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn--solid,
-  .btn--solid::before,
-  .btn--solid svg {
-    transition: background 0.2s var(--ease);
+  .btn,
+  .btn svg {
+    transition: background 0.2s var(--ease), color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
   }
-  html.can-hover .btn--solid:hover{
+  html.can-hover .btn:hover,
+  html.can-hover .btn--solid:hover {
     transform: none;
-    box-shadow: none;
   }
-  html.can-hover .btn--solid:hover::before{
-    transform: translate(6px, 6px);
+  html.can-hover .btn:hover svg {
+    transform: none;
   }
-  html.can-hover .btn--solid:hover svg{
+  html.can-hover .btn--solid:hover svg {
     transform: rotate(-45deg);
   }
 }
 
+/* Secondary: a glass pill. The violet bloom on hover lives in the motion
+   layer further down. */
 .btn--ghost {
   border: 1px solid var(--line-strong);
-  color: var(--bone);
-  background: transparent;
-}
-html.can-hover .btn--ghost:hover{
-  border-color: var(--bone);
-  transform: translateY(-1px);
+  color: var(--fg);
+  background: rgba(242, 238, 251, 0.035);
+  box-shadow: inset 0 1px 0 rgba(242, 238, 251, 0.06);
+  padding: 16px 24px;
 }
 
 .btn--lg {
-  padding: 19px 34px;
+  padding: 19px 30px;
   font-size: 16px;
+}
+.btn--lg.btn--solid:has(svg) {
+  padding: 8px 8px 8px 30px;
+  gap: 20px;
+}
+.btn--lg.btn--solid svg {
+  width: 40px;
+  height: 40px;
+  padding: 11px;
 }
 
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 /* text link with arrow */
@@ -440,9 +474,9 @@ html.can-hover .btn--ghost:hover{
   gap: 8px;
   font-weight: 600;
   font-size: 15px;
-  color: var(--bone);
+  color: var(--fg);
   padding: 4px 0;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-violet);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 .linkarrow svg {
@@ -450,11 +484,11 @@ html.can-hover .btn--ghost:hover{
   height: 15px;
   transition: transform 0.25s var(--ease);
 }
-html.can-hover .linkarrow:hover{
-  color: var(--orange-hot);
-  border-color: var(--orange-hot);
+html.can-hover .linkarrow:hover {
+  color: var(--lime);
+  border-color: var(--lime);
 }
-html.can-hover .linkarrow:hover svg{
+html.can-hover .linkarrow:hover svg {
   transform: translateX(3px);
 }
 
@@ -517,15 +551,14 @@ html.can-hover .linkarrow:hover svg{
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(236, 231, 220, 0.075),
-    rgba(236, 231, 220, 0.014) 38%,
+    rgba(242, 238, 251, 0.075),
+    rgba(242, 238, 251, 0.014) 38%,
     transparent 70%
   );
   opacity: 0.55;
   transition: opacity 0.4s var(--ease);
 }
-/* the separator, at half a device pixel: a 1px rule reads as a drawn line,
-   a 0.5px one reads as the edge of the glass */
+/* the separator, at half a device pixel, lit violet in the middle */
 .header::after {
   content: '';
   position: absolute;
@@ -539,6 +572,7 @@ html.can-hover .linkarrow:hover svg{
     to right,
     transparent,
     var(--line-strong) 14%,
+    var(--line-violet) 50%,
     var(--line-strong) 86%,
     transparent
   );
@@ -567,25 +601,22 @@ html.can-hover .linkarrow:hover svg{
    back to a tint solid enough to carry the type on its own. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .header {
-    background: rgba(13, 12, 10, 0.9);
+    background: rgba(8, 6, 14, 0.9);
   }
   .header.scrolled {
-    background: rgba(13, 12, 10, 0.96);
+    background: rgba(8, 6, 14, 0.96);
   }
   /* the panel's own rules sit in the responsive block further down: same
      specificity, later in the file, so these need to outrank them */
   html .mobile-nav {
-    background: rgba(13, 12, 10, 0.98);
+    background: rgba(8, 6, 14, 0.98);
   }
 }
 
-/* Someone who has asked the OS to cut transparency gets a solid bar. This is
-   an accessibility setting, not a taste one: the material is the thing being
-   turned off, so nothing here should still be see-through. */
 @media (prefers-reduced-motion: reduce) {
   /* html-prefixed: .navslug and .wordmark declare their own transitions later
      in this file, and at equal specificity the later rule wins on source
-     order. The frame still marks the page here, it just stops travelling. */
+     order. The pill still marks the page here, it just stops travelling. */
   html .navslug,
   html .header .wordmark {
     transition: none;
@@ -596,13 +627,16 @@ html.can-hover .linkarrow:hover svg{
   }
 }
 
+/* Someone who has asked the OS to cut transparency gets a solid bar. This is
+   an accessibility setting, not a taste one: the material is the thing being
+   turned off, so nothing here should still be see-through. */
 @media (prefers-reduced-transparency: reduce) {
   .header,
   .header.scrolled,
   html .mobile-nav {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: rgba(13, 12, 10, 0.97);
+    background: rgba(8, 6, 14, 0.97);
   }
   .header::before {
     display: none;
@@ -624,26 +658,19 @@ html.can-hover .linkarrow:hover svg{
   gap: 24px;
 }
 
-/* Measured, not estimated: at a 42px cap height the svg renders 108px wide
-   and the P's bounding box ends at 23.24px — which is exactly where the "A"
-   begins, since the wordmark is set tight. So the fold is 23px. Anything
-   wider catches a sliver of the A; the svg keeps its width and is clipped
-   rather than squashed. */
 .wordmark {
   display: inline-flex;
   align-items: center;
-  color: var(--bone);
+  color: var(--fg);
 }
 .wordmark svg {
   flex: none;
 }
 
-/* ---- the wordmark prints ----
-   It reveals left to right on arrival, mark first, like a sheet coming out
-   from under a press. Its width never changes, and that is the point: the
-   previous version folded it to 23 px on scroll, and with the bar set
-   space-between that emptied the left side and threw the bar's whole weight
-   to the right.
+/* ---- the wordmark arrives ----
+   It reveals left to right on arrival, mark first. Its width never changes:
+   with the bar set space-between, a folding logo empties the left side and
+   throws the bar's whole weight to the right.
 
    A keyframe rather than a class transition, so it needs no JavaScript to
    start. No delay and no backwards fill on purpose: both of those hold the
@@ -661,178 +688,144 @@ html.can-hover .linkarrow:hover svg{
   animation: wm-print 0.78s var(--ease-io);
   transition: transform 0.18s var(--ease);
 }
-/* the same press the plate makes, at a tenth the size */
 .header .wordmark:active {
   transform: translateY(1px);
 }
-/* the mark answers when pointed at, without moving anything around it */
+/* the mark answers when pointed at: it turns lime, without moving anything
+   around it */
 .header .wordmark .wm-p {
   transform-box: fill-box;
   transform-origin: center;
-  transition: fill 0.25s var(--ease), transform 0.32s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transition: fill 0.25s var(--ease), transform 0.32s var(--spring);
 }
 html.can-hover .header .wordmark:hover .wm-p,
 .header .wordmark:focus-visible .wm-p {
   transform: scale(1.07);
-}
-html.can-hover .header .wordmark:hover .wm-p,
-.header .wordmark:focus-visible .wm-p {
-  fill: var(--orange-hot);
+  fill: var(--lime);
 }
 .wordmark svg {
   height: 42px;
   width: auto;
   display: block;
 }
-/* the wordmark's "P" mark is orange; "AJZO" stays currentColor (white) */
+/* the wordmark's "P" mark is violet; "AJZO" stays currentColor (white) */
 .wm-p {
-  fill: var(--orange);
+  fill: var(--violet);
 }
-/* the giant footer watermark keeps one faint tone, so its P doesn't glare */
+/* the giant footer watermark keeps one tone, so its P doesn't glare */
 .footer__giant .wm-p {
   fill: currentColor;
 }
-/* in the footer the P is white too (currentColor); the orange P stays in the nav */
+/* in the footer the P is white too (currentColor); the violet P stays in the nav */
 .footer__brand .wm-p {
   fill: currentColor;
 }
 
-/* right cluster: nav + a single arrow-link CTA, right-aligned */
+/* right cluster: nav + the CTA, right-aligned */
 .header__right {
   display: flex;
   align-items: center;
-  gap: clamp(20px, 3vw, 44px);
+  gap: clamp(20px, 3vw, 40px);
 }
 
-/* ═══════════ the composing rail ═══════════
-   The nav is a stick and the frame is a slug set in it. One frame for the
-   whole nav rather than a border per item: it marks the page you are on and
-   slides to whatever you point at or tab to, stretching to that word's width.
-   It is the same dashed frame the CTA presses into, so the bar and the button
-   read as one idea instead of two unrelated ones. */
+/* ═══════════ the nav pill ═══════════
+   One lit pill for the whole nav, not a background per item: it marks the
+   page you are on and glides to whatever you point at or tab to, stretching
+   to that word's width. Following focus as well as hover is the part that
+   earns its keep: a keyboard user gets the same read of where they are as a
+   mouse user. */
 .header__nav {
   position: relative;
   display: flex;
   align-items: center;
-  gap: clamp(16px, 2.2vw, 32px);
+  gap: clamp(28px, 2.8vw, 40px);
 }
 .navslug {
   position: absolute;
-  inset-block: -8px;
+  inset-block: -9px;
   inset-inline-start: 0;
-  /* The frame sits wider than the word it marks. Measuring the word and
-     drawing the frame on exactly that box read as a tight crop; the pad is
-     added here rather than in the measurement so the geometry stays honest
-     and the breathing room stays tunable. */
-  --slug-pad: 10px;
+  /* The pill sits wider than the word it marks. The pad is added here rather
+     than in the measurement so the geometry stays honest and the breathing
+     room stays tunable. */
+  --slug-pad: 14px;
   width: calc(var(--sw, 0px) + var(--slug-pad) * 2);
   transform: translateX(calc(var(--sx, 0px) - var(--slug-pad)));
-  border: 1px dashed rgba(232, 98, 26, 0.55);
-  border-radius: var(--radius-s);
+  border: 1px solid var(--line-violet);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(160, 123, 255, 0.22), rgba(160, 123, 255, 0.08));
+  box-shadow: inset 0 1px 0 rgba(242, 238, 251, 0.1),
+    0 8px 22px -10px rgba(124, 58, 237, 0.7);
   opacity: 0;
   pointer-events: none;
-  /* the same spring the stamped plate uses when it presses home */
-  transition: transform 0.44s cubic-bezier(0.34, 1.4, 0.5, 1),
-    width 0.44s cubic-bezier(0.34, 1.4, 0.5, 1), opacity 0.24s var(--ease);
+  transition: transform 0.44s cubic-bezier(0.34, 1.25, 0.5, 1),
+    width 0.44s cubic-bezier(0.34, 1.25, 0.5, 1), opacity 0.24s var(--ease);
 }
 .navslug[data-on='true'] {
   opacity: 1;
 }
-/* The inked edge. Sitting on the frame's own bottom rule rather than
-   floating below it keeps the slug reading as one object instead of a box
-   with a stray underline. */
-.navslug::after {
-  content: '';
-  position: absolute;
-  inset-inline: -1px;
-  bottom: -1px;
-  height: 2px;
-  background: var(--orange);
-  border-radius: 0 0 var(--radius-s) var(--radius-s);
-}
 
 .navlink {
   position: relative;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--bone-soft);
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--fg-soft);
   padding: 4px 0;
   transition: color 0.2s var(--ease);
 }
 html.can-hover .navlink:hover,
 .navlink:focus-visible {
-  color: var(--bone);
+  color: var(--fg);
 }
 .navlink--active {
-  color: var(--bone);
+  color: var(--fg);
 }
-/* the slug already says which item is which; a ring on top of it is noise */
+/* the pill already says which item is which; a ring on top of it is noise */
 .navlink:focus-visible {
   outline: none;
 }
 
-/* The CTA is the hero's stamped plate, not a second button design: same
-   plate, same offset dashed frame, same end cap and the same arrow that
-   straightens on press. Only the scale changes, so it sits in a 74px bar
-   without crowding the nav. Everything it needs comes from .btn--solid;
-   .btn--nav below is purely the smaller size. */
+/* The CTA is the hero's lime pill at nav scale: same cap, same turning arrow. */
 .btn--nav {
-  padding: 10px 17px;
-  font-size: 11.5px;
-  letter-spacing: 0.1em;
-  gap: 7px;
-  /* a shorter throw than the hero's, in proportion to the smaller plate */
-  box-shadow: 0 8px 18px -8px rgba(232, 98, 26, 0.45);
+  font-size: 13.5px;
 }
-.btn--nav.btn--solid::before {
-  transform: translate(4px, 4px);
-}
-/* The frame has to travel back as the plate presses out; that swap is the
-   whole animation. Without this the rule above wins on hover too, because
-   .btn--nav.btn--solid::before and .btn--solid:hover::before have identical
-   specificity and this block sits later in the file, so the frame just sat
-   still and only the plate moved. */
-.btn--nav.btn--solid:hover::before{
-  transform: translate(0, 0);
+.btn--nav.btn--solid:has(svg) {
+  padding: 5px 5px 5px 16px;
+  gap: 12px;
 }
 .btn--nav.btn--solid svg {
-  width: 13px;
-  height: 13px;
-  margin-left: 12px;
+  width: 28px;
+  height: 28px;
+  padding: 8px;
 }
-.btn--nav.btn--solid:has(svg)::after {
-  top: 7px;
-  bottom: 7px;
-  right: 39px; /* padding 17 + arrow 13 + gap 9 */
-}
-html.can-hover .btn--nav.btn--solid:hover{
-  transform: translate(4px, 4px);
-  box-shadow: none;
-}
-.btn--nav.btn--solid:active {
-  transform: translate(5px, 5px) scale(0.985);
+html.can-hover .btn--nav.btn--solid:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 4px rgba(204, 255, 77, 0.12),
+    0 12px 26px -12px rgba(204, 255, 77, 0.65);
 }
 
 /* a control cut from the same material as the bar: a faint fill, a hairline,
    and an inner highlight on its top edge so it reads as raised glass */
 .menu-toggle {
   display: none;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--line-strong);
-  background: rgba(236, 231, 220, 0.05);
-  box-shadow: inset 0 1px 0 rgba(236, 231, 220, 0.08);
-  color: var(--bone);
+  background: rgba(242, 238, 251, 0.05);
+  box-shadow: inset 0 1px 0 rgba(242, 238, 251, 0.08);
+  color: var(--fg);
   transition: background 0.24s var(--ease), border-color 0.24s var(--ease);
 }
-html.can-hover .menu-toggle:hover{
-  background: rgba(236, 231, 220, 0.1);
-  border-color: rgba(236, 231, 220, 0.32);
+html.can-hover .menu-toggle:hover {
+  background: rgba(242, 238, 251, 0.1);
+  border-color: rgba(242, 238, 251, 0.32);
+}
+.menu-toggle[aria-expanded='true'] {
+  border-color: var(--line-violet);
+  background: rgba(160, 123, 255, 0.16);
 }
 .menu-toggle svg {
   width: 20px;
@@ -850,7 +843,7 @@ html.can-hover .menu-toggle:hover{
   .menu-toggle {
     display: inline-flex;
   }
-  /* the hamburger menu carries the contact button on every page */
+  /* the menu carries the contact button on every page */
   .header__cta {
     display: none;
   }
@@ -858,10 +851,9 @@ html.can-hover .menu-toggle:hover{
     display: flex;
     flex-direction: column;
     gap: 4px;
-    /* Absolutely positioned under the bar. In flow it kept its full height
-       even when closed (visibility: hidden still occupies space), which made
-       the fixed header ~450px tall and painted a huge dark panel over the
-       hero on scroll. Out of flow, the header is just the bar again. */
+    /* Out of flow, under the bar. In flow it kept its full height even when
+       closed (visibility: hidden still occupies space), which made the fixed
+       header ~450px tall and painted a dark panel over the hero on scroll. */
     position: fixed;
     top: var(--nav-h);
     left: 0;
@@ -872,8 +864,10 @@ html.can-hover .menu-toggle:hover{
        height, not just a 74px strip */
     -webkit-backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
     backdrop-filter: saturate(var(--glass-sat)) var(--glass-lift) blur(var(--glass-blur));
-    background: rgba(15, 14, 11, 0.76);
-    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(120% 70% at 100% 0%, rgba(124, 58, 237, 0.22), transparent 60%),
+      rgba(12, 9, 20, 0.8);
+    border-bottom: 1px solid var(--line-violet);
     box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.7);
     opacity: 0;
     visibility: hidden;
@@ -889,7 +883,7 @@ html.can-hover .menu-toggle:hover{
     pointer-events: auto;
     transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
   }
-  /* the compartments of a type case: number, word, rule */
+  /* number, word, rule — each sliding in a beat after the one above it */
   .mobile-nav a {
     position: relative;
     display: grid;
@@ -897,7 +891,7 @@ html.can-hover .menu-toggle:hover{
     align-items: baseline;
     gap: 14px;
     padding: 18px 2px 16px;
-    color: var(--bone-soft);
+    color: var(--fg-soft);
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.4s var(--ease), transform 0.5s var(--ease-io),
@@ -919,7 +913,7 @@ html.can-hover .menu-toggle:hover{
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: var(--bone-mute);
+    color: var(--fg-mute);
   }
   .mn-word {
     font-family: var(--font-display);
@@ -928,7 +922,6 @@ html.can-hover .menu-toggle:hover{
     letter-spacing: -0.03em;
     line-height: 1;
   }
-  /* the rule is a compartment edge, and it fills orange on the page you are on */
   .mn-rule {
     position: absolute;
     inset-inline: 0;
@@ -937,13 +930,14 @@ html.can-hover .menu-toggle:hover{
     background: var(--line);
   }
   .mobile-nav a.is-active {
-    color: var(--bone);
+    color: var(--fg);
   }
   .mobile-nav a.is-active .mn-no {
-    color: var(--orange);
+    color: var(--lime);
   }
+  /* the page you are on: its rule lights violet, fading out to the right */
   .mobile-nav a.is-active .mn-rule {
-    background: var(--orange);
+    background: linear-gradient(90deg, var(--violet), transparent 85%);
   }
   .mobile-nav a:last-of-type .mn-rule {
     background: var(--line);
@@ -951,6 +945,7 @@ html.can-hover .menu-toggle:hover{
   .mobile-nav .btn {
     margin-top: 22px;
     justify-content: center;
+    padding: 18px 24px;
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: none !important;
@@ -961,56 +956,82 @@ html.can-hover .menu-toggle:hover{
 
 .hero {
   position: relative;
+  isolation: isolate;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  padding: clamp(96px, 12vh, 132px) 0 26px;
+  padding: clamp(96px, 12vh, 132px) 0 40px;
   overflow: hidden;
 }
 
-/* faint blueprint grid behind the hero */
+/* a fine dot field, brightest around the mark */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 38%, black 0%, transparent 72%);
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 38%, black 0%, transparent 72%);
-  opacity: 0.55;
+  z-index: -1;
+  background-image: radial-gradient(rgba(242, 238, 251, 0.2) 1px, transparent 1.6px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 66% 42%, black 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 75% 70% at 66% 42%, black 0%, transparent 72%);
+  opacity: 0.45;
   pointer-events: none;
 }
+/* The light. A violet bloom behind the mark, a deeper one low on the left and
+   a faint lime glint, all plain gradients: nothing here is a blur filter, so
+   nothing re-blurs when the mark moves. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(46vw 40vw at 80% 36%, rgba(124, 58, 237, 0.42), transparent 70%),
+    radial-gradient(40vw 30vw at 4% 96%, rgba(76, 29, 149, 0.45), transparent 70%),
+    radial-gradient(16vw 12vw at 70% 78%, rgba(204, 255, 77, 0.07), transparent 70%);
+}
 
-/* the shield mark, huge and ghosted off the right edge.
+/* the shield mark, huge and luminous off the right edge. Its keyline runs
+   violet to lime along the gradient defined in Hero.tsx.
    --px/--py are written by a gentle pointer-parallax loop. */
 .hero__mark {
   position: absolute;
   top: 50%;
   right: -6vw;
+  z-index: -1;
   transform: translate3d(var(--px, 0px), calc(-54% + var(--py, 0px)), 0) rotate(8deg);
   width: clamp(320px, 44vw, 660px);
-  color: transparent;
+  overflow: visible;
   pointer-events: none;
 }
+.hero__mark .hm-s1 { stop-color: var(--violet-soft); }
+.hero__mark .hm-s2 { stop-color: var(--violet-deep); }
+.hero__mark .hm-s3 { stop-color: var(--lime); }
+.hero__mark .hm-f1 { stop-color: var(--violet); stop-opacity: 0.2; }
+.hero__mark .hm-f2 { stop-color: var(--violet); stop-opacity: 0; }
 .hero__mark path {
-  fill: none;
-  stroke: var(--line);
-  stroke-width: 3;
+  fill: url(#hero-fill);
+  stroke: url(#hero-stroke);
+  stroke-width: 2.5;
+  stroke-opacity: 0.75;
 }
-/* keyline draws itself on at load */
+/* keyline draws itself on at load, then the glass fills in behind it */
 @media (prefers-reduced-motion: no-preference) {
   .hero__mark path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: draw 2s var(--ease) 0.5s forwards;
+    fill-opacity: 0;
+    animation: draw 2s var(--ease) 0.5s forwards, mark-fill 1.2s var(--ease) 1.6s forwards;
   }
+}
+@keyframes mark-fill {
+  to { fill-opacity: 1; }
 }
 
 .hero__wrap {
   position: relative;
   z-index: 1;
-  /* centres the content block; the meta strip keeps the bottom edge */
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -1021,7 +1042,7 @@ html.can-hover .menu-toggle:hover{
   font-weight: 600;
   line-height: 0.98;
   letter-spacing: -0.035em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .hero__line {
   display: block;
@@ -1050,40 +1071,43 @@ html.can-hover .menu-toggle:hover{
   }
 }
 
-.hero__accent {
-  color: var(--orange);
-}
-
-/* outlined word — studio flourish */
+/* outlined line, keyed in pale violet */
 .hero__outline {
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--bone-soft);
+  -webkit-text-stroke: 1.5px rgba(199, 179, 255, 0.72);
 }
 
 .hero__cta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-top: clamp(26px, 3.2vw, 42px);
+  gap: 14px;
+  margin-top: clamp(28px, 3.4vw, 46px);
 }
 
 @media (max-width: 720px) {
   .hero__mark {
     right: -30vw;
-    opacity: 0.6;
+    opacity: 0.7;
   }
 }
 
 /* ------------------------------------------------------------ marquee */
 
+/* A lime band, tilted a degree and a half, laid across the seam between the
+   hero and the services: the loudest lime on the page, and the only lime
+   that is not a control. It overhangs the viewport on both sides so the tilt
+   never shows a corner; body's overflow-x: clip keeps that from scrolling. */
 .marquee {
   position: relative;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 26px 0;
+  z-index: 2;
+  margin: 0 -48px;
+  padding: 20px 0;
   overflow: hidden;
-  background: var(--bg-lift);
+  background: var(--lime);
+  color: var(--ink);
+  transform: rotate(-1.4deg);
+  box-shadow: 0 24px 70px -24px rgba(204, 255, 77, 0.4);
 }
 .marquee__track {
   display: flex;
@@ -1094,7 +1118,7 @@ html.can-hover .menu-toggle:hover{
 .marquee.is-off .marquee__track {
   animation-play-state: paused;
 }
-html.can-hover .marquee:hover .marquee__track{
+html.can-hover .marquee:hover .marquee__track {
   animation-play-state: paused;
 }
 @keyframes marquee {
@@ -1108,22 +1132,26 @@ html.can-hover .marquee:hover .marquee__track{
 .marquee__item {
   display: flex;
   align-items: center;
-  gap: 34px;
-  padding-right: 34px;
+  gap: 30px;
+  padding-right: 30px;
   font-size: clamp(20px, 2.6vw, 30px);
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  color: var(--bone);
+  color: var(--ink);
 }
+/* a violet four-point star between the words */
 .marquee__item::after {
-  content: '✺';
-  color: var(--orange);
-  font-size: 0.75em;
+  content: '';
+  width: 0.62em;
+  height: 0.62em;
+  flex: none;
+  background: var(--violet-deep);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
 }
 .marquee__item--ghost {
   color: transparent;
-  -webkit-text-stroke: 1px var(--bone-mute);
+  -webkit-text-stroke: 1.2px var(--ink);
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee__track {
@@ -1138,29 +1166,40 @@ html.can-hover .marquee:hover .marquee__track{
 
 /* ------------------------------------------------------------ services index */
 
-.svc {
-  border-top: 1px solid var(--line);
+/* each discipline is its own glass row: violet light rises from its left
+   edge when you aim at it, the number turns lime, and the arrow cap fills */
+.svc__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 .svc__row {
   position: relative;
   display: grid;
-  grid-template-columns: 90px 1.1fr 1.4fr 60px;
-  align-items: start;
+  grid-template-columns: 76px 1.1fr 1.4fr 56px;
+  align-items: center;
   gap: clamp(18px, 3vw, 44px);
   width: 100%;
   text-align: left;
-  padding: clamp(30px, 4.5vw, 54px) 0;
-  border-bottom: 1px solid var(--line);
-  transition: padding 0.35s var(--ease);
+  padding: clamp(26px, 3.4vw, 40px) clamp(22px, 3vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: linear-gradient(180deg, rgba(242, 238, 251, 0.03), rgba(242, 238, 251, 0.012));
+  overflow: hidden;
+  transition: border-color 0.35s var(--ease), transform 0.35s var(--ease);
 }
 .svc__row::before {
   content: '';
   position: absolute;
-  inset: 0 calc(var(--gutter) * -1);
-  background: var(--bg-hover);
+  inset: 0;
+  background: radial-gradient(70% 160% at 0% 50%, rgba(124, 58, 237, 0.3), transparent 70%);
   opacity: 0;
-  transition: opacity 0.35s var(--ease);
+  transition: opacity 0.4s var(--ease);
   pointer-events: none;
+}
+html.can-hover .svc__row:hover,
+.svc__row:focus-visible {
+  border-color: var(--line-violet);
 }
 html.can-hover .svc__row:hover::before,
 .svc__row:focus-visible::before {
@@ -1174,12 +1213,12 @@ html.can-hover .svc__row:hover::before,
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.16em;
-  color: var(--bone-mute);
-  padding-top: 10px;
+  color: var(--violet);
   transition: color 0.3s var(--ease);
 }
-html.can-hover .svc__row:hover .svc__num{
-  color: var(--orange);
+html.can-hover .svc__row:hover .svc__num,
+.svc__row:focus-visible .svc__num {
+  color: var(--lime);
 }
 
 .svc__name {
@@ -1187,11 +1226,11 @@ html.can-hover .svc__row:hover .svc__num{
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.025em;
-  color: var(--bone);
+  color: var(--fg);
   transition: transform 0.35s var(--ease);
 }
-html.can-hover .svc__row:hover .svc__name{
-  transform: translateX(8px);
+html.can-hover .svc__row:hover .svc__name {
+  transform: translateX(6px);
 }
 
 .svc__body {
@@ -1202,7 +1241,7 @@ html.can-hover .svc__row:hover .svc__name{
 .svc__desc {
   font-size: 16px;
   line-height: 1.65;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 520px;
 }
 .svc__tags {
@@ -1217,15 +1256,15 @@ html.can-hover .svc__row:hover .svc__name{
   font-size: 11.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   padding: 7px 13px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
 }
 html.can-hover .svc__row:hover .svc__tags li,
-html.can-hover .svc__row:hover .svc__tags span{
-  border-color: rgba(232, 98, 26, 0.4);
+html.can-hover .svc__row:hover .svc__tags span {
+  border-color: var(--line-violet);
 }
 
 .svc__go {
@@ -1237,52 +1276,64 @@ html.can-hover .svc__row:hover .svc__tags span{
   align-items: center;
   justify-content: center;
   justify-self: end;
-  margin-top: 4px;
-  color: var(--bone);
+  color: var(--fg);
   transition: background 0.3s var(--ease), border-color 0.3s var(--ease),
-    color 0.3s var(--ease), transform 0.3s var(--ease);
+    color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .svc__go svg {
   width: 19px;
   height: 19px;
   transform: rotate(-45deg);
-  transition: transform 0.3s var(--ease);
+  transition: transform 0.42s var(--spring);
 }
-html.can-hover .svc__row:hover .svc__go{
-  background: var(--orange);
-  border-color: var(--orange);
-  color: #0d0c0a;
-  transform: rotate(45deg);
+html.can-hover .svc__row:hover .svc__go,
+.svc__row:focus-visible .svc__go {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--ink);
+  box-shadow: 0 10px 26px -10px rgba(204, 255, 77, 0.6);
+}
+html.can-hover .svc__row:hover .svc__go svg,
+.svc__row:focus-visible .svc__go svg {
+  transform: rotate(0deg);
 }
 
 .svc__foot {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 34px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 30px;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
+}
+.svc__foot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(204, 255, 77, 0.7);
+  flex: none;
 }
 .svc__foot b {
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   font-weight: 500;
 }
 
 @media (max-width: 860px) {
   .svc__row {
     grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .svc__num {
-    padding-top: 0;
+    gap: 12px;
+    padding: 26px 22px;
   }
   .svc__go {
     display: none;
   }
-  html.can-hover .svc__row:hover .svc__name{
+  html.can-hover .svc__row:hover .svc__name {
     transform: none;
   }
 }
@@ -1290,16 +1341,27 @@ html.can-hover .svc__row:hover .svc__go{
 /* ------------------------------------------------------------ studio (ethos + founder) */
 
 .studio {
+  isolation: isolate;
   background: var(--bg-lift);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+/* violet light pooling at the top of the section, behind the manifesto */
+.studio::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 34% at 20% 0%, rgba(124, 58, 237, 0.2), transparent 70%);
+  pointer-events: none;
 }
 
-/* the bento — asymmetric grid of tenets, one orange promise, one spec sheet */
+/* the bento — asymmetric grid of tenets and one violet promise */
 .bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(16px, 2vw, 24px);
+  gap: clamp(14px, 1.8vw, 22px);
 }
 .bento .tenet--wide {
   grid-column: span 2;
@@ -1308,18 +1370,30 @@ html.can-hover .svc__row:hover .svc__go{
   grid-column: 1 / -1;
 }
 
+/* Glass cards with a lit edge: the border is a gradient, violet at the top
+   left where the light comes from, lime at the far corner. Two backgrounds,
+   one clipped to the padding box and one to the border box, is what draws a
+   gradient border on a rounded card without an extra element. */
 .tenet {
   position: relative;
   min-height: 230px;
   padding: clamp(26px, 3.4vw, 40px);
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
   border-radius: var(--radius-l);
-  background: var(--bg-card);
+  background:
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(
+        140deg,
+        rgba(160, 123, 255, 0.5),
+        rgba(242, 238, 251, 0.07) 36%,
+        rgba(242, 238, 251, 0.05) 70%,
+        rgba(204, 255, 77, 0.22)
+      )
+      border-box;
   overflow: hidden;
-  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  transition: transform 0.3s var(--ease);
 }
-html.can-hover .tenet:hover{
-  border-color: var(--line-strong);
+html.can-hover .tenet:hover {
   transform: translateY(-3px);
 }
 /* huge ghost numeral, clipped by the card edge */
@@ -1332,13 +1406,13 @@ html.can-hover .tenet:hover{
   line-height: 1;
   letter-spacing: -0.04em;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(236, 231, 220, 0.13);
+  -webkit-text-stroke: 1.5px rgba(160, 123, 255, 0.24);
   pointer-events: none;
   user-select: none;
   transition: -webkit-text-stroke-color 0.4s var(--ease);
 }
-html.can-hover .tenet:hover .tenet__num{
-  -webkit-text-stroke-color: rgba(232, 98, 26, 0.5);
+html.can-hover .tenet:hover .tenet__num {
+  -webkit-text-stroke-color: rgba(204, 255, 77, 0.55);
 }
 .tenet h3,
 .tenet p {
@@ -1355,7 +1429,7 @@ html.can-hover .tenet:hover .tenet__num{
 .tenet p {
   font-size: 15.5px;
   line-height: 1.65;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 52ch;
 }
 
@@ -1369,25 +1443,29 @@ html.can-hover .tenet:hover .tenet__num{
   margin-bottom: 18px;
 }
 
-/* the one solid-orange moment on the page */
+/* the one solid-violet moment on the page */
 .bento__promise {
   position: relative;
   overflow: hidden;
   min-height: 230px;
   padding: clamp(26px, 3.4vw, 40px);
   border-radius: var(--radius-l);
-  background: var(--orange);
-  color: #0d0c0a;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(167, 139, 250, 0.55), transparent 60%),
+    linear-gradient(150deg, var(--violet-deep) 0%, var(--violet-ink) 100%);
+  color: #fff;
+  box-shadow: 0 30px 60px -30px rgba(108, 59, 239, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s var(--ease);
 }
-html.can-hover .bento__promise:hover{
+html.can-hover .bento__promise:hover {
   transform: translateY(-3px);
 }
 .bento__promise .bento__label {
-  color: rgba(13, 12, 10, 0.65);
+  color: var(--lime);
 }
 .bento__promise p {
   position: relative;
@@ -1403,11 +1481,10 @@ html.can-hover .bento__promise:hover{
   right: -34px;
   bottom: -44px;
   width: 168px;
-  color: rgba(13, 12, 10, 0.16);
+  color: rgba(255, 255, 255, 0.1);
   transform: rotate(8deg);
   pointer-events: none;
 }
-
 
 /* founder strip */
 .founder {
@@ -1417,15 +1494,17 @@ html.can-hover .bento__promise:hover{
   align-items: center;
   gap: clamp(22px, 4vw, 44px);
   padding: clamp(26px, 4vw, 44px);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-l);
+  border: 1px solid transparent;
+  border-radius: var(--radius-xl);
   background:
-    radial-gradient(600px 220px at 12% 0%, var(--orange-dim), transparent 60%),
-    var(--bg-card);
+    radial-gradient(600px 240px at 10% 0%, rgba(124, 58, 237, 0.24), transparent 65%) padding-box,
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(120deg, var(--line-violet), rgba(242, 238, 251, 0.06) 50%, rgba(242, 238, 251, 0.04))
+      border-box;
 }
 .founder__mark {
   width: clamp(64px, 7vw, 88px);
-  color: var(--orange);
+  color: var(--violet);
   flex: none;
 }
 .founder__mark svg {
@@ -1438,7 +1517,7 @@ html.can-hover .bento__promise:hover{
   font-weight: 500;
   line-height: 1.45;
   letter-spacing: -0.015em;
-  color: var(--bone);
+  color: var(--fg);
   max-width: 720px;
 }
 .founder figcaption {
@@ -1446,12 +1525,12 @@ html.can-hover .bento__promise:hover{
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   white-space: nowrap;
 }
 .founder figcaption b {
   display: block;
-  color: var(--bone-soft);
+  color: var(--violet-soft);
   font-weight: 500;
   margin-bottom: 4px;
 }
@@ -1502,11 +1581,27 @@ html.can-hover .bento__promise:hover{
   }
 }
 
+/* each question is its own card; the open one is lit violet */
 .faq {
-  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .faq__item {
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: rgba(242, 238, 251, 0.02);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+html.can-hover .faq__item:hover {
+  border-color: var(--line-strong);
+}
+.faq__item.open,
+html.can-hover .faq__item.open:hover {
+  border-color: var(--line-violet);
+  background:
+    radial-gradient(80% 120% at 0% 0%, rgba(124, 58, 237, 0.16), transparent 70%),
+    rgba(160, 123, 255, 0.03);
 }
 .faq__q {
   display: flex;
@@ -1514,15 +1609,16 @@ html.can-hover .bento__promise:hover{
   gap: 18px;
   width: 100%;
   text-align: left;
-  padding: 24px 4px;
+  padding: 20px 18px 20px 22px;
+  border-radius: inherit;
   font-size: clamp(17px, 2vw, 20px);
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--fg);
   transition: color 0.2s var(--ease);
 }
-html.can-hover .faq__q:hover{
-  color: var(--orange-hot);
+html.can-hover .faq__q:hover {
+  color: var(--violet-soft);
 }
 .faq__idx {
   flex: none;
@@ -1530,11 +1626,11 @@ html.can-hover .faq__q:hover{
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.12em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   transition: color 0.3s var(--ease);
 }
 .faq__item.open .faq__idx {
-  color: var(--orange);
+  color: var(--violet);
 }
 .faq__q-text {
   flex: 1;
@@ -1546,7 +1642,8 @@ html.can-hover .faq__q:hover{
   height: 34px;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease),
+    color 0.3s var(--ease);
 }
 .faq__icon::before,
 .faq__icon::after {
@@ -1564,9 +1661,9 @@ html.can-hover .faq__q:hover{
   transform: translate(-50%, -50%) rotate(90deg);
 }
 .faq__item.open .faq__icon {
-  border-color: var(--orange);
-  background: var(--orange-dim);
-  color: var(--orange);
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
 }
 .faq__item.open .faq__icon::after {
   transform: translate(-50%, -50%) rotate(0deg);
@@ -1587,16 +1684,19 @@ html.can-hover .faq__q:hover{
   overflow: hidden;
   min-height: 0;
   /* aligned under the question text, past the Q.01 index */
-  padding: 0 56px 0 68px;
+  padding: 0 70px 0 86px;
   font-size: 16px;
   line-height: 1.7;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   opacity: 0;
   transition: opacity 0.35s var(--ease), padding 0.4s var(--ease);
 }
 @media (max-width: 620px) {
+  .faq__q {
+    padding-left: 18px;
+  }
   .faq__a-inner {
-    padding-left: 4px;
+    padding-left: 18px;
     padding-right: 24px;
   }
   .faq__idx {
@@ -1605,15 +1705,23 @@ html.can-hover .faq__q:hover{
 }
 .faq__item.open .faq__a-inner {
   opacity: 1;
-  padding-bottom: 26px;
+  padding-bottom: 24px;
 }
 
 /* ------------------------------------------------------------ big cta */
 
+/* The close: a violet sky over the curved rim of a dark planet. The planet
+   is one huge circle filled with the page colour, so its surface runs
+   straight on into the footer below.
+   The geometry is scale-free: a circle 300vw across whose top sits --rise
+   above the section's bottom edge meets that edge ~51vw either side of
+   centre, so the rim always lands just outside the viewport's corners and
+   the glow never ends in a hard corner against the footer. */
 .cta {
+  --rise: max(9vw, 60px);
   position: relative;
-  padding: clamp(110px, 15vw, 200px) 0;
-  border-top: 1px solid var(--line);
+  isolation: isolate;
+  padding: clamp(110px, 15vw, 190px) 0 clamp(170px, 20vw, 260px);
   overflow: hidden;
   text-align: center;
 }
@@ -1621,15 +1729,31 @@ html.can-hover .faq__q:hover{
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(720px 380px at 50% 110%, var(--orange-dim), transparent 70%);
+  z-index: -2;
+  background:
+    radial-gradient(70% 55% at 50% 100%, rgba(124, 58, 237, 0.5), transparent 72%),
+    radial-gradient(30% 25% at 50% 92%, rgba(199, 179, 255, 0.22), transparent 70%);
+  pointer-events: none;
+}
+.cta::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: calc(100% - var(--rise));
+  width: 300vw;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow:
+    0 -1px 0 0 rgba(217, 204, 255, 0.85),
+    0 -12px 40px -6px rgba(160, 123, 255, 0.6),
+    0 -60px 140px -20px rgba(124, 58, 237, 0.55);
   pointer-events: none;
 }
 .cta__tag {
-  justify-content: center;
-  margin-bottom: 26px;
-}
-.cta__tag::before {
-  display: none;
+  margin: 0 auto 26px;
 }
 .cta h2 {
   font-size: clamp(44px, 8.5vw, 110px);
@@ -1638,16 +1762,12 @@ html.can-hover .faq__q:hover{
   letter-spacing: -0.035em;
   text-wrap: balance;
 }
-.cta h2 em {
-  font-style: normal;
-  color: var(--orange);
-}
 .cta__sub {
   margin: 26px auto 0;
   max-width: 520px;
   font-size: clamp(16px, 1.7vw, 18.5px);
   line-height: 1.65;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .cta__actions {
   display: flex;
@@ -1661,28 +1781,41 @@ html.can-hover .faq__q:hover{
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.1em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   margin-top: 26px;
   display: block;
 }
 .cta__mail a {
-  color: var(--bone-soft);
-  border-bottom: 1px solid var(--line-strong);
+  color: var(--fg-soft);
+  border-bottom: 1px solid var(--line-violet);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-html.can-hover .cta__mail a:hover{
-  color: var(--orange-hot);
-  border-color: var(--orange-hot);
+html.can-hover .cta__mail a:hover {
+  color: var(--lime);
+  border-color: var(--lime);
 }
 
 /* ------------------------------------------------------------ footer */
 
 .footer {
   position: relative;
-  border-top: 1px solid var(--line);
-  background: var(--bg-lift);
+  background: var(--bg);
   padding: clamp(60px, 8vw, 100px) 0 0;
   overflow: hidden;
+}
+/* a violet hairline that fades out at both ends. Not after the home page's
+   planet: there the footer is the planet's surface, and a rule would cut it. */
+main:has(> .cta:last-child) + .footer::before {
+  display: none;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-violet) 30%, var(--line-violet) 70%, transparent);
 }
 
 .footer__top {
@@ -1719,7 +1852,7 @@ html.can-hover .cta__mail a:hover{
 .footer__tagline {
   margin-top: 18px;
   font-size: 16px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 320px;
   line-height: 1.6;
 }
@@ -1729,14 +1862,14 @@ html.can-hover .cta__mail a:hover{
   font-family: var(--font-mono);
   font-size: 13.5px;
   letter-spacing: 0.06em;
-  color: var(--bone);
-  border-bottom: 1px solid var(--line-strong);
+  color: var(--fg);
+  border-bottom: 1px solid var(--line-violet);
   padding-bottom: 2px;
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-html.can-hover .footer__mail:hover{
-  color: var(--orange-hot);
-  border-color: var(--orange-hot);
+html.can-hover .footer__mail:hover {
+  color: var(--lime);
+  border-color: var(--lime);
 }
 
 .footer__col h4 {
@@ -1745,7 +1878,7 @@ html.can-hover .footer__mail:hover{
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   margin-bottom: 18px;
 }
 .footer__links {
@@ -1756,14 +1889,14 @@ html.can-hover .footer__mail:hover{
 .footer__links a,
 .footer__links button {
   font-size: 15px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   text-align: left;
   width: fit-content;
   transition: color 0.2s var(--ease);
 }
 html.can-hover .footer__links a:hover,
-html.can-hover .footer__links button:hover{
-  color: var(--bone);
+html.can-hover .footer__links button:hover {
+  color: var(--fg);
 }
 
 .footer__socials {
@@ -1774,23 +1907,26 @@ html.can-hover .footer__links button:hover{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
-  color: var(--bone-soft);
+  background: rgba(242, 238, 251, 0.03);
+  color: var(--fg-soft);
   transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
-    background 0.25s var(--ease), transform 0.25s var(--ease);
+    background 0.25s var(--ease), transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 .footer__social svg {
   width: 17px;
   height: 17px;
 }
-html.can-hover .footer__social:hover{
-  color: #0d0c0a;
-  background: var(--orange);
-  border-color: var(--orange);
+html.can-hover .footer__social:hover {
+  color: var(--ink);
+  background: var(--lime);
+  border-color: var(--lime);
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -10px rgba(204, 255, 77, 0.6);
 }
 
 .footer__bottom {
@@ -1805,7 +1941,7 @@ html.can-hover .footer__social:hover{
   font-size: 11.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .footer__legal-links {
   display: flex;
@@ -1815,12 +1951,15 @@ html.can-hover .footer__social:hover{
 .footer__legal-links a {
   transition: color 0.2s var(--ease);
 }
-html.can-hover .footer__legal-links a:hover{
-  color: var(--bone);
+html.can-hover .footer__legal-links a:hover {
+  color: var(--fg);
 }
 
-/* the giant clipped wordmark at the very bottom */
+/* the giant clipped wordmark at the very bottom, tinted violet and sinking
+   into the page. The fade is a plain overlay rather than a mask: masks
+   promote layers, and promoted layers are what iOS paints dark on scroll-up. */
 .footer__giant {
+  position: relative;
   display: block;
   width: 100%;
   margin-top: 8px;
@@ -1828,11 +1967,17 @@ html.can-hover .footer__legal-links a:hover{
   user-select: none;
   pointer-events: none;
 }
+.footer__giant::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 15%, var(--bg) 92%);
+}
 .footer__giant svg {
   display: block;
   width: 100%;
   height: auto;
-  color: rgba(236, 231, 220, 0.06);
+  color: rgba(160, 123, 255, 0.22);
 }
 
 @media (max-width: 860px) {
@@ -1857,7 +2002,11 @@ html.can-hover .footer__legal-links a:hover{
   position: fixed;
   inset: 0;
   z-index: 150;
-  background: var(--bg);
+  /* the same night as the page, with violet light falling from the top */
+  background:
+    radial-gradient(70% 50% at 50% -10%, rgba(124, 58, 237, 0.28), transparent 70%),
+    radial-gradient(40% 30% at 100% 100%, rgba(76, 29, 149, 0.25), transparent 70%),
+    var(--bg);
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -1885,7 +2034,8 @@ html.can-hover .footer__legal-links a:hover{
 .cform__top-progress span {
   display: block;
   height: 100%;
-  background: var(--orange);
+  background: linear-gradient(90deg, var(--violet-deep), var(--violet) 60%, var(--lime));
+  box-shadow: 0 0 12px rgba(160, 123, 255, 0.7);
   transition: width 0.5s var(--ease);
 }
 
@@ -1900,7 +2050,7 @@ html.can-hover .footer__legal-links a:hover{
   font-family: 'Bungee', var(--font-body);
   font-size: 19px;
   letter-spacing: 0.04em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .cform__close {
   display: inline-flex;
@@ -1910,7 +2060,7 @@ html.can-hover .footer__legal-links a:hover{
   height: 46px;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
-  color: var(--bone);
+  color: var(--fg);
   transition: background 0.25s var(--ease), color 0.25s var(--ease),
     border-color 0.25s var(--ease), transform 0.25s var(--ease);
 }
@@ -1918,10 +2068,10 @@ html.can-hover .footer__legal-links a:hover{
   width: 19px;
   height: 19px;
 }
-html.can-hover .cform__close:hover{
-  background: var(--orange);
-  border-color: var(--orange);
-  color: #0d0c0a;
+html.can-hover .cform__close:hover {
+  background: var(--violet-deep);
+  border-color: var(--violet);
+  color: #fff;
   transform: rotate(90deg);
 }
 
@@ -1955,17 +2105,19 @@ html.can-hover .cform__close:hover{
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   margin-bottom: 18px;
 }
 .cform__eyebrow::before {
   content: '';
-  width: 26px;
-  height: 1px;
-  background: var(--orange);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(204, 255, 77, 0.75);
 }
 .cform__eyebrow-num {
-  color: var(--orange);
+  color: var(--violet-soft);
 }
 
 .cform__head {
@@ -1978,7 +2130,7 @@ html.can-hover .cform__close:hover{
   margin-top: 14px;
   font-size: 16.5px;
   line-height: 1.65;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 .cform__fields {
@@ -2003,12 +2155,12 @@ html.can-hover .cform__close:hover{
   font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .field__label .opt {
   text-transform: none;
   letter-spacing: 0.04em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   opacity: 0.7;
 }
 .field__input,
@@ -2018,19 +2170,20 @@ html.can-hover .cform__close:hover{
   background: var(--bg-card);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
-  color: var(--bone);
+  color: var(--fg);
   font-size: 16px;
   transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .field__input::placeholder,
 .field__textarea::placeholder {
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .field__input:focus,
 .field__textarea:focus {
   outline: none;
-  border-color: var(--orange);
+  border-color: var(--violet);
   background: var(--bg-hover);
+  box-shadow: 0 0 0 4px rgba(160, 123, 255, 0.16);
 }
 .field__textarea {
   resize: vertical;
@@ -2063,16 +2216,16 @@ html.can-hover .cform__close:hover{
   transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
 }
 html.can-hover .copt:hover{
-  border-color: var(--bone-mute);
+  border-color: var(--fg-mute);
 }
 .copt b {
   font-size: 15.5px;
   font-weight: 600;
-  color: var(--bone);
+  color: var(--fg);
 }
 .copt small {
   font-size: 13px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   line-height: 1.45;
 }
 .copt__tick {
@@ -2095,13 +2248,15 @@ html.can-hover .copt:hover{
   height: 13px;
 }
 .copt--on {
-  border-color: var(--orange);
-  background: var(--orange-dim);
+  border-color: var(--violet);
+  background:
+    radial-gradient(90% 120% at 0% 0%, rgba(124, 58, 237, 0.22), transparent 70%),
+    var(--bg-card);
 }
 .copt--on .copt__tick {
-  background: var(--orange);
-  border-color: var(--orange);
-  color: #0d0c0a;
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--ink);
 }
 
 /* budget block — slides open under the options.
@@ -2131,11 +2286,11 @@ html.can-hover .copt:hover{
   gap: 12px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   transition: color 0.2s var(--ease);
 }
 html.can-hover .cform__budget-toggle:hover{
-  color: var(--bone);
+  color: var(--fg);
 }
 .cform__budget-box {
   width: 22px;
@@ -2151,7 +2306,7 @@ html.can-hover .cform__budget-toggle:hover{
   width: 13px;
   height: 13px;
   fill: none;
-  stroke: #0d0c0a;
+  stroke: var(--ink);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -2159,8 +2314,8 @@ html.can-hover .cform__budget-toggle:hover{
   transition: opacity 0.2s var(--ease);
 }
 .cform__budget-toggle.is-on .cform__budget-box {
-  background: var(--orange);
-  border-color: var(--orange);
+  background: var(--lime);
+  border-color: var(--lime);
 }
 .cform__budget-toggle.is-on .cform__budget-tick {
   opacity: 1;
@@ -2193,7 +2348,7 @@ html.can-hover .cform__budget-toggle:hover{
 .cform__budget {
   font-family: var(--font-mono);
   font-size: 15px;
-  color: var(--orange-hot);
+  color: var(--lime);
 }
 
 .range {
@@ -2210,18 +2365,18 @@ html.can-hover .cform__budget-toggle:hover{
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--orange);
+  background: var(--lime);
   border: 4px solid var(--bg);
-  box-shadow: 0 0 0 1px var(--orange);
+  box-shadow: 0 0 0 1px var(--lime), 0 0 14px rgba(204, 255, 77, 0.5);
   cursor: grab;
 }
 .range::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--orange);
+  background: var(--lime);
   border: 4px solid var(--bg);
-  box-shadow: 0 0 0 1px var(--orange);
+  box-shadow: 0 0 0 1px var(--lime), 0 0 14px rgba(204, 255, 77, 0.5);
   cursor: grab;
 }
 
@@ -2232,14 +2387,14 @@ html.can-hover .cform__budget-toggle:hover{
 .cform__err {
   margin-top: 18px;
   padding: 14px 18px;
-  border: 1px solid rgba(232, 98, 26, 0.5);
+  border: 1px solid rgba(160, 123, 255, 0.5);
   border-radius: var(--radius-s);
-  background: var(--orange-dim);
+  background: var(--violet-dim);
   font-size: 14.5px;
-  color: var(--bone);
+  color: var(--fg);
 }
 .cform__err a {
-  color: var(--orange-hot);
+  color: var(--lime);
   border-bottom: 1px solid currentColor;
 }
 
@@ -2278,6 +2433,37 @@ html.can-hover .cform__budget-toggle:hover{
   }
 }
 
+/* ------------------------------------------------------------ inner pages, shared */
+
+/* Every inner page opens under the same violet light as the home hero: a
+   bloom high on the right and a deeper one on the left, fading out within
+   the first screen. Plain gradients on a pseudo-element, painted once. */
+.pf,
+.ab,
+.sv,
+.pw,
+.legal {
+  position: relative;
+  isolation: isolate;
+}
+.pf::before,
+.ab::before,
+.sv::before,
+.pw::before,
+.legal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(1000px, 120vh);
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 55% at 88% 0%, rgba(124, 58, 237, 0.32), transparent 70%),
+    radial-gradient(36% 42% at 0% 6%, rgba(76, 29, 149, 0.26), transparent 70%);
+}
+
 /* ------------------------------------------------------------ legal pages */
 
 .legal {
@@ -2294,12 +2480,12 @@ html.can-hover .cform__budget-toggle:hover{
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   margin-bottom: 34px;
   transition: color 0.2s var(--ease);
 }
 html.can-hover .legal__back:hover{
-  color: var(--orange-hot);
+  color: var(--lime);
 }
 .legal__wrap h1 {
   font-size: clamp(34px, 5vw, 52px);
@@ -2313,7 +2499,7 @@ html.can-hover .legal__back:hover{
   font-size: 12.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .legal__wrap h2 {
   font-size: 21px;
@@ -2325,7 +2511,7 @@ html.can-hover .legal__back:hover{
 .legal__wrap li {
   font-size: 16px;
   line-height: 1.75;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .legal__wrap p + p {
   margin-top: 12px;
@@ -2350,13 +2536,13 @@ html.can-hover .legal__back:hover{
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--violet);
   margin-bottom: 14px;
 }
 .legal__wrap code {
   font-family: var(--font-mono);
   font-size: 0.88em;
-  color: var(--bone);
+  color: var(--fg);
   background: rgba(255, 255, 255, 0.045);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -2383,37 +2569,37 @@ html.can-hover .legal__back:hover{
 }
 html.can-hover .legal__index a:hover,
 .legal__index a:focus-visible {
-  border-color: var(--orange);
-  background: rgba(232, 98, 26, 0.045);
+  border-color: var(--violet);
+  background: rgba(160, 123, 255, 0.045);
 }
 .legal__index-app {
   font-size: 19px;
   font-weight: 600;
   letter-spacing: -0.015em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .legal__index-note {
   font-size: 15px;
   line-height: 1.6;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .legal__index-date {
   font-family: var(--font-mono);
   font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   margin-top: 3px;
 }
 
 a.inline {
-  color: var(--bone);
+  color: var(--fg);
   border-bottom: 1px solid var(--line-strong);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 html.can-hover a.inline:hover{
-  color: var(--orange-hot);
-  border-color: var(--orange-hot);
+  color: var(--lime);
+  border-color: var(--lime);
 }
 
 /* ------------------------------------------------------------ misc */
@@ -2490,6 +2676,7 @@ section[id] {
 .anim-settled .hero__mark path {
   animation: none !important;
   stroke-dashoffset: 0 !important;
+  fill-opacity: 1 !important;
 }
 
 /* iOS Safari dark-on-scroll-up fix.
@@ -2506,7 +2693,7 @@ section[id] {
   .grain {
     animation: none;
   }
-  /* drop the hero mask so the blueprint grid paints as a plain,
+  /* drop the hero mask so the dot field paints as a plain,
      non-composited layer instead of a mask-promoted one */
   .hero::before {
     -webkit-mask-image: none;
@@ -2524,17 +2711,19 @@ section[id] {
   }
 }
 
-/* section tag rule draws in with the reveal */
-.reveal-ready .reveal .tag::before {
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.9s var(--ease) 0.2s;
+/* the section tag's lime dot switches on with the reveal */
+.reveal-ready .reveal .tag::before,
+.reveal-ready .tag.reveal::before {
+  transform: scale(0);
+  transition: transform 0.6s var(--spring) 0.35s;
 }
-.reveal-ready .reveal.in .tag::before {
-  transform: scaleX(1);
+.reveal-ready .reveal.in .tag::before,
+.reveal-ready .tag.reveal.in::before {
+  transform: scale(1);
 }
 @media (prefers-reduced-motion: reduce) {
-  .reveal-ready .reveal .tag::before {
+  .reveal-ready .reveal .tag::before,
+  .reveal-ready .tag.reveal::before {
     transform: none;
     transition: none;
   }
@@ -2549,14 +2738,14 @@ section[id] {
   letter-spacing: -0.015em;
 }
 .lede--manifesto .w {
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   transition: color 0.35s var(--ease);
 }
 .lede--manifesto .w.lit {
-  color: var(--bone);
+  color: var(--fg);
 }
 
-/* ghost buttons — orange bloom from the pointer's entry point */
+/* ghost buttons — a violet bloom from the pointer's entry point */
 .btn--ghost {
   position: relative;
   overflow: hidden;
@@ -2571,15 +2760,16 @@ section[id] {
   width: 320px;
   height: 320px;
   border-radius: 50%;
-  background: var(--orange);
+  background: radial-gradient(circle, var(--violet-deep) 55%, #5a2ad6 100%);
   transform: translate(-50%, -50%) scale(0);
   transition: transform 0.5s var(--ease);
   pointer-events: none;
 }
 @media (hover: hover) and (pointer: fine) {
-  html.can-hover .btn--ghost:hover{
-    color: #0d0c0a;
-    border-color: var(--orange);
+  html.can-hover .btn--ghost:hover {
+    color: #fff;
+    border-color: var(--violet);
+    box-shadow: 0 14px 34px -16px rgba(108, 59, 239, 0.8);
   }
   html.can-hover .btn--ghost:hover::before{
     transform: translate(-50%, -50%) scale(1.05);
@@ -2624,7 +2814,7 @@ html.can-hover .footer__legal-links a:hover{
   opacity: 0;
   transform: scale(0);
   will-change: transform, opacity;
-  filter: drop-shadow(0 18px 42px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 18px 42px rgba(40, 12, 100, 0.55));
 }
 /* Width belongs in this list too: a desktop window dragged narrow keeps its
    fine pointer, so without it the canvas stays in the layout at phone widths
@@ -2647,7 +2837,8 @@ html.can-hover .footer__legal-links a:hover{
   height: auto;
 }
 
-/* CTA embers — slow orange sparks drifting out of the bottom glow */
+/* CTA sparks — slow violet motes (every third one lime) rising off the
+   planet's rim into the glow */
 .cta__embers {
   position: absolute;
   inset: 0;
@@ -2656,13 +2847,18 @@ html.can-hover .footer__legal-links a:hover{
 }
 .cta__embers span {
   position: absolute;
-  bottom: -6px;
+  bottom: calc(var(--rise) - 10px);
   left: calc(6% + var(--i) * 7.5%);
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--orange-hot);
+  background: var(--violet-soft);
+  box-shadow: 0 0 8px rgba(199, 179, 255, 0.8);
   opacity: 0;
+}
+.cta__embers span:nth-child(3n) {
+  background: var(--lime);
+  box-shadow: 0 0 8px rgba(204, 255, 77, 0.8);
 }
 @media (prefers-reduced-motion: no-preference) {
   .cta__embers span {
@@ -2691,12 +2887,12 @@ html.can-hover .footer__legal-links a:hover{
   }
 }
 
-/* tenets — a faint orange breath in the corner on hover */
+/* tenets — a faint violet breath in the corner on hover */
 .tenet::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(280px 160px at 100% 0%, var(--orange-dim), transparent 70%);
+  background: radial-gradient(280px 160px at 100% 0%, var(--violet-dim), transparent 70%);
   opacity: 0;
   transition: opacity 0.45s var(--ease);
   pointer-events: none;
@@ -2710,7 +2906,7 @@ html.can-hover .tenet:hover::after{
 .pf {
   min-height: 100vh;
   background: var(--bg);
-  color: var(--bone);
+  color: var(--fg);
 }
 
 .pf__wrap {
@@ -2727,13 +2923,14 @@ html.can-hover .tenet:hover::after{
   font-size: 12.5px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pf__dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--orange);
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(204, 255, 77, 0.75);
 }
 .pf__title {
   margin-top: 22px;
@@ -2741,14 +2938,14 @@ html.can-hover .tenet:hover::after{
   font-weight: 600;
   line-height: 0.98;
   letter-spacing: -0.035em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pf__lead {
   max-width: 540px;
   margin-top: 26px;
   font-size: clamp(15px, 2vw, 18px);
   line-height: 1.62;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* project list */
@@ -2802,8 +2999,9 @@ html.can-hover .pf__shot:hover img{
   gap: 8px;
   padding: 10px 16px;
   border-radius: 999px;
-  background: var(--orange);
-  color: #0d0c0a;
+  background: var(--lime);
+  color: var(--ink);
+  box-shadow: 0 10px 24px -10px rgba(204, 255, 77, 0.6);
   font-family: var(--font-mono);
   font-size: 11.5px;
   font-weight: 600;
@@ -2841,14 +3039,14 @@ html.can-hover .pf__shot:hover .pf__open,
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.1em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .pf__name {
   margin-top: 12px;
   font-size: clamp(26px, 3.4vw, 40px);
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pf__cat {
   margin-top: 12px;
@@ -2856,12 +3054,12 @@ html.can-hover .pf__shot:hover .pf__open,
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .pf__blurb {
   font-size: clamp(15px, 1.8vw, 18px);
   line-height: 1.62;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 560px;
 }
 .pf__tags {
@@ -2877,7 +3075,7 @@ html.can-hover .pf__shot:hover .pf__open,
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 7px 13px;
@@ -2891,7 +3089,7 @@ html.can-hover .pf__shot:hover .pf__open,
   font-size: 12.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--fg);
   border-bottom: 1px solid var(--line-strong);
   padding-bottom: 4px;
   transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
@@ -2902,8 +3100,8 @@ html.can-hover .pf__shot:hover .pf__open,
   transition: transform 0.3s var(--ease);
 }
 html.can-hover .pf__view:hover{
-  color: var(--orange);
-  border-color: var(--orange);
+  color: var(--violet);
+  border-color: var(--violet);
 }
 html.can-hover .pf__view:hover svg{
   transform: translateX(4px);
@@ -2926,7 +3124,7 @@ html.can-hover .pf__view:hover svg{
   background: var(--bg);
 }
 
-/* binding edge: a hairline with a scroll-linked orange fill, desktop only */
+/* binding edge: a hairline with a scroll-linked violet fill, desktop only */
 .pw__rail {
   --p: 0;
   position: absolute;
@@ -2939,7 +3137,7 @@ html.can-hover .pf__view:hover svg{
 .pw__rail-fill {
   position: absolute;
   inset: 0;
-  background: var(--orange);
+  background: var(--violet);
   transform: scaleY(var(--p));
   transform-origin: top center;
 }
@@ -2954,7 +3152,7 @@ html.can-hover .pf__view:hover svg{
   flex: 1;
   min-width: 28px;
   height: 1em;
-  background-image: radial-gradient(circle, var(--bone-mute) 1px, transparent 1.4px);
+  background-image: radial-gradient(circle, var(--fg-mute) 1px, transparent 1.4px);
   background-size: 9px 100%;
   background-position: 0 65%;
   background-repeat: repeat-x;
@@ -2983,10 +3181,6 @@ html.can-hover .pf__view:hover svg{
   letter-spacing: -0.03em;
   margin-top: 22px;
 }
-.pw__h1 em {
-  font-style: normal;
-  color: var(--orange);
-}
 .pw__hero-copy .lede {
   margin-top: 24px;
   max-width: 560px;
@@ -2997,7 +3191,7 @@ html.can-hover .pf__view:hover svg{
   font-size: 11.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   max-width: 520px;
   line-height: 1.8;
 }
@@ -3013,14 +3207,14 @@ html.can-hover .pf__view:hover svg{
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   border-bottom: 1px solid var(--line-strong);
   padding-bottom: 3px;
   transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 html.can-hover .pw__skip:hover{
-  color: var(--orange);
-  border-color: var(--orange);
+  color: var(--violet);
+  border-color: var(--violet);
 }
 
 /* the dossier cover card */
@@ -3036,8 +3230,8 @@ html.can-hover .pw__skip:hover{
   position: absolute;
   top: -13px;
   left: clamp(24px, 2.6vw, 40px);
-  background: var(--orange);
-  color: #0d0c0a;
+  background: var(--violet);
+  color: var(--ink);
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
@@ -3072,12 +3266,12 @@ html.can-hover .pw__skip:hover{
   font-size: 11.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   flex: none;
 }
 .pw__cover-v {
   font-size: 14.5px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   text-align: right;
 }
 .pw__cover--blank .pw__cover-row {
@@ -3105,7 +3299,7 @@ html.can-hover .pw__skip:hover{
   width: 100%;
   height: 100%;
   fill: none;
-  stroke: var(--orange);
+  stroke: var(--violet);
   stroke-width: 1.6;
 }
 .pw__stamp svg rect {
@@ -3127,7 +3321,7 @@ html.can-hover .pw__skip:hover{
   font-size: 12.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--violet);
 }
 
 /* ---- contents ---- */
@@ -3146,7 +3340,7 @@ html.can-hover .pw__skip:hover{
   font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
@@ -3171,7 +3365,7 @@ html.can-hover .pw__skip:hover{
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   width: 30px;
   flex: none;
   transition: color 0.2s var(--ease);
@@ -3179,17 +3373,17 @@ html.can-hover .pw__skip:hover{
 .pw__toc-label {
   font-size: 16.5px;
   font-weight: 500;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__toc-when {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   font-variant-numeric: tabular-nums;
 }
 html.can-hover .pw__toc-row:hover .pw__toc-num{
-  color: var(--orange);
+  color: var(--violet);
 }
 .pw__toc-foot {
   padding-top: 16px;
@@ -3197,7 +3391,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 
 /* ---- phase spreads ---- */
@@ -3222,7 +3416,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-weight: 600;
   line-height: 0.9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(236, 231, 220, 0.13);
+  -webkit-text-stroke: 1px rgba(242, 238, 251, 0.13);
   user-select: none;
 }
 .pw__phase-title {
@@ -3248,13 +3442,13 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   flex: none;
 }
 .pw__meta-row dd {
   font-size: 13.5px;
   line-height: 1.5;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   text-align: right;
   max-width: 65%;
 }
@@ -3273,7 +3467,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 .pw__prose p {
   font-size: clamp(15.5px, 1.7vw, 17.5px);
   line-height: 1.7;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__prose p + p {
   margin-top: 16px;
@@ -3295,7 +3489,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   padding-bottom: 14px;
   border-bottom: 1px double var(--line-strong);
 }
@@ -3327,7 +3521,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   flex: none;
   margin-top: 3px;
   fill: none;
-  stroke: var(--orange);
+  stroke: var(--violet);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -3348,13 +3542,13 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__log-entry p span {
   display: block;
   margin-top: 5px;
   font-size: 14.5px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__log figcaption {
   padding: 14px 0 4px;
@@ -3362,7 +3556,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 
 /* artifact 02: the specimen quote sheet */
@@ -3384,7 +3578,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
   font-size: 15px;
-  color: var(--bone);
+  color: var(--fg);
   opacity: 0;
   transition: opacity 0.45s var(--ease);
   transition-delay: calc(var(--i) * 70ms + 120ms);
@@ -3397,7 +3591,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__total {
   display: flex;
@@ -3418,7 +3612,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   display: inline-block;
   width: 26px;
   height: 1px;
-  background: var(--bone-soft);
+  background: var(--fg-soft);
   transform: translateY(-3px);
 }
 .pw__total-foot {
@@ -3426,7 +3620,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   text-align: right;
 }
 .pw__signline {
@@ -3442,7 +3636,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 }
 .pw__sign-path {
   fill: none;
-  stroke: var(--bone);
+  stroke: var(--fg);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 1;
@@ -3457,7 +3651,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   padding-bottom: 6px;
 }
 .pw__perf {
@@ -3470,7 +3664,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--violet);
   text-align: center;
   padding: 14px 0 4px;
   opacity: calc(var(--tear, 0));
@@ -3494,7 +3688,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   transform: translateY(calc(var(--tear, 0) * 8px)) rotate(calc(var(--tear, 0) * 0.4deg));
 }
 .pw__sheet.is-torn .pw__perf {
-  border-color: var(--orange);
+  border-color: var(--violet);
 }
 .pw__sheet.is-torn .pw__tear-cap {
   opacity: 1;
@@ -3512,19 +3706,19 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 12.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__half span {
   display: block;
   margin-top: 7px;
   font-size: 13.5px;
   line-height: 1.5;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__sheet figcaption {
   margin-top: 20px;
   font-size: 15px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* artifact 03: checkpoint ledger */
@@ -3547,7 +3741,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__diff {
   margin-top: 14px;
@@ -3567,7 +3761,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   flex: none;
 }
 .pw__diff-del {
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .pw__diff-del s {
   position: relative;
@@ -3580,7 +3774,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   right: 0;
   top: 52%;
   height: 1px;
-  background: var(--bone-mute);
+  background: var(--fg-mute);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.35s var(--ease) 0.45s;
@@ -3589,15 +3783,15 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   transform: scaleX(1);
 }
 .pw__diff-add {
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__diff-add i {
-  color: var(--orange);
+  color: var(--violet);
 }
 .pw__check-note {
   margin-top: 14px;
   font-size: 14.5px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* artifact 04: handover manifest */
@@ -3615,12 +3809,12 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   line-height: 1;
   letter-spacing: -0.02em;
   margin: 18px 0 8px;
-  -webkit-text-stroke: 1px var(--bone-soft);
+  -webkit-text-stroke: 1px var(--fg-soft);
   color: transparent;
   transition: color 0.6s var(--ease) 0.9s;
 }
 .reveal.in .pw__yours {
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__mrow {
   display: flex;
@@ -3644,18 +3838,18 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 .pw__mitem {
   font-weight: 500;
   font-size: 15px;
-  color: var(--bone);
+  color: var(--fg);
   flex: none;
 }
 .pw__mnote {
   font-size: 13.5px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   text-align: right;
 }
 .pw__manifest figcaption {
   margin-top: 18px;
   font-size: 15px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* artifact 05: the month strip */
@@ -3682,7 +3876,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   right: 0;
   bottom: -1px;
   height: 2px;
-  background: var(--orange);
+  background: var(--violet);
   transform: scaleX(var(--fill));
   transform-origin: left center;
 }
@@ -3695,7 +3889,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   font-variant-numeric: tabular-nums;
 }
 .pw__month-cap {
@@ -3704,7 +3898,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--violet);
 }
 .pw__forks {
   display: grid;
@@ -3726,18 +3920,18 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__forks span {
   display: block;
   margin-top: 6px;
   font-size: 13.5px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__month figcaption {
   margin-top: 18px;
   font-size: 15px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* ---- appendix A ---- */
@@ -3768,7 +3962,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--orange);
+  color: var(--violet);
   flex: none;
   width: 30px;
 }
@@ -3776,13 +3970,13 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: clamp(16.5px, 1.8vw, 19px);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .pw__clause p {
   margin-top: 6px;
   font-size: 14.5px;
   line-height: 1.6;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__facsimile-foot {
   display: flex;
@@ -3794,7 +3988,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .pw__client-line {
   display: inline-flex;
@@ -3805,7 +3999,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   display: inline-block;
   width: 150px;
   height: 1px;
-  background: var(--bone-mute);
+  background: var(--fg-mute);
 }
 
 .pw__aside-blocks {
@@ -3820,7 +4014,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line-strong);
   margin-bottom: 18px;
@@ -3841,7 +4035,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 .pw__strike-item s {
   position: relative;
   text-decoration: none;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   flex: none;
 }
 .pw__strike-item s::after {
@@ -3851,7 +4045,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   right: 0;
   top: 52%;
   height: 1px;
-  background: var(--bone-mute);
+  background: var(--fg-mute);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.3s var(--ease);
@@ -3863,13 +4057,13 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 .pw__strike-item em {
   font-style: normal;
   font-size: 13px;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__wrong p,
 .pw__changes > p {
   font-size: 14.5px;
   line-height: 1.68;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .pw__wrong p + p,
 .pw__changes > p + p {
@@ -3885,7 +4079,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 10.5px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   padding-bottom: 10px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 6px;
@@ -3902,12 +4096,12 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   flex: none;
 }
 .pw__slip em {
   font-style: normal;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* ---- appendix B: closing ---- */
@@ -3972,7 +4166,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 /* touch and reduced motion: the file arrives settled */
 @media (hover: none), (pointer: coarse) {
   .pw__sheet .pw__perf {
-    border-color: var(--orange);
+    border-color: var(--violet);
   }
   .pw__tear-cap {
     opacity: 1;
@@ -4015,7 +4209,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
     transition: none;
   }
   .pw__yours {
-    color: var(--bone);
+    color: var(--fg);
     transition: none;
   }
   .pw__diff-del s::after,
@@ -4052,10 +4246,6 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   letter-spacing: -0.03em;
   margin-top: 22px;
 }
-.ab__h1 em {
-  font-style: normal;
-  color: var(--orange);
-}
 .ab__lede {
   margin-top: 26px;
   max-width: 580px;
@@ -4077,7 +4267,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   padding-bottom: 16px;
   border-bottom: 1px double var(--line-strong);
 }
@@ -4088,7 +4278,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
 .ab__letter-body p {
   font-size: clamp(16px, 1.8vw, 18px);
   line-height: 1.72;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .ab__letter-body p + p {
   margin-top: 18px;
@@ -4109,7 +4299,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: clamp(21px, 2.2vw, 26px);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .ab__sig-role {
   display: block;
@@ -4118,14 +4308,14 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--violet);
 }
 .ab__letter-place {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 
 /* the table */
@@ -4150,7 +4340,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   margin-top: 20px;
   font-size: 16px;
   line-height: 1.68;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   max-width: 42ch;
 }
 .ab__side-link {
@@ -4162,7 +4352,7 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   font-size: 12.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bone);
+  color: var(--fg);
   border-bottom: 1px solid var(--line-strong);
   padding-bottom: 4px;
   transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
@@ -4173,8 +4363,8 @@ html.can-hover .pw__toc-row:hover .pw__toc-num{
   transition: transform 0.3s var(--ease);
 }
 html.can-hover .ab__side-link:hover{
-  color: var(--orange);
-  border-color: var(--orange);
+  color: var(--violet);
+  border-color: var(--violet);
 }
 html.can-hover .ab__side-link:hover svg{
   transform: translateX(4px);
@@ -4194,7 +4384,7 @@ html.can-hover .ab__side-link:hover svg{
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--orange);
+  color: var(--violet);
 }
 .ab__disc h3 {
   margin-top: 12px;
@@ -4202,13 +4392,13 @@ html.can-hover .ab__side-link:hover svg{
   font-size: clamp(18px, 1.9vw, 22px);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .ab__disc p {
   margin-top: 9px;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* closing */
@@ -4265,7 +4455,7 @@ html.can-hover .ab__side-link:hover svg{
   max-width: 620px;
   font-size: clamp(17px, 2.1vw, 22px);
   line-height: 1.5;
-  color: var(--bone);
+  color: var(--fg);
 }
 .sv__intro {
   margin-top: 22px;
@@ -4274,7 +4464,7 @@ html.can-hover .ab__side-link:hover svg{
 .sv__intro p {
   font-size: 16px;
   line-height: 1.68;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .sv__intro p + p {
   margin-top: 14px;
@@ -4310,7 +4500,7 @@ html.can-hover .ab__side-link:hover svg{
   max-width: 34ch;
   font-size: 15px;
   line-height: 1.6;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* included grid */
@@ -4330,13 +4520,13 @@ html.can-hover .ab__side-link:hover svg{
   font-size: clamp(17px, 1.9vw, 20px);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--fg);
 }
 .sv__inc p {
   margin-top: 9px;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 
 /* approach */
@@ -4346,7 +4536,7 @@ html.can-hover .ab__side-link:hover svg{
 .sv__prose p {
   font-size: clamp(16px, 1.8vw, 18px);
   line-height: 1.72;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
 }
 .sv__prose p + p {
   margin-top: 16px;
@@ -4364,7 +4554,7 @@ html.can-hover .ab__side-link:hover svg{
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bone-soft);
+  color: var(--fg-soft);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 7px 13px;
@@ -4384,13 +4574,13 @@ html.can-hover .ab__side-link:hover svg{
   padding: 18px 4px;
   border-bottom: 1px solid var(--line);
   font-size: clamp(16px, 1.9vw, 20px);
-  color: var(--bone);
+  color: var(--fg);
 }
 .sv__del-num {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--orange);
+  color: var(--violet);
   flex: none;
 }
 
@@ -4415,19 +4605,19 @@ html.can-hover .ab__side-link:hover svg{
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.1em;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
 }
 .sv__other-name {
   font-family: var(--font-display);
   font-size: clamp(22px, 3vw, 38px);
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--bone);
+  color: var(--fg);
   flex: 1;
 }
 .sv__other-go {
   display: inline-flex;
-  color: var(--bone-mute);
+  color: var(--fg-mute);
   transition: color 0.3s var(--ease), transform 0.3s var(--ease);
 }
 .sv__other-go svg {
@@ -4438,11 +4628,11 @@ html.can-hover .sv__other:hover{
   padding-left: 18px;
 }
 html.can-hover .sv__other:hover .sv__other-go{
-  color: var(--orange);
+  color: var(--violet);
   transform: translateX(5px);
 }
 html.can-hover .sv__other:hover .sv__other-name{
-  color: var(--orange);
+  color: var(--violet);
 }
 
 /* closing */
@@ -4457,10 +4647,6 @@ html.can-hover .sv__other:hover .sv__other-name{
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.0;
-}
-.sv__close-head em {
-  font-style: normal;
-  color: var(--orange);
 }
 .sv__close .sv__hero-cta {
   justify-content: center;
@@ -4491,12 +4677,14 @@ html.can-hover .sv__other:hover .sv__other-name{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-lift);
+  background:
+    radial-gradient(50% 45% at 50% 50%, rgba(124, 58, 237, 0.28), transparent 70%),
+    var(--bg-lift);
   transform: translateY(102%);
   visibility: hidden;
   pointer-events: none;
 }
-/* orange hairline on both travelling edges */
+/* a lit violet edge on both travelling sides */
 .pt::before,
 .pt::after {
   content: '';
@@ -4504,7 +4692,8 @@ html.can-hover .sv__other:hover .sv__other-name{
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--orange);
+  background: linear-gradient(90deg, var(--violet-deep), var(--violet-soft) 50%, var(--violet-deep));
+  box-shadow: 0 0 18px rgba(160, 123, 255, 0.8);
 }
 .pt::before {
   top: 0;
@@ -4525,10 +4714,11 @@ html.can-hover .sv__other:hover .sv__other-name{
 /* the mark sits unlit, and the stroke draws over it as the page loads:
    the dash offset IS the progress, written per frame from App.tsx */
 .pt__ghost {
-  stroke: rgba(236, 231, 220, 0.14);
+  stroke: rgba(242, 238, 251, 0.14);
 }
 .pt__draw {
-  stroke: var(--orange);
+  stroke: var(--lime);
+  filter: drop-shadow(0 0 8px rgba(204, 255, 77, 0.55));
 }
 .pt--cover,
 .pt--hold {

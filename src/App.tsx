@@ -362,7 +362,7 @@ function App() {
     return () => io.disconnect();
   }, [route]);
 
-  // Ghost buttons: the orange bloom starts from the pointer's entry point and
+  // Ghost buttons: the violet bloom starts from the pointer's entry point and
   // recedes toward its exit point. Coordinates only — the rest is CSS.
   useEffect(() => {
     const setOrigin = (e: PointerEvent) => {

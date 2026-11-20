@@ -3,7 +3,8 @@ import { ArrowRight } from './icons';
 import { navigate } from '../nav';
 import type { OpenModal } from '../App';
 
-// The Pajzo shield — ghosted keyline, drawn on at load.
+// The Pajzo shield — a violet-to-lime keyline, drawn on at load, with a faint
+// violet glass fill behind it.
 const SHIELD =
   'M238.4968,10H10v74.9127h50.4731v145.2735l49.3451-49.3451,29.8067,29.8067-79.1518,79.1518v76.6148l49.3451-49.3451,29.8067,29.8068-79.1518,79.1518v85.6663l128.5717-128.5717v-121.6868h49.452c71.5849,0,129.616-56.2858,129.616-125.7178S310.0818,10,238.4968,10Z';
 
@@ -64,6 +65,18 @@ const Hero = ({ openModal }: { openModal: OpenModal }) => {
         ref={markRef}
         aria-hidden="true"
       >
+        {/* stop colours come from CSS (.hm-*), so the palette stays in tokens */}
+        <defs>
+          <linearGradient id="hero-stroke" x1="0" y1="0" x2="1" y2="1">
+            <stop className="hm-s1" offset="0" />
+            <stop className="hm-s2" offset="0.6" />
+            <stop className="hm-s3" offset="1" />
+          </linearGradient>
+          <linearGradient id="hero-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop className="hm-f1" offset="0" />
+            <stop className="hm-f2" offset="1" />
+          </linearGradient>
+        </defs>
         <path d={SHIELD} pathLength={1} />
       </svg>
 

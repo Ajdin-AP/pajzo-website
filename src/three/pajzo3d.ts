@@ -1,11 +1,14 @@
 // Lazy-loaded three.js helpers for the studio's 3D moments.
-// Everything is unlit line-art — dark fills, bone wireframes, one orange —
-// so the objects read as extensions of the keyline brand, not "3D for 3D's sake".
+// Everything is unlit line-art — violet-black fills, pale wireframes, the
+// shield keyed in violet and one lime detail per object — so they read as
+// extensions of the keyline brand, not "3D for 3D's sake". Matches the CSS
+// tokens: --violet, --lime, --fg, and a lifted --bg-card for the bodies.
 import type * as THREE from 'three';
 
-export const ORANGE = 0xe8621a;
-export const BONE = 0xece7dc;
-export const DARK = 0x211c18;
+export const VIOLET = 0xa07bff;
+export const LIME = 0xccff4d;
+export const PALE = 0xede7ff;
+export const DARK = 0x1a1330;
 
 // The Pajzo shield, same path as the wordmark.
 const SHIELD_PATH =
@@ -74,7 +77,7 @@ function roundedRectShape(T: ThreeMod, w: number, h: number, r: number) {
 const dark = (T: ThreeMod) =>
   new T.MeshBasicMaterial({ color: DARK, transparent: true, opacity: 0.92 });
 
-// A browser window: dark slab, bone edges, orange address bar, grid "content".
+// A browser window: dark slab, pale edges, lime address bar, grid "content".
 export function buildWeb(T: ThreeMod): THREE.Group {
   const g = new T.Group();
   const slabGeo = new T.ExtrudeGeometry(roundedRectShape(T, 1.7, 1.12, 0.07), {
@@ -82,25 +85,25 @@ export function buildWeb(T: ThreeMod): THREE.Group {
     bevelEnabled: false,
   });
   g.add(new T.Mesh(slabGeo, dark(T)));
-  g.add(edges(T, slabGeo, BONE, 1));
+  g.add(edges(T, slabGeo, PALE, 1));
 
   const bar = new T.Mesh(
     new T.BoxGeometry(1.54, 0.1, 0.02),
-    new T.MeshBasicMaterial({ color: ORANGE })
+    new T.MeshBasicMaterial({ color: LIME })
   );
   bar.position.set(0, 0.42, 0.085);
   g.add(bar);
 
   const grid = new T.LineSegments(
     new T.WireframeGeometry(new T.PlaneGeometry(1.54, 0.7, 6, 3)),
-    new T.LineBasicMaterial({ color: BONE, transparent: true, opacity: 0.4 })
+    new T.LineBasicMaterial({ color: PALE, transparent: true, opacity: 0.4 })
   );
   grid.position.set(0, -0.08, 0.08);
   g.add(grid);
   return g;
 }
 
-// A phone: tall slab, bone edges, orange island, faint screen grid.
+// A phone: tall slab, pale edges, lime island, faint screen grid.
 export function buildApp(T: ThreeMod): THREE.Group {
   const g = new T.Group();
   const slabGeo = new T.ExtrudeGeometry(roundedRectShape(T, 0.78, 1.56, 0.13), {
@@ -108,11 +111,11 @@ export function buildApp(T: ThreeMod): THREE.Group {
     bevelEnabled: false,
   });
   g.add(new T.Mesh(slabGeo, dark(T)));
-  g.add(edges(T, slabGeo, BONE, 1));
+  g.add(edges(T, slabGeo, PALE, 1));
 
   const island = new T.Mesh(
     new T.CapsuleGeometry(0.028, 0.14, 4, 8),
-    new T.MeshBasicMaterial({ color: ORANGE })
+    new T.MeshBasicMaterial({ color: LIME })
   );
   island.rotation.z = Math.PI / 2;
   island.position.set(0, 0.64, 0.09);
@@ -120,14 +123,14 @@ export function buildApp(T: ThreeMod): THREE.Group {
 
   const grid = new T.LineSegments(
     new T.WireframeGeometry(new T.PlaneGeometry(0.62, 1.1, 3, 5)),
-    new T.LineBasicMaterial({ color: BONE, transparent: true, opacity: 0.38 })
+    new T.LineBasicMaterial({ color: PALE, transparent: true, opacity: 0.38 })
   );
   grid.position.set(0, -0.06, 0.085);
   g.add(grid);
   return g;
 }
 
-// The shield itself, extruded — dark body, orange keyline edges.
+// The shield itself, extruded — dark body, violet keyline edges.
 export async function buildBrand(T: ThreeMod): Promise<THREE.Group> {
   const { SVGLoader } = await import('three/addons/loaders/SVGLoader.js');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg"><path d="${SHIELD_PATH}"/></svg>`;
@@ -138,7 +141,7 @@ export async function buildBrand(T: ThreeMod): Promise<THREE.Group> {
     for (const shape of SVGLoader.createShapes(p)) {
       const geo = new T.ExtrudeGeometry(shape, { depth: 56, bevelEnabled: false });
       inner.add(new T.Mesh(geo, dark(T)));
-      inner.add(edges(T, geo, ORANGE, 0.95));
+      inner.add(edges(T, geo, VIOLET, 0.95));
     }
   }
   // SVG space: y grows downward, path is ~447x520 units. Normalise to ~1.5.
@@ -151,7 +154,7 @@ export async function buildBrand(T: ThreeMod): Promise<THREE.Group> {
   return g;
 }
 
-// Design: a bone torus knot with an orange orbit ring — pure form.
+// Design: a pale torus knot with a lime orbit ring — pure form.
 export function buildDesign(T: ThreeMod): THREE.Group {
   const g = new T.Group();
   const knotGeo = new T.TorusKnotGeometry(0.5, 0.15, 96, 12);
@@ -159,12 +162,12 @@ export function buildDesign(T: ThreeMod): THREE.Group {
   g.add(
     new T.LineSegments(
       new T.WireframeGeometry(knotGeo),
-      new T.LineBasicMaterial({ color: BONE, transparent: true, opacity: 0.42 })
+      new T.LineBasicMaterial({ color: PALE, transparent: true, opacity: 0.42 })
     )
   );
   const ring = new T.Mesh(
     new T.TorusGeometry(0.92, 0.008, 6, 72),
-    new T.MeshBasicMaterial({ color: ORANGE })
+    new T.MeshBasicMaterial({ color: LIME })
   );
   ring.rotation.x = Math.PI / 2.4;
   g.add(ring);

@@ -370,7 +370,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                               value={data.budget}
                               onChange={(e) => set({ budget: Number(e.target.value) })}
                               style={{
-                                background: `linear-gradient(to right, var(--orange) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
+                                background: `linear-gradient(to right, var(--violet-deep), var(--violet) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
                               }}
                               aria-label="Rough budget"
                             />
@@ -435,7 +435,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                     d={SHIELD}
                     pathLength={1}
                     fill="none"
-                    stroke="var(--orange)"
+                    stroke="var(--violet)"
                     strokeWidth="14"
                     strokeLinejoin="round"
                     strokeLinecap="round"

@@ -95,10 +95,9 @@ export const Globe = ({ className }: P) => (
   </svg>
 );
 
-// The Pajzo wordmark: "P" mark + "AJZO" set in Bungee (declared in index.css).
-// The Pajzo wordmark: an orange "P" mark (.wm-p) + white "AJZO" in Bungee.
-// No keyline stroke. Colours come from CSS: the P is orange, AJZO is
-// currentColor; the giant footer watermark tones the P back down via CSS.
+// The Pajzo wordmark: a violet "P" mark (.wm-p) + white "AJZO", set in Bungee
+// (declared in index.css). No keyline stroke. Colours come from CSS: the P is
+// violet, AJZO is currentColor; the footer tones the P back down via CSS.
 export const Wordmark = ({ className }: P) => (
   <svg
     viewBox="-6 -6 1738 676"
