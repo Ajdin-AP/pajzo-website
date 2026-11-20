@@ -28,8 +28,8 @@ export const POLICIES: PolicyMeta[] = [
     slug: 'luniva',
     app: 'Luniva',
     summary:
-      'Prayer times, Qur’an, dhikr and daily reflection for iPhone. Nothing leaves the device.',
-    updated: '7 August 2026',
+      'Prayer times, Qur’an, dhikr and daily reflection for iPhone. No accounts, no analytics, no tracking.',
+    updated: '19 November 2026',
     load: () => import('./LunivaPolicy'),
   },
 ];

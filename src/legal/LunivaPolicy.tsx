@@ -49,7 +49,8 @@ const LunivaPolicy = () => (
     <p>
       Luniva uses your location for one purpose: calculating accurate prayer
       times and pointing the Qibla compass. Location is requested only while you
-      are using the app, at a coarse (roughly city-level) accuracy.
+      are using the app, at approximate accuracy (to within about 100 metres,
+      never continuous GPS tracking).
     </p>
     <p>
       Your coordinates are stored on your device only and are used to compute
@@ -88,14 +89,23 @@ const LunivaPolicy = () => (
       → Qur&rsquo;an) after which the app needs no network for reading at all.
     </p>
 
-    <h2>AI features (optional, off by default, your own key)</h2>
+    <h2>AI features (optional, off by default)</h2>
     <p>
-      Luniva has two optional AI features: writing your nightly reflection
-      question, and an understanding check for what you have read of the
-      Qur&rsquo;an. They are off unless you turn them on and add your own API
-      key.
+      Luniva has two optional AI features: Ask, which answers questions about
+      the religion from the app&rsquo;s own library of verified texts, and an
+      understanding check for what you have read of the Qur&rsquo;an. They are
+      off unless you turn them on.
     </p>
-    <p>If you enable them:</p>
+    <p>
+      By default they run on Apple Intelligence, Apple&rsquo;s language model on
+      your iPhone. Your questions, notes and answers are processed on the device
+      and are not sent to us, to Apple or to anyone else.
+    </p>
+    <p>
+      If your iPhone does not support Apple Intelligence, or you prefer to, you
+      can instead choose a cloud provider and add your own API key. The app asks
+      for your permission before that is first used. If you do:
+    </p>
     <ul>
       <li>
         Your key is stored in your device&rsquo;s Keychain. It is never included
@@ -104,11 +114,19 @@ const LunivaPolicy = () => (
       </li>
       <li>
         When a feature runs, the relevant text is sent directly from your device
-        to the provider you chose: Anthropic (Claude), OpenAI (ChatGPT), Google
-        (Gemini) or xAI (Grok). Specifically: for the nightly question, your
-        evening check-in (mood, energy, the word you chose, and what you wrote
-        about your day); for the Qur&rsquo;an check, the sūrah and āyāt
-        concerned and your notes on them.
+        to the provider you chose: OpenAI (ChatGPT), Google (Gemini) or xAI
+        (Grok). Specifically: for Ask, your question, the last
+        few messages of the conversation, your chosen school (madhab), the app
+        language, the name of the city set for your prayer times, today&rsquo;s
+        date, and the excerpts from the app&rsquo;s library that match your
+        question; for the Qur&rsquo;an check, the sūrah and āyāt concerned with
+        their translation, your notes on them and your answers.
+      </li>
+      <li>
+        Questions the app recognises as being about divorce, inheritance,
+        accusations of disbelief, medical ethics or legal disputes are answered
+        on your device with a referral to a qualified scholar, and are never
+        sent to any provider.
       </li>
       <li>
         That request goes to the provider under their privacy policy and terms,
@@ -120,15 +138,21 @@ const LunivaPolicy = () => (
       </li>
     </ul>
     <p>
-      You can remove your key at any time in Settings, and the app returns to
-      being entirely offline.
+      You can switch AI off, go back to Apple Intelligence, or remove your key
+      at any time in Settings → Intelligence.
     </p>
 
     <h2>Notifications, alarms, widgets and Lock Screen</h2>
     <p>
-      Prayer reminders, remembrance reminders and the Fajr alarm are local
-      notifications and alarms scheduled by your device. There is no push server
-      and no notification token is sent anywhere.
+      Prayer reminders, remembrance reminders and the Fajr and suḥūr alarms are
+      local notifications and alarms scheduled by your device. There is no push
+      server and no notification token is sent anywhere.
+    </p>
+    <p>
+      If you use the Apple Watch app, your iPhone sends it what it needs to show
+      today&rsquo;s prayer times (your coordinates, calculation settings and
+      which prayers you have marked) over Apple&rsquo;s own connection between
+      your paired devices. It is not sent to us or to anyone else.
     </p>
     <p>
       Widgets, the Lock Screen Live Activity and the Dynamic Island read a small
