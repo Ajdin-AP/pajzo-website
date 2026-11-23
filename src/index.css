@@ -230,31 +230,6 @@ select {
   top: 12px;
 }
 
-/* film grain over everything, very quiet. On a page this full of soft
-   gradients it earns its keep twice: texture, and no banding in the glows.
-   -25% overhang is plenty: the largest keyframe shift is 8% of the element. */
-.grain {
-  position: fixed;
-  inset: -25%;
-  z-index: 99;
-  pointer-events: none;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain-shift 9s steps(10) infinite;
-}
-@keyframes grain-shift {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-4%, -6%); }
-  20% { transform: translate(-8%, 3%); }
-  30% { transform: translate(5%, -8%); }
-  40% { transform: translate(-3%, 8%); }
-  50% { transform: translate(-7%, -3%); }
-  60% { transform: translate(8%, 4%); }
-  70% { transform: translate(3%, -5%); }
-  80% { transform: translate(-5%, 7%); }
-  90% { transform: translate(6%, 2%); }
-}
-
 /* ------------------------------------------------------------ shared */
 
 .container {
@@ -986,7 +961,11 @@ html.can-hover .menu-toggle:hover {
   inset: 0;
   z-index: -2;
   pointer-events: none;
+  /* the first layer fades everything back to the page colour before the
+     hero's bottom edge, so the glow never ends in a hard line where the
+     tilted band leaves a sliver of hero showing */
   background:
+    linear-gradient(to bottom, transparent 62%, var(--bg) 96%),
     radial-gradient(46vw 40vw at 80% 36%, rgba(124, 58, 237, 0.42), transparent 70%),
     radial-gradient(40vw 30vw at 4% 96%, rgba(76, 29, 149, 0.45), transparent 70%),
     radial-gradient(16vw 12vw at 70% 78%, rgba(204, 255, 77, 0.07), transparent 70%);
@@ -1118,9 +1097,8 @@ html.can-hover .menu-toggle:hover {
 .marquee.is-off .marquee__track {
   animation-play-state: paused;
 }
-html.can-hover .marquee:hover .marquee__track {
-  animation-play-state: paused;
-}
+/* hovering eases the band down to a slow drift rather than stopping it;
+   the speed change lives in Marquee.tsx (the animation's playbackRate) */
 @keyframes marquee {
   to { transform: translateX(-50%); }
 }
@@ -2046,11 +2024,60 @@ html.can-hover .footer__legal-links a:hover {
   padding: 22px var(--gutter);
   flex: none;
 }
-.cform__brand-word {
-  font-family: 'Bungee', var(--font-body);
-  font-size: 19px;
-  letter-spacing: 0.04em;
-  color: var(--fg);
+/* The form's logo — the P traces itself in as the brief fills up */
+.cform__brand {
+  display: inline-flex;
+  line-height: 0;
+}
+.cform__brand-svg {
+  height: 30px;
+  width: auto;
+  overflow: visible;
+}
+.cform__brand-text {
+  fill: var(--fg);
+}
+.cform__brand-track,
+.cform__brand-trace {
+  fill: none;
+  stroke-width: 38;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.cform__brand-track {
+  stroke: var(--line-strong);
+}
+.cform__brand-trace {
+  stroke: url(#cf-mark-stroke);
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 0.9s var(--spring), filter 0.5s var(--ease);
+}
+.cform__brand-fill {
+  fill: url(#cf-mark-fill);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  transform: scale(0.6);
+  transition: opacity 0.6s var(--ease), transform 0.8s var(--spring);
+}
+/* every answer in: the outline closes and glows */
+.cform__brand.is-ready .cform__brand-trace {
+  filter: drop-shadow(0 0 22px rgba(204, 255, 77, 0.55));
+}
+/* sent: the shape fills in solid */
+.cform__brand.is-sent .cform__brand-fill {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.25s;
+}
+.cform__brand.is-sent .cform__brand-trace {
+  filter: drop-shadow(0 0 28px rgba(160, 123, 255, 0.8));
+}
+@media (prefers-reduced-motion: reduce) {
+  .cform__brand-trace,
+  .cform__brand-fill {
+    transition: none;
+  }
 }
 .cform__close {
   display: inline-flex;
@@ -2335,9 +2362,13 @@ html.can-hover .cform__budget-toggle:hover{
 .cform__slider-clip {
   overflow: hidden;
   min-height: 0;
+  /* breathing room so the clip doesn't slice the knob's glow flat at the
+     bottom (and at either end of the rail); the negative margin keeps the
+     layout exactly where it was */
+  margin: 0 -18px -18px;
 }
 .cform__slider-pad {
-  padding-top: 20px;
+  padding: 20px 18px 18px;
 }
 .cform__slider-top {
   display: flex;
@@ -2349,35 +2380,126 @@ html.can-hover .cform__budget-toggle:hover{
   font-family: var(--font-mono);
   font-size: 15px;
   color: var(--lime);
+  font-variant-numeric: tabular-nums; /* digits don't jiggle while rolling */
 }
 
+/* odometer digits — see RollNumber in ContactModal.tsx */
+.roll {
+  display: inline-flex;
+  --enter: -0.75em; /* going up: new digit drops in from above */
+  --leave: 0.75em;
+}
+.roll--down {
+  --enter: 0.75em; /* going down: new digit rises from below */
+  --leave: -0.75em;
+}
+.roll__slot {
+  position: relative;
+  display: inline-block;
+}
+.roll__in {
+  display: inline-block;
+}
+.roll__out {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .roll__in.is-moving {
+    animation: roll-in 0.38s var(--spring) both;
+  }
+  .roll__out {
+    animation: roll-out 0.3s var(--ease) both;
+  }
+}
+@keyframes roll-in {
+  from {
+    transform: translateY(var(--enter));
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@keyframes roll-out {
+  from {
+    transform: none;
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    transform: translateY(var(--leave));
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* The input itself is a full thumb-height box so the knob has room; the
+   thin rail is drawn on the track, with the filled part set by --pct. Before,
+   the 3px input was the rail and WebKit hung the 22px knob off its top edge,
+   so it sat low. */
 .range {
+  --pct: 0%;
+  --rail: linear-gradient(to right, var(--violet-deep), var(--violet) var(--pct), var(--line-strong) var(--pct));
   -webkit-appearance: none;
   appearance: none;
+  display: block;
   width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
   height: 3px;
   border-radius: 999px;
-  outline: none;
+  background: var(--rail);
+}
+.range::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--rail);
 }
 .range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
+  margin-top: -6.5px; /* (3px rail - 16px knob) / 2 */
   border-radius: 50%;
   background: var(--lime);
-  border: 4px solid var(--bg);
-  box-shadow: 0 0 0 1px var(--lime), 0 0 14px rgba(204, 255, 77, 0.5);
+  border: 0;
+  box-shadow: 0 0 0 5px rgba(204, 255, 77, 0.18), 0 0 14px rgba(204, 255, 77, 0.55);
   cursor: grab;
+  transition: transform 0.2s var(--ease);
 }
 .range::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--lime);
-  border: 4px solid var(--bg);
-  box-shadow: 0 0 0 1px var(--lime), 0 0 14px rgba(204, 255, 77, 0.5);
+  border: 0;
+  box-shadow: 0 0 0 5px rgba(204, 255, 77, 0.18), 0 0 14px rgba(204, 255, 77, 0.55);
   cursor: grab;
+  transition: transform 0.2s var(--ease);
+}
+.range:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+.range:active::-moz-range-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+.range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 6px rgba(204, 255, 77, 0.32), 0 0 14px rgba(204, 255, 77, 0.55);
 }
 
 .cform__msg {
@@ -2608,9 +2730,6 @@ html.can-hover a.inline:hover{
   html {
     scroll-behavior: auto;
   }
-  .grain {
-    animation: none;
-  }
   .cform {
     transform: none;
     transition: opacity 0.2s linear, visibility 0s linear 0.2s;
@@ -2680,19 +2799,13 @@ section[id] {
 }
 
 /* iOS Safari dark-on-scroll-up fix.
-   On touch devices, perpetual GPU animations (the fixed, full-viewport
-   grain overlay and the infinite marquee) plus the hero's mask-image hold
+   On touch devices, perpetual GPU animations (the infinite marquee) plus the hero's mask-image hold
    .hero and .marquee on compositor layers that iOS fails to re-rasterise
    when they scroll back into view — the region paints from a stale/empty
    tile and reads dark. Neutralising those layers lets the content paint
    into the normal document layer and repaint correctly. Gated to coarse /
    no-hover pointers, so desktop is completely untouched. */
 @media (hover: none), (pointer: coarse) {
-  /* freeze the fixed full-screen grain (5% noise — a still frame is
-     visually identical) so it stops churning the compositor */
-  .grain {
-    animation: none;
-  }
   /* drop the hero mask so the dot field paints as a plain,
      non-composited layer instead of a mask-promoted one */
   .hero::before {
@@ -2847,23 +2960,22 @@ html.can-hover .footer__legal-links a:hover{
 }
 .cta__embers span {
   position: absolute;
-  bottom: calc(var(--rise) - 10px);
-  left: calc(6% + var(--i) * 7.5%);
-  width: 4px;
-  height: 4px;
+  bottom: calc(var(--rise) - 10px + var(--y, 0px));
+  width: var(--size, 4px);
+  height: var(--size, 4px);
   border-radius: 50%;
   background: var(--violet-soft);
   box-shadow: 0 0 8px rgba(199, 179, 255, 0.8);
   opacity: 0;
 }
-.cta__embers span:nth-child(3n) {
+.cta__embers span.is-lime {
   background: var(--lime);
   box-shadow: 0 0 8px rgba(204, 255, 77, 0.8);
 }
 @media (prefers-reduced-motion: no-preference) {
   .cta__embers span {
-    animation: ember calc(7s + var(--i) * 1.3s) linear infinite;
-    animation-delay: calc(var(--i) * -1.7s);
+    animation: ember var(--dur, 10s) linear infinite;
+    animation-delay: var(--delay, 0s);
   }
 }
 /* offscreen: don't burn compositor time on invisible sparks */
@@ -2872,17 +2984,17 @@ html.can-hover .footer__legal-links a:hover{
 }
 @keyframes ember {
   0% {
-    transform: translateY(0) translateX(0) scale(1);
+    transform: translate(0, 0) scale(1);
     opacity: 0;
   }
-  8% {
-    opacity: 0.7;
+  10% {
+    opacity: 0.75;
   }
   60% {
     opacity: 0.35;
   }
   100% {
-    transform: translateY(-46vh) translateX(3vw) scale(0.4);
+    transform: translate(var(--drift, 3vw), var(--climb, -46vh)) scale(0.4);
     opacity: 0;
   }
 }

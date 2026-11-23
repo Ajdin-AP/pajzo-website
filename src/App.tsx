@@ -462,7 +462,6 @@ function App() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <div className="grain" aria-hidden="true" />
       {/* the normalised path, so the old /portfolio link still lights Work */}
       <Header route={path} openModal={openModal} />
       {content}

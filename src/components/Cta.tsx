@@ -4,8 +4,19 @@ import { ArrowRight } from './icons';
 import { useOffscreenPause } from '../hooks';
 import type { OpenModal } from '../App';
 
-// A dozen slow sparks rising off the horizon — CSS only, staggered by index.
-const EMBERS = Array.from({ length: 12 }, (_, i) => i);
+// Slow sparks rising off the horizon. Each one gets its own random spot,
+// size, speed, drift and start time so they never line up into a row.
+const rand = (min: number, max: number) => min + Math.random() * (max - min);
+const EMBERS = Array.from({ length: 22 }, (_, i) => ({
+  x: rand(2, 98), // % across
+  y: rand(-30, 70), // px above or below the rim where it is born
+  size: rand(2, 5),
+  dur: rand(7, 16), // s
+  delay: -rand(0, 16), // s, negative so the field is already mid-flight
+  drift: rand(-4, 4), // vw sideways over the climb
+  rise: rand(28, 52), // vh climbed
+  lime: i % 3 === 0,
+}));
 
 const Cta = ({ openModal }: { openModal: OpenModal }) => {
   const ref = useRef<HTMLElement>(null);
@@ -14,8 +25,22 @@ const Cta = ({ openModal }: { openModal: OpenModal }) => {
   return (
   <section className="cta" id="contact" ref={ref}>
     <div className="cta__embers" aria-hidden="true">
-      {EMBERS.map((i) => (
-        <span key={i} style={{ '--i': i } as React.CSSProperties} />
+      {EMBERS.map((e, i) => (
+        <span
+          key={i}
+          className={e.lime ? 'is-lime' : undefined}
+          style={
+            {
+              left: `${e.x}%`,
+              '--y': `${e.y}px`,
+              '--size': `${e.size}px`,
+              '--dur': `${e.dur}s`,
+              '--delay': `${e.delay}s`,
+              '--drift': `${e.drift}vw`,
+              '--climb': `-${e.rise}vh`,
+            } as React.CSSProperties
+          }
+        />
       ))}
     </div>
     <div className="container reveal">

@@ -1,3 +1,4 @@
+import type React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Close, ArrowRight, Check } from './icons';
 
@@ -10,7 +11,7 @@ type Data = {
   email: string;
   company: string;
   website: string;
-  service: string;
+  services: string[];
   budget: number;
   budgetOn: boolean;
   message: string;
@@ -25,7 +26,7 @@ const EMPTY: Data = {
   email: '',
   company: '',
   website: '',
-  service: '',
+  services: [],
   budget: BUDGET_MIN,
   budgetOn: false,
   message: '',
@@ -39,6 +40,86 @@ const SERVICES = [
   { id: 'question', label: 'I have a question', note: 'No brief needed. Just ask.' },
   { id: 'unsure', label: 'Not sure yet', note: 'Describe the problem; we’ll name it together' },
 ];
+
+// The budget figure rolls like an odometer: each digit that changes slides
+// in from above when the amount goes up and from below when it goes down,
+// with a short blur, while the old digit leaves the other way. Digits are
+// keyed from the right so units stay units when a thousands digit appears.
+const RollDigit = ({ ch }: { ch: string }) => {
+  const [st, setSt] = useState({ cur: ch, prev: '', n: 0 });
+  if (ch !== st.cur) setSt({ cur: ch, prev: st.cur, n: st.n + 1 });
+  return (
+    <span className="roll__slot">
+      <span key={`c${st.n}`} className={`roll__in${st.n ? ' is-moving' : ''}`}>
+        {st.cur}
+      </span>
+      {st.prev && (
+        <span key={`p${st.n}`} className="roll__out" aria-hidden="true">
+          {st.prev}
+        </span>
+      )}
+    </span>
+  );
+};
+
+const RollNumber = ({ value, text }: { value: number; text: string }) => {
+  const last = useRef(value);
+  const dir = useRef<'up' | 'down'>('up');
+  if (value !== last.current) {
+    dir.current = value > last.current ? 'up' : 'down';
+    last.current = value;
+  }
+  const chars = text.split('');
+  return (
+    <span className={`roll roll--${dir.current}`} aria-label={text}>
+      {chars.map((c, i) => (
+        <RollDigit key={chars.length - i} ch={c} />
+      ))}
+    </span>
+  );
+};
+
+// The budget knob glides instead of hopping between €250 notches. The input
+// runs in whole euros so it follows the pointer freely, the knob eases toward
+// wherever it was put (a click on the rail slides it there too), and on
+// release it settles onto the nearest notch. The budget itself is always the
+// snapped value.
+const snap = (n: number) =>
+  Math.min(BUDGET_MAX, Math.max(BUDGET_MIN, Math.round(n / BUDGET_STEP) * BUDGET_STEP));
+
+const useGlide = (initial: number) => {
+  const [pos, setPos] = useState(initial);
+  const posRef = useRef(initial);
+  const target = useRef(initial);
+  const raf = useRef(0);
+  const reduce = useRef(false);
+  useEffect(() => {
+    reduce.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    return () => cancelAnimationFrame(raf.current);
+  }, []);
+  const tick = () => {
+    const gap = target.current - posRef.current;
+    posRef.current = Math.abs(gap) < 0.5 ? target.current : posRef.current + gap * 0.25;
+    setPos(posRef.current);
+    raf.current = posRef.current === target.current ? 0 : requestAnimationFrame(tick);
+  };
+  const glideTo = (n: number) => {
+    target.current = n;
+    if (reduce.current) {
+      posRef.current = n;
+      setPos(n);
+      return;
+    }
+    if (!raf.current) raf.current = requestAnimationFrame(tick);
+  };
+  const jumpTo = (n: number) => {
+    cancelAnimationFrame(raf.current);
+    raf.current = 0;
+    target.current = posRef.current = n;
+    setPos(n);
+  };
+  return { pos, glideTo, jumpTo };
+};
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
@@ -56,6 +137,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
   const [step, setStep] = useState(0);
   const [out, setOut] = useState(false);
   const [data, setData] = useState<Data>(EMPTY);
+  const knob = useGlide(BUDGET_MIN);
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
   // Pending step-fade timer, plus the latest "open generation". A fade that
@@ -71,7 +153,8 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
     setSeenNonce(openNonce);
     setStep(0);
     setOut(false);
-    setData({ ...EMPTY, service: initialService });
+    setData({ ...EMPTY, services: initialService ? [initialService] : [] });
+    knob.jumpTo(BUDGET_MIN);
     setSubmitting(false);
     setFailed(false);
   }
@@ -153,6 +236,19 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
     }, 280);
   };
 
+  // Several services can be picked together. "I have a question" isn't a
+  // project, so it stands alone: choosing it clears the others, and choosing
+  // any other service clears it.
+  const toggleService = (id: string) => {
+    const has = data.services.includes(id);
+    let next: string[];
+    if (has) next = data.services.filter((x) => x !== id);
+    else if (id === 'question') next = ['question'];
+    else next = [...data.services.filter((x) => x !== 'question'), id];
+    set({ services: next });
+  };
+  const onlyQuestion = data.services.length === 1 && data.services[0] === 'question';
+
   // Step 0 = "about you". Step 1 = "the project".
   const step0Valid =
     data.name.trim().length >= 2 &&
@@ -161,7 +257,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
 
   // Budget value written into the enquiry email.
   const budgetForSubmit = () => {
-    if (data.service === 'question') return 'Not applicable';
+    if (onlyQuestion) return 'Not applicable';
     if (!data.budgetOn) return 'Not specified';
     return amount(data.budget) + ' one-time';
   };
@@ -170,13 +266,15 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
     setSubmitting(true);
     setFailed(false);
     try {
-      const svc = SERVICES.find((s) => s.id === data.service);
+      const labels = SERVICES.filter((s) => data.services.includes(s.id)).map(
+        (s) => s.label
+      );
       const payload = {
         name: data.name.trim(),
         email: data.email.trim(),
         company: data.company.trim(),
         website: data.website.trim() || 'Not provided',
-        service: svc ? svc.label : 'Not specified',
+        service: labels.length ? labels.join(', ') : 'Not specified',
         budget: budgetForSubmit(),
         message: data.message.trim() || 'Not provided',
       };
@@ -199,13 +297,43 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
     }
   };
 
-  const budgetPct = Math.round(
-    ((data.budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100
-  );
+  const budgetPct = ((knob.pos - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
+
+  const moveKnob = (raw: number) => {
+    knob.glideTo(raw);
+    const b = snap(raw);
+    if (b !== data.budget) set({ budget: b });
+  };
+  const settleKnob = () => knob.glideTo(data.budget);
+  // Arrow keys step a whole notch; the input's own 1-euro step would crawl.
+  const knobKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const dir =
+      e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1
+      : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1
+      : e.key === 'PageUp' ? 4
+      : e.key === 'PageDown' ? -4
+      : 0;
+    if (!dir) return;
+    e.preventDefault();
+    const b = snap(data.budget + dir * BUDGET_STEP);
+    set({ budget: b });
+    knob.glideTo(b);
+  };
   const firstName = data.name.trim().split(' ')[0] || 'there';
 
   // The budget block opens with any real project service chosen.
-  const budgetVisible = !!data.service && data.service !== 'question';
+  const budgetVisible = data.services.length > 0 && !onlyQuestion;
+
+  // How much of the logo is drawn: one quarter per required answer.
+  const built =
+    step >= 2
+      ? 1
+      : ([
+          data.name.trim().length >= 2,
+          isEmail(data.email),
+          data.company.trim().length >= 2,
+          data.services.length > 0,
+        ].filter(Boolean).length) / 4;
 
   const progress = step >= 2 ? 100 : ((step + 1) / 2) * 100;
 
@@ -222,7 +350,43 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
       </div>
 
       <header className="cform__bar">
-        <span className="cform__brand-word">Pajzo</span>
+        {/* The mark builds itself as the brief comes together: each required
+            answer traces another stretch of the P's outline, a complete form
+            closes the shape, and a sent message fills it in. */}
+        <span
+          className={`cform__brand${built >= 1 ? ' is-ready' : ''}${step >= 2 ? ' is-sent' : ''}`}
+          aria-hidden="true"
+        >
+          <svg viewBox="-24 -24 1762 700" className="cform__brand-svg">
+            <defs>
+              <linearGradient id="cf-mark-stroke" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="var(--violet-soft)" />
+                <stop offset="0.6" stopColor="var(--violet)" />
+                <stop offset="1" stopColor="var(--lime)" />
+              </linearGradient>
+              <linearGradient id="cf-mark-fill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="var(--violet-soft)" />
+                <stop offset="1" stopColor="var(--violet-deep)" />
+              </linearGradient>
+            </defs>
+            <path className="cform__brand-fill" d={SHIELD} />
+            <path className="cform__brand-track" d={SHIELD} pathLength={1} />
+            <path
+              className="cform__brand-trace"
+              d={SHIELD}
+              pathLength={1}
+              style={{ strokeDashoffset: 1 - built }}
+            />
+            <text
+              className="cform__brand-text"
+              transform="translate(368.1129 511.6942)"
+              fontFamily="Bungee"
+              fontSize="478.5805"
+            >
+              AJZO
+            </text>
+          </svg>
+        </span>
         <button className="cform__close" onClick={onClose} aria-label="Close">
           <Close />
         </button>
@@ -311,7 +475,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                 </p>
                 <h2 className="cform__head">What needs building?</h2>
                 <p className="cform__lead">
-                  Pick the closest fit. If it&rsquo;s somewhere in between,
+                  Pick everything that fits. If it&rsquo;s somewhere in between,
                   that&rsquo;s what the message box is for.
                 </p>
 
@@ -320,9 +484,9 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                     <button
                       type="button"
                       key={s.id}
-                      className={`copt${data.service === s.id ? ' copt--on' : ''}`}
-                      onClick={() => set({ service: s.id })}
-                      aria-pressed={data.service === s.id}
+                      className={`copt${data.services.includes(s.id) ? ' copt--on' : ''}`}
+                      onClick={() => toggleService(s.id)}
+                      aria-pressed={data.services.includes(s.id)}
                     >
                       <span className="copt__tick" aria-hidden="true">
                         <Check />
@@ -358,7 +522,9 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                               <label className="field__label" htmlFor="cf-budget">
                                 Rough budget
                               </label>
-                              <span className="cform__budget">{amount(data.budget)}</span>
+                              <span className="cform__budget">
+                                <RollNumber value={data.budget} text={amount(data.budget)} />
+                              </span>
                             </div>
                             <input
                               id="cf-budget"
@@ -366,12 +532,14 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                               className="range"
                               min={BUDGET_MIN}
                               max={BUDGET_MAX}
-                              step={BUDGET_STEP}
-                              value={data.budget}
-                              onChange={(e) => set({ budget: Number(e.target.value) })}
-                              style={{
-                                background: `linear-gradient(to right, var(--violet-deep), var(--violet) ${budgetPct}%, var(--line-strong) ${budgetPct}%)`,
-                              }}
+                              step={1}
+                              value={Math.round(knob.pos)}
+                              onChange={(e) => moveKnob(Number(e.target.value))}
+                              onPointerUp={settleKnob}
+                              onBlur={settleKnob}
+                              onKeyDown={knobKeys}
+                              aria-valuetext={amount(data.budget)}
+                              style={{ '--pct': `${budgetPct}%` } as React.CSSProperties}
                               aria-label="Rough budget"
                             />
                           </div>
@@ -383,7 +551,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
 
                 <div className="field cform__msg">
                   <label className="field__label" htmlFor="cf-msg">
-                    {data.service === 'question' ? 'Your question' : 'The brief, roughly'}{' '}
+                    {onlyQuestion ? 'Your question' : 'The brief, roughly'}{' '}
                     <span className="opt">(optional)</span>
                   </label>
                   <textarea
@@ -394,7 +562,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                     maxLength={1500}
                     rows={2}
                     placeholder={
-                      data.service === 'question'
+                      onlyQuestion
                         ? 'Ask away…'
                         : 'Two or three sentences is plenty: what it is, who it is for, when you would like it.'
                     }
@@ -419,7 +587,7 @@ const ContactModal = ({ open, openNonce, onClose, initialService }: Props) => {
                   <button
                     className="btn btn--solid btn--lg"
                     onClick={submit}
-                    disabled={!data.service || submitting}
+                    disabled={!data.services.length || submitting}
                   >
                     {submitting ? 'Sending…' : 'Send to Ajdin'}
                     {!submitting && <ArrowRight />}

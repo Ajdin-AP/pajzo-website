@@ -8,7 +8,7 @@ const LIMITS = {
     email: 120,
     company: 120,
     website: 160,
-    service: 60,
+    service: 120,
     budget: 60,
     message: 1500
 };
